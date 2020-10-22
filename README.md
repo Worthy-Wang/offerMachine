@@ -54,7 +54,7 @@
 <br>
 
 ----------------
-#### new/delete 和 malloc/free 的区别？
+## new/delete 和 malloc/free 的区别？
 1. **最重要的一点**
 `new/delete`可以调用类的构造函数，析构函数等；而`malloc/free`只是简单的申请和释放内存。
 2. **本质类型**
