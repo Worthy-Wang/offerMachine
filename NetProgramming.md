@@ -189,21 +189,24 @@ Proactor模型处理数据的流程：
 
 >**相关知识补充说明**：
 Reactor的常用模型有以下几种：
-1）	单Reactor单线程模型
+>1. **单Reactor单线程模型**
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201102104014700.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
-2）	单Reactor多线程模型
+>2. **单Reactor多线程模型**
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201102104026760.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
-3）	主从Reactor多线程模型
+>3. **主从Reactor多线程模型**
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201102104043603.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
-**Reactor模型中有三大角色**：
-Reactor：负责监听事件，当有事件就绪时调用相应的回调函数。（事件就绪分为 连接就绪，读就绪，写就绪）
-Acceptor：负责处理客户端的新连接，并将文件描述符传递给Reactor。
-Handler：事件处理器，是一种通过回调函数（钩子函数）实现的事件处理机制，当handle（文件描述符）上有事件发生时，便会执行该回调函数。
-**关于英文资料中Reactor/Proactor模型专业名词解释**：
-Handle：Handle在Linux中称为文件描述符，在Windows中称句柄，含义相同。Handle是事件的发源地，发生在handle上面的事件可以有connection（连接），read for read（读就绪），read for write（写就绪）。
-Synchronous Event Demuliplexer：同步事件分离器，本质上属于系统调用。如IO多路复用 select/poll/epoll等方法。
-Event Handler：事件处理器，是一种通过回调函数（钩子函数）实现的事件处理机制，当handle上有事件发生时，便会执行该回调函数。
-Dispatcher：初始分发器，也就是reactor，提供了注册，删除，转发Event Handler的方法。当Synchronous Event Demuliplexer 检测到 handle 上面有事件发生时，便会通知dispatcher调用特定的回调函数。
+
+>**Reactor模型中有三大角色**：
+>* **Reactor**：负责监听事件，当有事件就绪时调用相应的回调函数。（事件就绪分为 连接就绪，读就绪，写就绪）
+>* **Acceptor**：负责处理客户端的新连接，并将文件描述符传递给Reactor。
+>* **Handler**：事件处理器，是一种通过回调函数（钩子函数）实现的事件处理机制，当handle（文件描述符）上有事件发生时，便会执行该回调函数。
+
+
+>**关于英文资料中Reactor/Proactor模型专业名词解释**：
+>* **Handle**：Handle在Linux中称为文件描述符，在Windows中称句柄，含义相同。Handle是事件的发源地，发生在handle上面的事件可以有connection（连接），read for read（读就绪），read for write（写就绪）。
+>* **Synchronous Event Demuliplexer**：同步事件分离器，本质上属于系统调用。如IO多路复用 select/poll/epoll等方法。
+>* **Event Handler**：事件处理器，是一种通过回调函数（钩子函数）实现的事件处理机制，当handle上有事件发生时，便会执行该回调函数。
+>* **Dispatcher**：初始分发器，也就是reactor，提供了注册，删除，转发Event Handler的方法。当Synchronous Event Demuliplexer 检测到 handle 上面有事件发生时，便会通知dispatcher调用特定的回调函数。
 
 <br>
 
