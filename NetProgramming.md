@@ -189,10 +189,13 @@ Proactor模型处理数据的流程：
 
 >**相关知识补充说明**：
 Reactor的常用模型有以下几种：
+
 >1. **单Reactor单线程模型**
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201102104014700.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
+
 >2. **单Reactor多线程模型**
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201102104026760.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
+
 >3. **主从Reactor多线程模型**
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201102104043603.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
 
