@@ -10,7 +10,7 @@
 - [UDP通信中调用connect有什么作用？和TCP连接中的connect有什么区别？](#udp通信中调用connect有什么作用和tcp连接中的connect有什么区别)
 - [keepalive是什么？如何使用？](#keepalive是什么如何使用)
 - [Socket编程中，如果client断开，服务器如何快速知道？](#socket编程中如果client断开服务器如何快速知道)
-
+- [Socket通信流程是怎样的？](#socket通信流程是怎样的)
 <br>
 
 -------------
@@ -286,5 +286,19 @@ Keepalive发送的时间可以通过 cat /proc/sys/net/ipv4/tcp_keepalive_time �
 
 >**补充：Keepalive 相关内容见上一个问题。**
 
+-------------
+## Socket通信流程是怎样的？
+
+* **以TCP通信为例**：
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201102123248610.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
+
+* **三次握手过程**：
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201102123323694.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
+
+* **四次挥手过程**：
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201102123342361.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
 
 
