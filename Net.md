@@ -523,6 +523,7 @@ ARQ协议是数据链路层和传输层的错误纠正协议之一，分为**停
 
 * **选择重传ARQ**：接收窗口大于1，只需要重传错误的帧。
 
+<img src="https://github.com/Worthy-Wang/offerMachine/blob/main/images/ARQ2.png">
 
 
 
