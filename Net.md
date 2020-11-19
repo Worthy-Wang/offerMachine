@@ -74,10 +74,13 @@ HTTP有**请求报文**和**响应报文**两种形式。
 * **请求报文**
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201028091449264.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
+
 请求报文由四个部分组成： 
+
 > **请求行 + 请求头 +  空行+ 请求体** 
 
 1.	 **请求行**
+
 >**1.1 请求方法**
 GET：重点在于从服务器上获取资源。
 POST: 重点在于向服务器发送数据（例如提交表单或上传文件）
@@ -509,11 +512,12 @@ ISN不固定有两个好处：
 
 5.	**ARQ（Auto Repeat Request）协议**
 
-ARQ协议是数据链路层和传输层的错误纠正协议之一，分为**停止等待ARQ协议**，**连续ARQ协议**。
+ARQ协议是数据链路层和传输层的错误纠正协议之一，分为**停止等待ARQ**，**回退n帧ARQ**，**选择重传ARQ**。
 * **停止等待ARQ协议**：发送一个报文段之后，必须受到该报文段的ACK之后，才发送下一个报文段。
-* **连续ARQ协议**：连续发送若干个报文段之后等待ACK确认。分为 回退n帧ARQ协议 与 选择重传ARQ协议，这两种协议的区别在于 :
->**回退n帧ARQ协议**的接收窗口为1，需要从出现错误的帧开始，将之后的全部帧进行重传。
-**选择重传ARQ**的接收窗口大于1，只需要重传错误的帧。
+* **回退n帧ARQ协议**：接收窗口为1，需要从出现错误的帧开始，将之后的全部帧进行重传。
+* **选择重传ARQ**：接收窗口大于1，只需要重传错误的帧。
+
+!()[https://github.com/Worthy-Wang/offerMachine/blob/main/images/ARQ1.png]
 
 
 6.	**设置滑动窗口进行流量控制** 
