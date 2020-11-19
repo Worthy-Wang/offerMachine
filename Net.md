@@ -513,11 +513,17 @@ ISN不固定有两个好处：
 5.	**ARQ（Auto Repeat Request）协议**
 
 ARQ协议是数据链路层和传输层的错误纠正协议之一，分为**停止等待ARQ**，**回退n帧ARQ**，**选择重传ARQ**。
+
 * **停止等待ARQ协议**：发送一个报文段之后，必须受到该报文段的ACK之后，才发送下一个报文段。
+
 * **回退n帧ARQ协议**：接收窗口为1，需要从出现错误的帧开始，将之后的全部帧进行重传。
+
+
+<img src="https://github.com/Worthy-Wang/offerMachine/blob/main/images/ARQ1.png"  width="250px">
+
 * **选择重传ARQ**：接收窗口大于1，只需要重传错误的帧。
 
-!()[https://github.com/Worthy-Wang/offerMachine/blob/main/images/ARQ1.png]
+
 
 
 6.	**设置滑动窗口进行流量控制** 
