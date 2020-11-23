@@ -47,28 +47,32 @@ IO的五种模型：
 
 讲解五种IO模型的区别，仍然用上一个问题中小王去书店买书的例子说明。
 
-1. 阻塞IO
+1. **阻塞IO**
 
 小王一直在书店等着，直到书店有书，这是 同步阻塞IO。
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201102094349264.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
-2. 非阻塞IO
+
+2. **非阻塞IO**
 
 小王隔一段时间就去书店看看有没有书，这是 同步非阻塞IO。
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201102094407675.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
-3. 多路复用IO
+
+3. **多路复用IO**
 
 多路复用IO比较特别，在实际进行read/recv时并不会阻塞，但在select/poll/epoll时会阻塞。
 小王来书店买书，但有一排书架，并不知道哪个书架上面有书，老板直接告诉小王哪个书架上面有书，这是多路复用IO。多路IO复用也属于**同步非阻塞**的一种。
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201102094421630.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
-4. 信号驱动IO
+
+4. **信号驱动IO**
 
 老板在书店有书的时候给小王打电话，让小王过来拿书，这是 信号驱动IO，也是同步非阻塞的一种。
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2020110209444168.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
-5. 异步IO
+
+5. **异步IO**
 
 老板在书店有书的时候直接把书寄到小王家里，这是 异步非阻塞。
 
@@ -182,7 +186,7 @@ Proactor模型处理数据的流程：
 
 2.	Reactor 需要进行实际的读写操作；Proactor不会进行实际的读写操作，而是直接从内存缓冲区读写。
 
-3.	Reactor编程相对简单；Proactor编程相对复杂，且由于需要稳定的内存缓冲区 造成不稳定性，同时目前Linux下的异步IO仍然是使用epoll实现的。
+3.	Reactor编程相对简单；Proactor编程相对复杂，且由于需要稳定的内存缓冲区这较难实现，同时目前Linux下的异步IO仍然是使用epoll实现的。
 
 **所以，目前Linux下实现的高并发网络编程都是以Reactor模型为主。**
 
