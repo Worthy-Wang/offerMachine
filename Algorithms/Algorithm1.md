@@ -284,14 +284,293 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/longest-consecutive-sequence
 
-解题思路：
+* **解法一**
 
-时间复杂度：
+解题思路：并查集，下标代表该数字，元素代表从该数字出发能够到达的位置；
 
-空间复杂度：
+时间复杂度：O(N)
 
-17:11
+空间复杂度：O(N)
+
+
 ```cpp
+class Solution {
+    unordered_map<int,int> union_find; 
+public:
+    int find(int x)
+    {
+        return union_find.count(x) ? union_find[x]=find(union_find[x]) :  x;
+    }
+
+    int longestConsecutive(vector<int>& nums) {
+        if (nums.empty())
+            return 0;
+        for(auto& e: nums)
+            union_find[e] = e + 1;
+        
+        int Max = INT32_MIN;
+        for(auto& beg: nums)
+        {
+            int end = find(beg+1);
+            Max = std::max(end-beg, Max);
+        }
+        return Max;
+    }
+};
+
+```
+
+* **解法二**
+
+解题思路：采用常规遍历+哈希表方法，相比于第一种的并查集方法，该方法会超出时间限制，原因是有了大量的重复计算操作
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        if (nums.empty())
+            return 0;
+        unordered_map<int,int> hashmap;
+        for(auto& i : nums)
+            hashmap[i] = i;
+        int Max = INT32_MIN;
+        for(auto i: nums)
+        {
+            int cnt = 1;
+            while (hashmap.count(++i))
+                cnt++;
+            Max = std::max(Max, cnt);
+        }
+        return Max;
+    }
+};
+
+```
+
+<br>
+
+------------------------------
+##### 1.两数之和
+
+>题目描述：给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。
+你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/two-sum
+
+* **错误解法**
+
+解题思路：先排序，再用双指针从首尾分别出发。此题思路行不通，因为需要返回的是数组的下标而不是数组本身！
+
+时间复杂度：O(NlogN + N)
+
+空间复杂度：O(1)
+
+
+
+* **正确解法**
+
+解题思路：将哈希表与遍历操作同时进行，相当于是一种空间换时间的策略，需要注意的地方是遍历与哈希表的创建必须同时进行，因为数组中可能会有重复元素让哈希表无法存放。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        if (nums.empty())
+            return {};
+        unordered_map<int,int> hashmap;
+        for(int i = 0; i < nums.size(); i++)
+        {
+            int another = target - nums[i];
+            if (hashmap.count(another))
+                return vector<int>{i, hashmap[another]};
+            else
+                hashmap[nums[i]] = i;
+        }
+        return {};
+    }
+};
+
+```
+
+
+<br>
+
+-----------------------------
+##### 15.三数之和
+
+>题目描述：给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有满足条件且不重复的三元组。
+注意：答案中不可以包含重复的三元组。
+
+来源：力扣（LeetCode）      
+链接：https://leetcode-cn.com/problems/3sum
+
+解题思路：先排序，再使用三指针法，也就是固定第一个指针，然后后面的两个指针用两数之和的双指针法解决。需要注意的点在于必须在执行过程中进行去重操作，不然时间复杂度会非常大！
+
+时间复杂度：O(NlogN+N^2) ≈ O(N^2)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        if (nums.size() < 3)
+            return {};
+        sort(nums.begin(), nums.end(), std::less<int>());
+        vector<vector<int>> ans;
+        for(int k = 0; k < nums.size()-2; k++)
+        {
+            if (nums[k]>0 || (k>0&&nums[k]==nums[k-1]))
+                continue;
+            int i = k + 1, j = nums.size()-1;
+            while (i < j)
+            {
+                int sum = nums[k] + nums[i] + nums[j];
+                if (sum == 0)
+                {
+                    ans.push_back(vector<int>{nums[k], nums[i++], nums[j--]});
+                    while(i<j && nums[i-1]==nums[i])
+                        i++;;
+                    while(i<j && nums[j+1]==nums[j])
+                        j--;
+                }
+                else if (sum < 0)
+                    i++;
+                else 
+                    j--;
+            }
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+---------------------------------
+##### 16.最接近的三数之和
+
+>题目描述：给定一个包括 n 个整数的数组 nums 和 一个目标值 target。找出 nums 中的三个整数，使得它们的和与 target 最接近。返回这三个数的和。假定每组输入只存在唯一答案。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/3sum-closest
+
+14:41
+
+解题思路：和上一题的方法相同，唯一需要注意的是返回这三个数的和！
+
+时间复杂度：O(NlogN+N^2) ≈ O(N^2)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int threeSumClosest(vector<int>& nums, int target) {
+        if (nums.size() < 3)
+            return -1;
+        sort(nums.begin(), nums.end(), std::less<int>());
+        int ans = nums[0] + nums[1] + nums[2];
+        for(int k = 0; k < nums.size()-2; k++)
+        {
+            if (k>0 && nums[k]==nums[k-1])
+                continue;
+            int i = k + 1, j = nums.size()-1;
+            while (i < j)
+            {
+                int sum = nums[k] + nums[i] + nums[j];
+                if (sum == target)
+                    return sum;
+                else if (sum < target)
+                {
+                    if (abs(target-sum) < abs(target-ans))
+                        ans = sum;
+                    i++;
+                    while(i<j && nums[i-1]==nums[i])
+                        i++;
+                }    
+                else 
+                {
+                    if (abs(target-sum) < abs(target-ans))
+                        ans = sum;
+                    j--;
+                    while(i<j && nums[j+1] == nums[j])
+                        j--;
+                }
+            }
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+----------------------------
+
+##### 18.四数之和
+
+>题目描述：
+给定一个包含 n 个整数的数组 nums 和一个目标值 target，判断 nums 中是否存在四个元素 a，b，c 和 d ，使得 a + b + c + d 的值与 target 相等？找出所有满足条件且不重复的四元组。注意答案中不可以包含重复的四元组。
+
+解题思路：先排序，再用四指针法求解，也就是固定第一个和第二个指针，将第三个指针和第四个指针向中间收拢。
+
+时间复杂度：O(NlogN + N^3)
+
+空间复杂度：O(1)
+
+
+```cpp
+
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        if (nums.size() < 4)
+            return {};
+        vector<vector<int>> ans;
+        sort(nums.begin(), nums.end(), std::less<int>());
+        for(int m = 0; m < nums.size()-3; m++)
+        {
+            if (m>0 && nums[m-1]==nums[m])
+                continue;
+            for(int n = m+1; n < nums.size()-2; n++)
+            {
+                if (n>m+1 && nums[n-1]==nums[n])
+                    continue;
+
+                int i = n + 1, j = nums.size()-1;
+                while (i < j)
+                {
+                    int sum = nums[m] + nums[n] + nums[i] + nums[j];
+                    if (sum == target)
+                    {
+                        ans.push_back(vector<int>{nums[m],nums[n],nums[i++],nums[j--]});
+                        while(i<j && nums[i-1]==nums[i]) i++;
+                        while(i<j && nums[j+1]==nums[j]) j--;
+                    }else if (sum < target)
+                    {
+                        i++;
+                    }else
+                    {
+                        j--;
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+};
 
 
 ```
@@ -299,12 +578,33 @@ public:
 
 <br>
 
-------------------------------
-1.两数之和
-15.三数之和
-16.最接近的三数之和
-18.四数之和
-27.移除元素
+-------------------------------
+
+##### 27.移除元素
+
+>题目描述：给你一个数组 nums 和一个值 val，你需要 原地 移除所有数值等于 val 的元素，并返回移除后数组的新长度。
+不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并 原地 修改输入数组。
+元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/remove-element
+
+解题思路：
+
+时间复杂度：
+
+空间复杂度：
+
+
+```cpp
+
+
+```
+
+<br>
+
+----------------------------
+
 31.下一个排列
 60.排列序列
 36.有效的数独
