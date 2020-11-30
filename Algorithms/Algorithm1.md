@@ -589,12 +589,294 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/remove-element
 
+解题思路：此题直接用双指针法解决。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    int removeElement(vector<int>& nums, int val) {
+        if (nums.empty())
+            return 0;
+        int i = -1, j = 0;
+        for(; j < nums.size(); j++)
+        {
+            if (nums[j] == val)
+                continue;
+            else
+                nums[++i] = nums[j];
+        }
+        return i + 1;
+    }
+};
+
+
+
+```
+
+<br>
+
+----------------------------
+##### 31.下一个排列
+
+>题目描述：实现获取 下一个排列 的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
+如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
+必须 原地 修改，只允许使用额外常数空间。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/next-permutation
+
+解题思路：两次遍历再加上局部反转即可；第一次遍历从rbegin出发找到第一个降序的数nums[i]，第二次遍历从rbegin出发找到第一个大于nums[i]的数，交换后从i的位置往后进行反转。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    void nextPermutation(vector<int>& nums) {
+        if (nums.size() <= 1)
+            return;
+        int i = nums.size()-2;
+        while(i>=0 && nums[i]>=nums[i+1])
+            i--;
+        if (i < 0)
+        {
+            reverse(nums.begin(), nums.end());
+            return;
+        }
+        int j = nums.size()-1;
+        while(nums[j] <= nums[i])
+            j--;
+        swap(nums[i], nums[j]);
+        reverse(nums.begin() + i + 1, nums.end());        
+    }
+};
+
+```
+
+<br>
+
+-----------------------------
+##### 46.全排列
+>题目描述：给定一个 没有重复 数字的序列，返回其所有可能的全排列。
+示例:
+输入: [1,2,3]
+输出:
+[
+  [1,2,3],
+  [1,3,2],
+  [2,1,3],
+  [2,3,1],
+  [3,1,2],
+  [3,2,1]
+]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/permutations
+
+解题思路：直接适用DFS遍历法对所有数进行遍历
+
+时间复杂度：O(N!)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+    vector<vector<int>> ans;
+public:
+    void DFS(vector<int>& nums, vector<int>& visited, vector<int>& res)
+    {
+        if (res.size() == nums.size())
+        {
+            ans.push_back(res);
+            return;
+        }
+
+        for(int i = 0; i < nums.size(); i++)
+        {
+            if (visited[i])
+                continue;
+            visited[i] = 1;
+            res.push_back(nums[i]);
+            DFS(nums, visited, res);
+            visited[i] = 0;
+            res.pop_back();
+        }
+    }
+
+    vector<vector<int>> permute(vector<int>& nums) {
+        int len = nums.size();
+        vector<int> visited(len, 0);
+        vector<int> res;
+        DFS(nums, visited, res);
+        return ans;
+    }
+};
+
+
+```
+
+<br>
+
+---------------------
+
+
+##### 60.排列序列
+
+>题目描述：给出集合 [1,2,3,...,n]，其所有元素共有 n! 种排列。
+按大小顺序列出所有排列情况，并一一标记，当 n = 3 时, 所有排列如下：
+"123"
+"132"
+"213"
+"231"
+"312"
+"321"
+给定 n 和 k，返回第 k 个排列。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/permutation-sequence
+
+解题思路：此题实质上属于一次遍历的DFS问题，用DFS递归的方法来进行无回溯的一次遍历，由于中间需要计算阶乘，所以时间复杂度为O(N^2)。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N)
+
+
+```cpp
+
+class Solution {
+public:
+    int getFactorial(int n)
+    {                       
+        int res = 1;
+        for(int i = n; i >= 1; i--)
+            res *= i;
+        return res;
+    }
+
+    void DFS(vector<int>& nums, int k, vector<int>& visited, string& res, int& level)
+    {
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (visited[i])
+                continue;
+            int skip = getFactorial(nums.size()-1-level);
+            if (k > skip)
+            {
+                k -= skip;
+                continue;
+            }
+            visited[i] = 1;
+            res.push_back(nums[i] + '0');
+            level++;
+            DFS(nums, k, visited, res, level);
+            return;//后面的不用执行
+        }
+    }
+
+    string getPermutation(int n, int k) {
+        vector<int> nums;
+        for(int i = 1; i <= n; i++)
+            nums.push_back(i);
+        int level = 0;
+        string res;
+        vector<int> visited(n, 0);
+        DFS(nums, k, visited, res, level);
+        return res;
+    }
+};
+
+```
+
+<br>
+
+-----------------------------------
+##### 36.有效的数独
+>题目描述：判断一个 9x9 的数独是否有效。只需要根据以下规则，验证已经填入的数字是否有效即可。
+数字 1-9 在每一行只能出现一次。
+数字 1-9 在每一列只能出现一次。
+数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/valid-sudoku
+
+解题思路：设置行，类，宫三种类型的辅助二维数组，每一个二维数组有9行，每一行可以存储 1~9 10个数字，进行一次遍历即可。
+
+时间复杂度：O(1)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    bool isValidSudoku(vector<vector<char>>& board) {
+        if (board.empty())
+            return false;
+        vector<vector<int>> rows(9, vector<int>(10, 0));
+        vector<vector<int>> columns(9, vector<int>(10, 0));
+        vector<vector<int>> boxes(9, vector<int>(10, 0));
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (board[i][j] != '.')
+                {
+                    int num = board[i][j] - '0';
+                    if (rows[i][num] || columns[j][num] || boxes[i/3*3+j/3][num])
+                        return false;
+                    else
+                    {
+                        rows[i][num]++;
+                        columns[j][num]++;
+                        boxes[i/3*3+j/3][num]++;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+};
+
+```
+
+<br>
+
+--------------------------
+##### 42.接雨水
+
+>题目描述：给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
+输入：height = [0,1,0,2,1,0,1,3,2,1,2,1]
+输出：6
+解释：上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。 
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/trapping-rain-water
+
 解题思路：
 
 时间复杂度：
 
 空间复杂度：
 
+```cpp
+17:55
+
+```
+
+解题思路：
+
+时间复杂度：
+
+空间复杂度：
 
 ```cpp
 
@@ -603,12 +885,8 @@ public:
 
 <br>
 
-----------------------------
+---------------------------------
 
-31.下一个排列
-60.排列序列
-36.有效的数独
-42.接雨水
 48.旋转图像
 66.加一
 70.爬楼梯
