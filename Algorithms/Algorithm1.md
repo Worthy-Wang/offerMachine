@@ -1,4 +1,49 @@
-
+- [一.线性表专题](#一线性表专题)
+    - [线性表专题：数组系列](#线性表专题数组系列)
+        - [26.删除排序数组中的重复项](#26删除排序数组中的重复项)
+        - [80.删除排序数组中的重复项2](#80删除排序数组中的重复项2)
+        - [33.搜索旋转排序数组](#33搜索旋转排序数组)
+        - [81.搜索旋转排序数组2](#81搜索旋转排序数组2)
+        - [4.寻找两个正序数组的中位数](#4寻找两个正序数组的中位数)
+        - [128.最长连续序列](#128最长连续序列)
+        - [1.两数之和](#1两数之和)
+        - [15.三数之和](#15三数之和)
+        - [16.最接近的三数之和](#16最接近的三数之和)
+        - [18.四数之和](#18四数之和)
+        - [27.移除元素](#27移除元素)
+        - [31.下一个排列](#31下一个排列)
+        - [46.全排列](#46全排列)
+        - [60.排列序列](#60排列序列)
+        - [36.有效的数独](#36有效的数独)
+        - [42.接雨水](#42接雨水)
+        - [48.旋转图像](#48旋转图像)
+        - [66.加一](#66加一)
+        - [70.爬楼梯](#70爬楼梯)
+        - [89.格雷编码](#89格雷编码)
+        - [73.矩阵置零](#73矩阵置零)
+        - [134.加油站](#134加油站)
+        - [135.分发糖果](#135分发糖果)
+        - [136.只出现一次的数字](#136只出现一次的数字)
+        - [137.只出现一次的数字2](#137只出现一次的数字2)
+        - [260.只出现一次的数字3](#260只出现一次的数字3)
+    - [线性表专题：链表系列](#线性表专题链表系列)
+        - [2.两数相加](#2两数相加)
+        - [445.两数相加2](#445两数相加2)
+        - [206.反转链表](#206反转链表)
+        - [92.反转链表2](#92反转链表2)
+        - [86.分隔链表](#86分隔链表)
+        - [83.删除排序链表中的重复元素](#83删除排序链表中的重复元素)
+        - [82.删除排序链表中的重复元素2](#82删除排序链表中的重复元素2)
+        - [61.旋转链表](#61旋转链表)
+        - [19.删除链表的倒数第N个节点](#19删除链表的倒数第n个节点)
+        - [24.两两交换链表中的节点](#24两两交换链表中的节点)
+        - [25.K个一组翻转链表](#25k个一组翻转链表)
+        - [138.复制带随机指针的链表](#138复制带随机指针的链表)
+        - [141.环形链表](#141环形链表)
+        - [142.环形链表2](#142环形链表2)
+        - [876.链表的中间节点](#876链表的中间节点)
+        - [143.重排链表](#143重排链表)
+        - [146.LRU缓存机制](#146lru缓存机制)
 
 
 # 一.线性表专题
@@ -1932,7 +1977,7 @@ k 是一个正整数，它的值小于或等于链表的长度。
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/reverse-nodes-in-k-group
 
-解题思路：对链表进行k个k个的遍历，先专门写一个函数用于转置链表的k个元素（需要返回新的首尾节点），该题相当于是 翻转链表 题的难度加大题。
+解题思路：对链表进行k个k个的遍历，先专门写一个函数用于转置链表的k个元素（需要返回新的首尾节点），该题相当于是 翻转链表 题的难度加大题。该题的关键点在于设置好指针，指向 上一个链表的尾结点 和 下一个链表的头结点。
 
 时间复杂度：O(N)
 
@@ -1940,102 +1985,401 @@ k 是一个正整数，它的值小于或等于链表的长度。
 
 
 ```cpp
+class Solution {
+public:
+    pair<ListNode*, ListNode*> reverseList(ListNode* head, ListNode* tail)
+    {
+        ListNode dummy(-1);
+        dummy.next = head;
+        ListNode* cur = head, *end = tail->next;
+        while (cur != end)
+        {
+            auto t = cur->next;
+            cur->next = dummy.next;
+            dummy.next = cur;
+            cur = t;
+        }
+        return make_pair(tail, head);
+    }
 
-
-```
-
-<br>
-
------------------------------------
-
-138.复制带随机指针的链表
->题目描述：
-
-解题思路：
-
-时间复杂度：O()
-
-空间复杂度：O()
-
-
-```cpp
-
-
-```
-
-<br>
-
------------------------------------
-
-141.环形链表
->题目描述：
-
-解题思路：
-
-时间复杂度：O()
-
-空间复杂度：O()
-
-
-```cpp
-
-
-```
-
-<br>
-
------------------------------------
-
-142.环形链表2
->题目描述：
-
-解题思路：
-
-时间复杂度：O()
-
-空间复杂度：O()
-
-
-```cpp
-
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        if (k<=1 || !head || !head->next)
+            return head;
+        ListNode dummy(-1);
+        dummy.next = head;
+        ListNode* pre = &dummy;
+        while (1)
+        {
+            ListNode* cur = pre;
+            for (int i = 0; i < k; i++)
+            {
+                cur = cur->next;
+                if (!cur)
+                    return dummy.next;
+            }
+            ListNode* rightHead = cur->next;
+            pair<ListNode*,ListNode*> newPair = reverseList(pre->next, cur);
+            ListNode* newHead = newPair.first, *newTail = newPair.second;
+            pre->next = newHead;
+            pre = newTail;
+            newTail->next = rightHead;
+        }
+        return dummy.next;
+    }
+};
 
 ```
 
 <br>
 
 -----------------------------------
-143.重排链表
+##### 138.复制带随机指针的链表
+>题目描述：给定一个链表，每个节点包含一个额外增加的随机指针，该指针可以指向链表中的任何节点或空节点。
+要求返回这个链表的 深拷贝。 
+我们用一个由 n 个节点组成的链表来表示输入/输出中的链表。每个节点用一个 [val, random_index] 表示：
+val：一个表示 Node.val 的整数。
+random_index：随机指针指向的节点索引（范围从 0 到 n-1）；如果不指向任何节点，则为  null 。
 
->题目描述：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/copy-list-with-random-pointer
 
-解题思路：
+* **解法一**
 
-时间复杂度：O()
+解题思路：哈希表作为辅助，key为旧节点的指针，value为新创建的节点的指针，一次遍历先创建新节点并记录哈希表，再一次遍历将随机指针填充上即可。
 
-空间复杂度：O()
+时间复杂度：O(N)
 
+空间复杂度：O(N)
 
 ```cpp
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        unordered_map<Node*, Node*> hashmap;
+        Node dummy(-1);
+        Node* tail = &dummy;
+        for (auto cur = head; cur ; cur=cur->next)
+        {
+            Node* node = new Node(cur->val);
+            tail->next = node;
+            tail = node;
+            hashmap[cur] = node;
+        }
+        for (auto p = head, q=dummy.next; p&&q; p=p->next, q=q->next)
+            q->random = hashmap[p->random];
+        return dummy.next;
+    }
+};
 
+```
+
+* **解法二**
+
+解题思路：将深拷贝的节点存放在旧节点的next后，新节点的next又连接原来旧节点的下一个节点，这样可以起到模拟哈希表的作用。第一次遍历先创建新节点，第二次遍历填充新节点的 random指针，第三次遍历将新旧链表分开。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        if (!head)
+            return nullptr;
+        //创建新链表
+        auto cur = head;
+        while(cur)
+        {
+            Node* node = new Node(cur->val);
+            node->next = cur->next;
+            cur->next = node;
+            cur = cur->next->next;
+        }
+        //填充新链表的random指针
+        auto p = head, q = head->next;
+        while (p && q)
+        {
+            q->random = (p->random? p->random->next : nullptr);
+            p = p->next->next;
+            if (q->next)
+                q = q->next->next;
+        }
+        //将 新旧链表拆开
+        Node* head2 = head->next;
+        p = head, q =head2;
+        while (p && q)
+        {
+            p->next = q->next;
+            p = p->next;
+            q->next = (p ? p->next : nullptr);
+            q = q->next;
+        }
+        return head2;
+    }
+};
 
 ```
 
 <br>
 
 -----------------------------------
+##### 141.环形链表
+>题目描述：给定一个链表，判断链表中是否有环。
+如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环。 为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。注意：pos 不作为参数进行传递，仅仅是为了标识链表的实际情况。
+如果链表中存在环，则返回 true 。 否则，返回 false 。
+你能用 O(1)（即，常量）内存解决此问题吗？
 
-146.LRU缓存机制
->题目描述：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/linked-list-cycle
 
-解题思路：
+解题思路：快慢指针法，快指针走的速度是慢指针的两倍，如果两个指针能够重新相遇，那么说明有环；若快指针走到末尾，则说明无环。
 
-时间复杂度：O()
+时间复杂度：O(N)
 
-空间复杂度：O()
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        if (!head)
+            return false;
+        ListNode* s = head, *f = head;
+        do 
+        {
+            if (!f || !f->next)
+                return false;
+            s = s->next;
+            f = f->next->next;
+        }while (s != f);
+        return true;
+    }
+};
+
+```
+
+<br>
+
+-----------------------------------
+##### 142.环形链表2
+>题目描述：给定一个链表，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。
+为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。注意，pos 仅仅是用于标识环的情况，并不会作为参数传递到函数中。
+说明：不允许修改给定的链表。
+你是否可以使用 O(1) 空间解决此题？
+ 
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/linked-list-cycle-ii
+
+解题思路：使用快慢指针法，快指针的速度是慢指针的两倍；让两指针相遇时，再将快指针放到初始位置处再让两个指针以相同的速度走，再次相遇的地方即为环的入口。
+假设a为环之前的那段路，b为环的长度
+快指针走的路程：a+xb，慢指针走的路程:a+yb，相减可知相遇时慢指针相当于走了n圈b的长度，也就是n*b，再+a 也就是等于 a + n*b = a。即可求解
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
 
 
 ```cpp
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        if (!head)
+            return head;
+        ListNode* s = head, *f = head;
+        do 
+        {
+            if (!f || !f->next)
+                return nullptr;
+            s = s->next;
+            f = f->next->next;
+        }while (s != f);
+        f = head;
+        while (s != f)
+        {
+            s = s->next;
+            f = f->next;
+        }
+        return s;
+    }
+};
 
+```
+
+<br>
+
+-----------------------------------
+##### 876.链表的中间节点
+>题目描述：给定一个头结点为 head 的非空单链表，返回链表的中间结点。
+如果有两个中间结点，则返回第二个中间结点。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/middle-of-the-linked-list
+
+解题思路：快慢指针法
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    ListNode* middleNode(ListNode* head) {
+        if (!head || !head->next)
+            return head;
+        ListNode* s = head, *f = head;
+        while (1)
+        {
+            if (!f || !f->next)
+                return s;
+            s = s->next;
+            f = f->next->next;
+        }
+        return s;
+    }
+};
+
+```
+
+<br>
+
+-----------------------------------
+##### 143.重排链表
+>题目描述：给定一个单链表 L：L0→L1→…→Ln-1→Ln ，
+将其重新排列后变为： L0→Ln→L1→Ln-1→L2→Ln-2→…
+你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+示例 1:
+给定链表 1->2->3->4, 重新排列为 1->4->2->3.
+示例 2:
+给定链表 1->2->3->4->5, 重新排列为 1->5->2->4->3.
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/reorder-list
+
+解题思路：先通过找到链表的中点将其分成两个链表，再将右边的链表进行反转，再将翻转之后的右边链表依次加入到左边链表元素的右边一个。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    //寻找中间节点，若有两个中间节点则返回第一个
+    ListNode* findMid(ListNode*  head)
+    {
+        auto s = head, f = head;
+        while (f)
+        {
+            if (!f || !f->next || !f->next->next)
+                return s;
+            s = s->next;
+            f = f->next->next;
+        }
+        return s;
+    }
+
+    //翻转链表，并返回新的首节点
+    ListNode* reverseList(ListNode* head)
+    {
+        ListNode dummy(-1);
+        auto cur = head;
+        while (cur)
+        {
+            auto temp = cur->next;
+            cur->next = dummy.next;
+            dummy.next = cur;
+            cur = temp;
+        }
+        return dummy.next;
+    }
+
+    void reorderList(ListNode* head) {
+        if (!head || !head->next)
+            return;
+        ListNode* mid = findMid(head);
+        ListNode* rHead = mid->next;
+        mid->next = nullptr;
+        rHead = reverseList(rHead);
+        auto p = head, q = rHead;
+        while (p && q)
+        {
+            ListNode* temp = q->next;
+            q->next = p->next;
+            p->next = q;
+            p = p->next->next;
+            q = temp;
+        }
+    }
+};
+
+```
+
+<br>
+
+-----------------------------------
+##### 146.LRU缓存机制
+>题目描述：运用你所掌握的数据结构，设计和实现一个  LRU (最近最少使用) 缓存机制 。
+实现 LRUCache 类：
+LRUCache(int capacity) 以正整数作为容量 capacity 初始化 LRU 缓存
+int get(int key) 如果关键字 key 存在于缓存中，则返回关键字的值，否则返回 -1 。
+void put(int key, int value) 如果关键字已经存在，则变更其数据值；如果关键字不存在，则插入该组「关键字-值」。当缓存容量达到上限时，它应该在写入新数据之前删除最久未使用的数据值，从而为新的数据值留出空间。
+你是否可以在 O(1) 时间复杂度内完成这两种操作？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/lru-cache
+
+解题思路：list + 哈希表辅助法，用list存储元素值，越靠前代表越先进来的，越靠后代表越后进来的；再用哈希表存储key值，映射list对应的迭代器，这样可以快速的进行删除和转移。这样能够保证get 和 push 都是 O(1)的时间复杂度。
+
+时间复杂度：O(1)
+
+空间复杂度：O(N)
+
+
+```cpp
+class LRUCache {
+    int _capacity;
+    std::list<pair<int,int>> list;
+    std::unordered_map<int, std::list<pair<int,int>>::iterator> hashmap; 
+public:
+    LRUCache(int capacity) {
+        _capacity = capacity;
+    }
+    
+    int get(int key) {
+        if (hashmap.count(key))
+        {
+            auto it = hashmap[key];
+            list.splice(list.end(), list, it);
+            hashmap[key] = prev(list.end());
+            return list.rbegin()->second; 
+        }
+        else
+            return -1;
+    }
+    
+    void put(int key, int value) {
+        if (hashmap.count(key))
+        {
+            auto it = hashmap[key];
+            list.splice(list.end(), list, it);
+            list.rbegin()->second = value;
+            hashmap[key] = prev(list.end());
+        }
+        else
+        {
+            if (_capacity == list.size())
+            {
+                hashmap.erase(list.begin()->first);
+                list.pop_front();
+            }
+            list.push_back(make_pair(key, value));
+            hashmap[key] = prev(list.end());
+        }
+    }
+};
 
 ```
 
