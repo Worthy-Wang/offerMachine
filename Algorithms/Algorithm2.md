@@ -82,11 +82,58 @@ public:
 
 * **解法二**
 
-解题思路：KMP算法，
+解题思路：RK算法，首先对needle进行哈希求值并求出长度n，再对haystack进行一次遍历并在haystack中不断计算n长度的哈希值，若haystakc和needle的哈希值相等时，需要进行一遍对比（因为可能会出现哈希冲突的情况），如果仍然相等则说明两个字符串匹配。
+RK算法的缺点就是如果哈希冲突太多的话，就会退化成BF算法，这个也很好理解。
 
-时间复杂度：
 
-空间复杂度：
+时间复杂度：O(M+N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    int strStr(string haystack, string needle) {
+        int sum1 = 0, sum2 = 0, len1 = haystack.size(), len2 = needle.size();
+        for (auto& e: needle)
+            sum2 += e;
+        int start = 0, end = len2-1;
+        for (int i = start; i <= end; i++)
+            sum1 += haystack[i];
+        while (end < len1)
+        {
+            if (sum1 == sum2)
+            {
+                bool flag = true;//预防哈希冲突
+                for (int i = 0; i < len2; i++)
+                    if (haystack[i+start] != needle[i])
+                    {
+                        flag = false;
+                        break;
+                    }
+                if (flag)
+                   return start;
+            }
+            end++;
+            start++;
+            if (end < len1)
+                sum1 = sum1 + haystack[end]-haystack[start-1];
+        }
+        return -1;
+    }
+};
+
+```
+
+* **解法三**
+
+解题思路：KMP算法，在haystack设置永不回退的指针i，在needle上设置动态回退的指针j，其中需要辅助数组next，每一次匹配失败时，**j = next[j]** ，也就是回退到之前已经拥有重复前缀的位置。
+next数组其实也很好理解，需要用到动态规划的思想。它根据 前缀的前一部分 和 前缀的后一部分 是否相等，用来记录匹配失败时j指针需要回退的位置。因为如果 前缀的后一部分 能够匹配成功，那么 前缀的后一部分 也能够匹配成功，也就无需再一次让 j 指针从头开始，这就是next 数组的原理。
+
+时间复杂度：O(M+N)
+
+空间复杂度：O(N)
 
 ```cpp
 
