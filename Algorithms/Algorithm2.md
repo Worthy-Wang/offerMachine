@@ -76,9 +76,6 @@ public:
 
 空间复杂度：O(1)
 
-```cpp
-
-```
 
 * **解法二**
 
@@ -136,26 +133,105 @@ next数组其实也很好理解，需要用到动态规划的思想。它根据 
 空间复杂度：O(N)
 
 ```cpp
+class Solution {
+public:
+void getNext(string &needle, vector<int> &next)
+{
+    int n = needle.size();
+    next[0] = -1;
+    int i = 0, j = -1; //i在后，j在前
+    while (i < n)
+    {
+        if (-1 == j || needle[i] == needle[j])
+        {
+            i++, j++;
+            next[i] = j;
+        }
+        else
+            j = next[j];
+    }
+}
 
+int strStr(string haystack, string needle)
+{
+    int n1 = haystack.size(), n2 = needle.size();
+    if (0==n2)
+        return 0;
+    if (0==n1) 
+        return -1;
+    vector<int> next(n2+1);//+1是因为构建next数组的过程中会多构建一个无用的下标
+    getNext(needle, next);
+    int i = 0, j = 0; //i作为主串的下标，j作为子串的下标
+    while (i < n1 && j<n2)
+    {
+        if (-1 == j || haystack[i] == needle[j])
+        {
+            i++, j++;
+            if (j == n2)
+                return i - n2;
+        }
+        else
+            j = next[j];
+    }
+    return -1;
+}
+};
 
 ```
-
-
 
 <br>
 
 
 -----------------------------
 ##### 8.字符串转换整数
->题目描述：
+>题目描述：请你来实现一个 atoi 函数，使其能将字符串转换成整数。
+首先，该函数会根据需要丢弃无用的开头空格字符，直到寻找到第一个非空格的字符为止。接下来的转化规则如下：
+如果第一个非空字符为正或者负号时，则将该符号与之后面尽可能多的连续数字字符组合起来，形成一个有符号整数。
+假如第一个非空字符是数字，则直接将其与之后连续的数字字符组合起来，形成一个整数。
+该字符串在有效的整数部分之后也可能会存在多余的字符，那么这些字符可以被忽略，它们对函数不应该造成影响。
+注意：假如该字符串中的第一个非空格字符不是一个有效整数字符、字符串为空或字符串仅包含空白字符时，则你的函数不需要进行转换，即无法进行有效转换。
+在任何情况下，若函数不能进行有效的转换时，请返回 0 。
+提示：
+本题中的空白字符只包括空格字符 ' ' 。
+假设我们的环境只能存储 32 位大小的有符号整数，那么其数值范围为 [−2^31,  2^31 − 1]。如果数值超过这个范围，请返回  INT_MAX (2^31 − 1) 或 INT_MIN (−2^31) 。
+ 
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/string-to-integer-atoi
 
-时间复杂度：
+解题思路：经典的atoi，stoi 题，也就是将字符串转换为整数。字符串的前缀可以为空格，有效整数前可以用+-号区分，有效整数后的字符可以直接忽略，若转换失败返回 0，另外需要注意转换的整数不能超过 INT32_MIN 和 INT32_MIN 。
 
-空间复杂度：
+时间复杂度：O(N)
+
+空间复杂度：O(1)
 
 ```cpp
+class Solution {
+public:
+    int myAtoi(string s) {
+        long sum = 0;
+        int i = 0;
+        int flag = 1;
+        while (isspace(s[i])) i++; //忽略前缀空格
+        if ('+'==s[i])
+            i++;
+        else if ('-' == s[i])
+        {
+            i++;
+            flag = -1;
+        }
+        while (isdigit(s[i]))
+        {
+            sum = sum * 10 + s[i] - '0';
+            if (sum*flag > INT32_MAX)
+                return INT32_MAX;
+            else if (sum*flag < INT32_MIN)
+                return INT32_MIN;
+            i++;
+        }
+        return sum * flag;
+    }
+};
 
 ```
 
@@ -164,16 +240,47 @@ next数组其实也很好理解，需要用到动态规划的思想。它根据 
 
 -----------------------------
 ##### 67.二进制求和
->题目描述：
+>题目描述：给你两个二进制字符串，返回它们的和（用二进制表示）。
+输入为 非空 字符串且只包含数字 1 和 0。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/add-binary
 
-时间复杂度：
+解题思路：先遍历一遍两个字符串，将较短的字符串用'0'在前部进行填充，竖向的两两相加，即可得到结果。
 
-空间复杂度：
+时间复杂度：O(max(M, N))
+
+空间复杂度：O(1)
 
 ```cpp
+class Solution {
+public:
+    string addBinary(string a, string b) {
+        int n1 = a.size(), n2 = b.size();
+        if (n1 < n2)
+        {
+            for (int i = 0; i < n2-n1; i++)
+                a = '0' + a;
+        }
+        else
+        {
+            for (int i = 0; i < n1-n2; i++)
+                b = '0' + b;
+        }
 
+        string ans;
+        int carry = 0;
+        for (int i = std::max(n1,n2)-1; i >= 0; i--)
+        {
+            int sum = a[i]-'0' + b[i]-'0' + carry;
+            ans = to_string(sum%2) + ans;
+            carry = (sum>=2 ? 1 : 0);
+        }
+        if (carry)
+            ans = '1' + ans;
+        return ans;
+    }
+};
 ```
 
 <br>
@@ -181,17 +288,64 @@ next数组其实也很好理解，需要用到动态规划的思想。它根据 
 
 -----------------------------
 ##### 5.最长回文子串
->题目描述：
+>题目描述：给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-palindromic-substring
 
-时间复杂度：
+* **解法一**
 
-空间复杂度：
+解题思路：暴力法，用两层for循环O(N^2)，再使用一层for循环判断是否为回文。
+
+时间复杂度：O(N^3)
+
+空间复杂度：O(1)
+
+
+* **解法二**
+
+解题思路：中心扩展法，以一个for循环遍历元素，该元素作为回文子串的中心左右两边扩散。注意需要区分最长回文的子串有奇数个还是偶数个。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(1)
 
 ```cpp
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        if (s.size() <= 1)
+            return s;
+        int maxStart = 0, maxLen = 0;
+        for (int i =0; i < s.size(); i++)
+        {
+            int l = i, r = i;
+            while (0<=l && r<s.size() && s[l]==s[r])//假设最长回文子串有奇数个，i为中间点
+            {
+                if (maxLen < r-l+1)
+                {
+                    maxLen = r-l+1;
+                    maxStart = l; 
+                }
+                l-- ,r++;
+            }
+            l = i, r = i+1;
+            while (0<=l && r<s.size() && s[l]==s[r])//假设最长回文子串有偶数个，i为两个中间点左边的那个
+            {
+                if (maxLen < r-l+1)
+                {
+                    maxLen = r-l+1;
+                    maxStart = l; 
+                }
+                l-- ,r++;
+            }
+        }
+        return s.substr(maxStart, maxLen);
+    }
+};
 
 ```
+
 
 <br>
 
@@ -232,16 +386,41 @@ next数组其实也很好理解，需要用到动态规划的思想。它根据 
 
 -----------------------------
 ##### 14.最长公共前缀
->题目描述：
+>题目描述：编写一个函数来查找字符串数组中的最长公共前缀。
+如果不存在公共前缀，返回空字符串 ""。
+说明:
+所有输入只包含小写字母 a-z 。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-common-prefix
 
-时间复杂度：
+解题思路：由于字符串数组也是一个M行N列的数组，那么直接按照列进行遍历即可，平均情况是O(k*M),k为前缀长度，最差的情况是O(M*N)。
 
-空间复杂度：
+时间复杂度：O(M)
+
+空间复杂度：O(1)
 
 ```cpp
-
+class Solution {
+public:
+    string longestCommonPrefix(vector<string>& strs) {
+        if (strs.empty())
+            return string();
+        int M = strs.size(), N = strs[0].size();
+        int maxLen = 0;
+        for (int j = 0; j < N; j++)
+        {
+            char ch = strs[0][j];
+            for (int i = 0; i < M; i++)
+            {
+                if (strs[i][j] != ch)
+                    return strs[0].substr(0, maxLen);
+            }
+            maxLen++;
+        }
+        return strs[0];
+    }
+};
 ```
 
 <br>
@@ -249,15 +428,66 @@ next数组其实也很好理解，需要用到动态规划的思想。它根据 
 
 -----------------------------
 ##### 65.有效数字
->题目描述：
+>题目描述：验证给定的字符串是否可以解释为十进制数字。
+说明: 我们有意将问题陈述地比较模糊。在实现代码之前，你应当事先思考所有可能的情况。这里给出一份可能存在于有效十进制数字中的字符列表。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/valid-number
 
-时间复杂度：
+解题思路：首先考虑一种最复杂的情况 "  -3.1415e13 "  ，我们将 . 作为一个区分处，只要 . 的前后有合法的数字那么该数字即是合法的；另外如果后面有 e(E) 的话，后面必须接上数字才行，最后再判断是否有其他的非法字母。
 
-空间复杂度：
+时间复杂度：O(N)
+
+空间复杂度：O(1)
 
 ```cpp
+class Solution {
+public:
+    bool isNumber(string s) {
+        int i = 0;
+        while (isspace(s[i])) i++; //忽略空格
+        if ('+'==s[i] || '-'==s[i])
+            i++;
+        bool flag1=  false;
+        while (isdigit(s[i]))
+        {
+            flag1 = true;
+            i++;    
+        }
+        if ('.' == s[i])
+            i++;
+        bool flag2 = false;
+        while (isdigit(s[i]))
+        {
+            flag2 = true;
+            i++;
+        }
+        if (!flag1 && !flag2)
+            return false;
+        
+        // 如果有e(E)的话
+        if ('e'==s[i] || 'E'==s[i])
+        {
+            i++;
+            if ('+'==s[i] || '-'==s[i])
+                i++;
+            bool flag3 = false;
+            while (isdigit(s[i]))
+            {
+                flag3 = true;
+                i++;
+            }
+            if (!flag3)
+                return false;
+        }
+
+        for (; i < s.size(); i++)
+            if (!isspace(s[i]))
+                return false;
+        return true;        
+    }
+};
+
 
 ```
 
@@ -266,15 +496,48 @@ next数组其实也很好理解，需要用到动态规划的思想。它根据 
 
 -----------------------------
 ##### 12.整形转罗马数字
->题目描述：
+>题目描述：罗马数字包含以下七种字符： I， V， X， L，C，D 和 M。
+字符          数值
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+例如， 罗马数字 2 写做 II ，即为两个并列的 1。12 写做 XII ，即为 X + II 。 27 写做  XXVII, 即为 XX + V + II 。
+通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做 IIII，而是 IV。数字 1 在数字 5 的左边，所表示的数等于大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为 IX。这个特殊的规则只适用于以下六种情况：
+I 可以放在 V (5) 和 X (10) 的左边，来表示 4 和 9。
+X 可以放在 L (50) 和 C (100) 的左边，来表示 40 和 90。 
+C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
+给定一个整数，将其转为罗马数字。输入确保在 1 到 3999 的范围内。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/integer-to-roman
 
-时间复杂度：
+解题思路：首先使用vector进行整形数字与罗马数字的映射（不用哈希表的原因是无法将数字进行从大到小的遍历），我们注意到 4, 9 这样的数是需要单独设置的，也就是这些需要有单独个性的数，需要添加到哈希表里面去；接下来再从最大的数字（1000）开始求余数，再将罗马数字累加即可得到结果。
+   
+时间复杂度：O(N)
 
-空间复杂度：
+空间复杂度：O(1)
 
 ```cpp
+class Solution {
+public:
+    string intToRoman(int num) {
+        vector<pair<int, string>> vec{{1000,"M"}, {900,"CM"}, {500,"D"}, {400,"CD"}, {100,"C"}, {90,"XC"}, {50,"L"}, {40, "XL"}, {10,"X"}, {9, "IX"}, {5,"V"}, {4,"IV"}, {1,"I"}};
+        string ans;
+        for (auto& e: vec)
+        {
+            int cnt = num / e.first;
+            for (int i = 0; i < cnt; i++)
+                ans += e.second;
+            num -= cnt * e.first;
+        }
+        return ans;
+    }
+};
+
 
 ```
 
@@ -284,15 +547,55 @@ next数组其实也很好理解，需要用到动态规划的思想。它根据 
 -----------------------------
 ##### 13.罗马数字转整形
 >题目描述：
+罗马数字包含以下七种字符: I， V， X， L，C，D 和 M。
+字符          数值
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+例如， 罗马数字 2 写做 II ，即为两个并列的 1。12 写做 XII ，即为 X + II 。 27 写做  XXVII, 即为 XX + V + II 。
+通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做 IIII，而是 IV。数字 1 在数字 5 的左边，所表示的数等于大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为 IX。这个特殊的规则只适用于以下六种情况：
+I 可以放在 V (5) 和 X (10) 的左边，来表示 4 和 9。
+X 可以放在 L (50) 和 C (100) 的左边，来表示 40 和 90。 
+C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
+给定一个罗马数字，将其转换成整数。输入确保在 1 到 3999 的范围内。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/roman-to-integer
 
-时间复杂度：
+解题思路：创建哈希表实现 罗马数字->普通数字，从罗马数字的字符串开始遍历，注意罗马数字可能会是两个连续的字符。
 
-空间复杂度：
+时间复杂度：O(N)
+
+空间复杂度：O(1)
 
 ```cpp
-
+class Solution {
+public:
+    int romanToInt(string s) {
+        unordered_map<string, int> hashmap{{"I",1}, {"IV", 4}, {"V", 5}, {"IX", 9}, {"X", 10}, {"XL", 40}, {"L", 50}, {"XC", 90}, {"C",100}, {"CD",400}, {"D", 500}, {"CM",900}, {"M", 1000}};
+        int sum = 0;
+        for (int i = 0; i < s.size(); i++)
+        {
+            if (i==s.size()-1)
+            {
+                sum += hashmap[s.substr(i,1)];
+            }
+            else if (hashmap.count(s.substr(i, 2)))
+            {
+                sum += hashmap[s.substr(i,2)];
+                i++;
+            }else   
+            {
+                sum += hashmap[s.substr(i,1)];
+            }
+        }
+        return sum;
+    }
+};
 ```
 
 <br>
@@ -300,15 +603,56 @@ next数组其实也很好理解，需要用到动态规划的思想。它根据 
 
 -----------------------------
 ##### 38.外观数列
->题目描述：
+>题目描述：给定一个正整数 n ，输出外观数列的第 n 项。
+「外观数列」是一个整数序列，从数字 1 开始，序列中的每一项都是对前一项的描述。
+你可以将其视作是由递归公式定义的数字字符串序列：
+countAndSay(1) = "1"
+countAndSay(n) 是对 countAndSay(n-1) 的描述，然后转换成另一个数字字符串。
+前五项如下：
+1.     1
+2.     11
+3.     21
+4.     1211
+5.     111221
+第一项是数字 1 
+描述前一项，这个数是 1 即 “ 一 个 1 ”，记作 "11"
+描述前一项，这个数是 11 即 “ 二 个 1 ” ，记作 "21"
+描述前一项，这个数是 21 即 “ 一 个 2 + 一 个 1 ” ，记作 "1211"
+描述前一项，这个数是 1211 即 “ 一 个 1 + 一 个 2 + 二 个 1 ” ，记作 "111221"
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/count-and-say
 
-时间复杂度：
+解题思路：动态规划，dp[n] 总是通过 dp[n-1]计算得出，在此题中用两个string代替即可。
 
-空间复杂度：
+时间复杂度：O(N)
+
+空间复杂度：O(1)
 
 ```cpp
+class Solution {
+public:
+    string countAndSay(int n)
+    {
+        string ans("1");
+        for (int k = 0; k < n - 1; k++)
+        {
+            stringstream ss(ans);
+            auto l = ans.begin();
+            while (l != ans.end())
+            {
+                auto r = std::find_if(l, ans.end(), [&](char ch) {
+                    return ch != (*l);
+                });
+                int cnt = distance(l, r);
+                ss <<  cnt << *l;
+                l = r;
+            }
+            ans = ss.str();
+        }
+        return ans;
+    }
+};
 
 ```
 
@@ -317,7 +661,21 @@ next数组其实也很好理解，需要用到动态规划的思想。它根据 
 
 -----------------------------
 ##### 49.字母异位词分组
->题目描述：
+>题目描述：给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
+示例:
+输入: ["eat", "tea", "tan", "ate", "nat", "bat"]
+输出:
+[
+  ["ate","eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+说明：
+所有输入均为小写字母。
+不考虑答案输出的顺序。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/group-anagrams
 
 解题思路：
 
