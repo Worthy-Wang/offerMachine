@@ -1,4 +1,19 @@
-
+- [二.字符串专题](#二字符串专题)
+        - [125.验证回文串](#125验证回文串)
+        - [28.实现strStr()](#28实现strstr)
+        - [8.字符串转换整数](#8字符串转换整数)
+        - [67.二进制求和](#67二进制求和)
+        - [5.最长回文子串](#5最长回文子串)
+        - [10.正则表达式匹配](#10正则表达式匹配)
+        - [44.通配符匹配](#44通配符匹配)
+        - [14.最长公共前缀](#14最长公共前缀)
+        - [65.有效数字](#65有效数字)
+        - [12.整形转罗马数字](#12整形转罗马数字)
+        - [13.罗马数字转整形](#13罗马数字转整形)
+        - [38.外观数列](#38外观数列)
+        - [49.字母异位词分组](#49字母异位词分组)
+        - [71.简化路径](#71简化路径)
+        - [58.最后一个单词的长度](#58最后一个单词的长度)
 
 
 # 二.字符串专题
@@ -677,13 +692,30 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/group-anagrams
 
-解题思路：
+解题思路：设置一个哈希表 key 为 每个字符串排序后的串，value 为 符合该key值的 字符串集合，进行一次遍历即可。
 
-时间复杂度：
+时间复杂度：O(N*K*logK) k为字符串的长度，N为字符串数组的长度
 
-空间复杂度：
+空间复杂度：O(N) 
 
 ```cpp
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        unordered_map<string, vector<string>> hashmap;
+        string key;
+        for(auto& s: strs)
+        {
+            key = s;
+            sort(key.begin(), key.end(), std::less<char>());
+            hashmap[key].push_back(s);
+        }
+        vector<vector<string>> ans;
+        for(auto& e: hashmap)
+            ans.push_back(e.second);
+        return ans;
+    }
+};
 
 ```
 
@@ -692,33 +724,114 @@ public:
 
 -----------------------------
 ##### 71.简化路径
->题目描述：
+>题目描述：以 Unix 风格给出一个文件的绝对路径，你需要简化它。或者换句话说，将其转换为规范路径。
+在 Unix 风格的文件系统中，一个点（.）表示当前目录本身；此外，两个点 （..） 表示将目录切换到上一级（指向父目录）；两者都可以是复杂相对路径的组成部分。
+请注意，返回的规范路径必须始终以斜杠 / 开头，并且两个目录名之间必须只有一个斜杠 /。最后一个目录名（如果存在）不能以 / 结尾。此外，规范路径必须是表示绝对路径的最短字符串。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/simplify-path
 
-时间复杂度：
+解题思路：该题的核心就是通过一次遍历，将所有合法的文件名 file 存储起来，然后拼接成为返回string串即可，中间需要以 '/' 为间隔进行不断的跳过。
 
-空间复杂度：
+时间复杂度：O(N)
+
+空间复杂度：O(N)
 
 ```cpp
+class Solution {
+public:
+    string simplifyPath(string path) {
+        if (path.empty())
+            return string();
+        vector<string> vec; //存放分割出来的文件名
+        stringstream ss(path);
+        string file;
+        while (getline(ss, file, '/'))
+        {
+            if ("" == file)
+                continue;
+            else if ("." == file)
+                continue;
+            else if (".." == file)
+            {
+                if (!vec.empty()) 
+                    vec.pop_back();
+            }
+            else 
+                vec.push_back(file);
+        }
+
+        string ans;
+        for(auto& e: vec)
+            ans = ans + "/" + e;
+        if (ans.empty())
+            return "/";
+        return ans;
+    }
+};
+
 
 ```
 
 <br>
 
-
 -----------------------------
 ##### 58.最后一个单词的长度
->题目描述：
+>题目描述：给定一个仅包含大小写字母和空格 ' ' 的字符串 s，返回其最后一个单词的长度。如果字符串从左向右滚动显示，那么最后一个单词就是最后出现的单词。
+如果不存在最后一个单词，请返回 0 。
+说明：一个单词是指仅由字母组成、不包含任何空格字符的 最大子字符串。
+示例:
+输入: "Hello World"
+输出: 5
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/length-of-last-word
 
-时间复杂度：
+* **解法一**
 
-空间复杂度：
+解题思路：直接从尾部开始遍历即可 
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
 
 ```cpp
+class Solution {
+public:
+    int lengthOfLastWord(string s) {
+        int j = s.size()-1;
+        while (0<=j && isspace(s[j]))
+            j--;
+        int i = j;
+        while (0<=i && !isspace(s[i]))
+            i--;
+        return j-i;
+    }
+};
 
+```
+
+
+* **解法二**
+
+解题思路：直接适用C++中的stringstream，用getline 或者 流操作 即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+
+```cpp
+class Solution {
+public:
+    int lengthOfLastWord(string s) {
+        stringstream ss(s);
+        string ans;
+        while (ss >> ans);
+        return ans.size();
+    }
+};
 ```
 
 <br>
