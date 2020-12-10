@@ -136,25 +136,90 @@ public:
 空间复杂度：O(N)
 
 ```cpp
-17：18
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        if (heights.empty())
+            return 0;
+        int ans = 0;
+        heights.push_back(0);//在数组尾部加入一个最小的数，保证单调栈中的所有数都可以进行计算
+        std::stack<int> stk;//单调栈存储的是下标
+        for (int i = 0; i < heights.size(); i++)
+        {
+            while (!stk.empty() && heights[i]<heights[stk.top()])
+            {
+                int mid = stk.top();
+                stk.pop();
+                int l = stk.empty() ? -1 : stk.top();
+                int r = i;
+                ans = std::max(ans, heights[mid]*(r-l-1));
+            }
+            stk.push(i);
+        }
+        return ans;
+    }
+};
 
 ```
 
 <br>
 
-
 ---------------------------
 ##### 150.逆波兰表达式求值
 >题目描述:
+根据 逆波兰表示法，求表达式的值。
+有效的运算符包括 +, -, *, / 。每个运算对象可以是整数，也可以是另一个逆波兰表达式。
+说明：
+整数除法只保留整数部分。
+给定逆波兰表达式总是有效的。换句话说，表达式总会得出有效数值且不存在除数为 0 的情况。
+逆波兰表达式：
+逆波兰表达式是一种后缀表达式，所谓后缀就是指算符写在后面。
+平常使用的算式则是一种中缀表达式，如 ( 1 + 2 ) * ( 3 + 4 ) 。
+该算式的逆波兰表达式写法为 ( ( 1 2 + ) ( 3 4 + ) * ) 。
+逆波兰表达式主要有以下两个优点：
+去掉括号后表达式无歧义，上式即便写成 1 2 + 3 4 + * 也可以依据次序计算出正确结果。
+适合用栈操作运算：遇到数字则入栈；遇到算符则取出栈顶两个数字进行计算，并将结果压入栈中。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/evaluate-reverse-polish-notation
 
-时间复杂度：
+解题思路：逆波兰表达式的核心在于遇到数字时进行入栈，遇到运算符号时出栈两个元素，并将其计算的结果入栈，最后弹出栈中剩下的最后一个元素即可。
 
-空间复杂度：
+时间复杂度：O(N)
+
+空间复杂度：O(N)
 
 ```cpp
-
+class Solution {
+public:
+    int evalRPN(vector<string>& tokens) {
+        if (tokens.empty())
+            return 0;
+        std::stack<int> stk;
+        for(auto& e: tokens)
+        {
+            if (e.size()==1 && !isdigit(e[0]))
+            {
+                int b = stk.top();
+                stk.pop();
+                int a = stk.top();
+                stk.pop();
+                switch(e[0])
+                {
+                    case '+': stk.push(a+b); break;
+                    case '-': stk.push(a-b); break;
+                    case '*': stk.push(a*b); break;
+                    case '/': stk.push(a/b); break;
+                    default: break;
+                }
+            }
+            else 
+                stk.push(stoi(e));
+        }
+        int sum = stk.top();
+        return sum;
+    }
+};
 
 ```
 
