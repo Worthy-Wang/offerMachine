@@ -370,30 +370,74 @@ ListNode *quickSort(ListNode *head)
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/first-missing-positive
 
-解题思路：
+解题思路：原地哈希法，也就是将原数组作为哈希表，不断swap保证 下标 i == nums[i] 即可， 不过有下面三种情况时可以直接跳过：
+1.下标i大于数组长度n  2. nums[i]为负数 3.nums[i]与nums[nums[i]]相同。
+另外，由于下标0白占了一个空位，我们需要人为的添加一个0让nums的长度增加一位。
+ 
+时间复杂度：O(N)
 
-时间复杂度：
-
-空间复杂度：
+空间复杂度：O(1)
 
 ```cpp
-17：34
+class Solution {
+public:
+    int firstMissingPositive(vector<int>& nums) {
+        nums.push_back(0);
+        int n = nums.size();
+        for (int i = 0; i < n; i++)
+        {
+            while (i != nums[i])
+            {
+                if (nums[i]>n-1 || nums[i]<0 || nums[i]==nums[nums[i]])
+                    break;
+                swap(nums[i], nums[nums[i]]);
+            }
+        }
 
+        for (int i = 1; i < n; i++)
+        {
+            if (nums[i] != i)
+                return i; 
+        }
+        return n;
+    }
+};
 ```
 
 <br>
 
 ---------------------------
 ##### 75.颜色分类
->题目描述:
+>题目描述:给定一个包含红色、白色和蓝色，一共 n 个元素的数组，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+此题中，我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
+进阶：
+你可以不使用代码库中的排序函数来解决这道题吗？
+你能想出一个仅使用常数空间的一趟扫描算法吗？
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/sort-colors
 
-时间复杂度：
 
-空间复杂度：
+解题思路：双指针法，设置快慢指针执行两次，每一次分别在慢指针出处安置好 0, 1 这三个数。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
 
 ```cpp
+class Solution {
+public:
+    void sortColors(vector<int>& nums) {
+        int i = 0, j = 0;
+        for (int j = 0; j < nums.size(); j++)
+            if (0 == nums[j])
+                swap(nums[i++], nums[j]);
+        for (int j = i; j < nums.size(); j++)
+            if (1 == nums[j])
+                swap(nums[i++], nums[j]);
+    }
+};
+
 
 
 ```
