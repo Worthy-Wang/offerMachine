@@ -1,5 +1,6 @@
 - [九.DFS专题](#九dfs专题)
         - [131.分割回文串](#131分割回文串)
+        - [132.分割回文串2](#132分割回文串2)
         - [62.不同路径](#62不同路径)
         - [63.不同路径2](#63不同路径2)
         - [51.N皇后](#51n皇后)
@@ -75,6 +76,26 @@ public:
 ```
 
 <br>
+
+
+
+---------------------------
+##### 132.分割回文串2
+>题目描述:
+
+解题思路：
+
+时间复杂度：
+
+空间复杂度：
+
+```cpp
+
+
+```
+
+<br>
+
 
 
 ---------------------------
@@ -278,16 +299,52 @@ public:
 
 ---------------------------
 ##### 93.复原IP地址
->题目描述:
+>题目描述:给定一个只包含数字的字符串，复原它并返回所有可能的 IP 地址格式。
+有效的 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 '.' 分隔。
+例如："0.1.2.201" 和 "192.168.1.1" 是 有效的 IP 地址，但是 "0.011.255.245"、"192.168.1.312" 和 "192.168@1.1" 是 无效的 IP 地址。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/restore-ip-addresses
 
-时间复杂度：
+解题思路：DFS法，设置path辅助变量存储分割好的数字，设置start起始位置作为每一次数字的开头，剪枝操作实质上也就是将不符合规定的IP地址值跳过。
 
-空间复杂度：
+时间复杂度：O(N!)
+
+空间复杂度：O(N)
 
 ```cpp
+class Solution {
+    vector<string> ans;
+public:
+    void DFS(string& s, int start, vector<string>& path)
+    {
+        if (4==path.size() && start==s.size())
+        {
+            ans.push_back(string(path[0]+"."+path[1]+"."+path[2]+"."+path[3]));
+            return;
+        }
 
+        for (int j = start; j < s.size(); j++)
+        {
+            string str = s.substr(start, j-start+1);
+            if (stoi(str)>255)
+                break;
+            path.push_back(str);
+            DFS(s, j+1, path);  
+            path.pop_back();  
+            if ("0" == str)
+                break;
+        }
+    }
+
+    vector<string> restoreIpAddresses(string s) {
+        if (s.size() > 12)
+            return {};
+        vector<string> path;
+        DFS(s, 0, path);
+        return ans;
+    }
+};
 
 ```
 
@@ -303,18 +360,45 @@ candidates 中的数字可以无限制重复被选取。
 解集不能包含重复的组合。 
 candidate 中的每个元素都是独一无二的。
 
-
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/combination-sum
 
-解题思路：
+解题思路：DFS法，需要设置辅助变量path记录路径，以及每次遍历的起始点start。
 
-时间复杂度：
+时间复杂度：O(N!)
 
-空间复杂度：
+空间复杂度：O(N)
 
 ```cpp
-18：20
+class Solution {
+    vector<vector<int>> ans;
+public:
+    void DFS(vector<int>& candidates, int start, int target, vector<int>& path)
+    {
+        if (target < 0)
+            return;
+        if (target==0)
+        {
+            ans.push_back(path);
+            return;
+        }
+
+        for (int i = start; i < candidates.size(); i++)
+        {
+            path.push_back(candidates[i]);
+            DFS(candidates, i, target-candidates[i], path);
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        if (candidates.empty())
+            return {};
+        vector<int> path;
+        DFS(candidates, 0, target, path);
+        return ans;
+    }
+};
 
 ```
 
@@ -324,15 +408,55 @@ candidate 中的每个元素都是独一无二的。
 
 ---------------------------
 ##### 40.组合总合2
->题目描述:
+>题目描述:给定一个数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+candidates 中的每个数字在每个组合中只能使用一次。
+所有数字（包括目标数）都是正整数。
+解集不能包含重复的组合。 
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/combination-sum-ii
 
-时间复杂度：
+解题思路：用DFS法解决，需要设置辅助变量path记录路径，并设置起始点start。
 
-空间复杂度：
+时间复杂度：O(N!)
+
+空间复杂度：O(N)
 
 ```cpp
+class Solution {
+    vector<vector<int>> ans;
+public:
+    void DFS(vector<int>& candidates, int target, int start,  vector<int>& path)
+    {
+        if (target < 0)
+            return;
+        if (0 == target)
+        {
+            ans.push_back(path);
+            return;
+        }
+
+        for (int i = start; i < candidates.size(); i++)
+        {
+            if (i>start && candidates[i]==candidates[i-1])
+                continue;
+            if (candidates[i] > target)
+                return;
+            path.push_back(candidates[i]);
+            DFS(candidates, target-candidates[i], i+1, path);
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        if (candidates.empty())
+            return {};
+        vector<int> path;
+        sort(candidates.begin(), candidates.end());
+        DFS(candidates, target, 0, path);
+        return ans;
+    }
+};
 
 
 ```
@@ -342,16 +466,51 @@ candidate 中的每个元素都是独一无二的。
 
 ---------------------------
 ##### 22.括号生成
->题目描述:
+>题目描述:数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/generate-parentheses
+
+解题思路：DFS法，记录左右括号的剩余值，当剩余值都为0时说明匹配完成；注意左括号的剩余值是必须小于右括号的剩余值。
 
 时间复杂度：
 
 空间复杂度：
 
 ```cpp
+class Solution {
+    vector<string> ans;
+public:
+    void DFS(int l, int r, string& path)
+    {
+        if (0==l && 0==r)
+        {
+            ans.push_back(path);
+            return;
+        }
 
+        if (l)
+        {
+            path.push_back('(');
+            DFS(l-1, r, path);
+            path.pop_back();
+        }
+        if (l < r)
+        {
+            path.push_back(')');
+            DFS(l, r-1, path);
+            path.pop_back();
+        }
+    }
+
+    vector<string> generateParenthesis(int n) {
+        if (n <= 0)
+            return {};
+        string path;
+        DFS(n, n, path);
+        return ans;
+    }
+};
 
 ```
 
@@ -438,16 +597,54 @@ public:
 
 ---------------------------
 ##### 79.单词搜索
->题目描述:
+>题目描述:给定一个二维网格和一个单词，找出该单词是否存在于网格中。
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+board 和 word 中只包含大写和小写英文字母。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/word-search
 
-时间复杂度：
+解题思路：DFS，设置辅助visited数组记录走过的路径，设置 idx 作为word的 下标。
 
-空间复杂度：
+时间复杂度：O(M*N*3^L) L为word的长度
+
+空间复杂度：O(M*N+L)
 
 ```cpp
+class Solution {
+public:
+    bool DFS(vector<vector<char>>& board, int i, int j, int M, int N,  vector<vector<int>>& visited, string& word ,int idx)
+    {
+        if (idx == word.size())
+            return true;
+        if (i<0 || i>=M || j<0 || j>=N)
+            return false;
+        if (visited[i][j])
+            return false;
+        if (board[i][j] != word[idx])
+            return false;
+        
+        visited[i][j] = 1;
+        bool ans = DFS(board, i+1, j, M, N, visited, word, idx+1)
+        || DFS(board, i-1, j, M, N, visited, word, idx+1)
+        || DFS(board, i, j+1, M, N, visited, word, idx+1)
+        || DFS(board, i, j-1, M, N, visited, word, idx+1);
+        visited[i][j] = 0;
+        return ans;
+    }
 
+    bool exist(vector<vector<char>>& board, string word) {
+        if (board.empty())
+            return false;
+        int M = board.size(), N = board[0].size();
+        vector<vector<int>> visited(M, vector<int>(N, 0));
+        for (int i = 0; i < M; i++)
+            for (int j = 0; j < N; j++)
+                if (DFS(board, i, j, M, N, visited, word, 0))
+                    return true;
+        return false;
+    }
+};
 
 ```
 
