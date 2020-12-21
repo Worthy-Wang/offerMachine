@@ -16,16 +16,66 @@
 
 ---------------------------
 ##### 120.三角形最小路径和
->题目描述:
+>题目描述:给定一个三角形，找出自顶向下的最小路径和。每一步只能移动到下一行中相邻的结点上。
+相邻的结点 在这里指的是 下标 与 上一层结点下标 相同或者等于 上一层结点下标 + 1 的两个结点。
+如果你可以只使用 O(n) 的额外空间（n 为三角形的总行数）来解决这个问题，那么你的算法会很加分。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/triangle
 
-时间复杂度：
+解题思路：动态规划，创建一个和原三角形相同大小的数组，dp[i][j] = triangle[i][j] + std::min(dp[i-1][j], dp[i-1][j-1])，然后遍历最后一层找出最小啊的那一个即可。
 
-空间复杂度：
+时间复杂度：O(N^2)
+
+空间复杂度：O(N^2)
 
 ```cpp
+class Solution {
+public:
+    int minimumTotal(vector<vector<int>>& triangle) {
+        int N = triangle.size();
+        vector<vector<int>> dp(N, vector<int>(N, 0));
+        dp[0][0] = triangle[0][0];
+        for (int i = 1; i < N; i++)
+        {
+            dp[i][0] = triangle[i][0]+dp[i-1][0];//每行的第一个数单独处理
+            for (int j = 1; j < i; j++)
+                dp[i][j] = triangle[i][j] + std::min(dp[i-1][j-1], dp[i-1][j]);
+            dp[i][i] = triangle[i][i] + dp[i-1][i-1];//每行的最后一个数单独处理
+        }
+        int ans = INT32_MAX;
+        for (int j = 0; j < N; j++)
+            ans = std::min(ans, dp[N-1][j]);
+        return ans;
+    }
+};
 
+```
+
+在这里可以将空间复杂度进行优化一下，也就是用两个交替的dp数组，此时的空间复杂度为 O(N)
+
+```cpp
+class Solution {
+public:
+    int minimumTotal(vector<vector<int>>& triangle) {
+        int N = triangle.size();
+        vector<vector<int>> dp(2, vector<int>(N, 0));
+        dp[0][0] = triangle[0][0];
+        for (int i = 1; i < N; i++)
+        {
+            dp[1][0] = triangle[i][0]+dp[0][0];//每行的第一个数单独处理
+            for (int j = 1; j < i; j++)
+                dp[1][j] = triangle[i][j] + std::min(dp[0][j-1], dp[0][j]);
+            dp[1][i] = triangle[i][i] + dp[0][i-1];//每行的最后一个数单独处理
+            swap(dp[0], dp[1]);
+        }
+
+        int ans = INT32_MAX;
+        for (int j = 0; j < N; j++)
+            ans = std::min(ans, dp[0][j]);
+        return ans;
+    }
+};
 
 ```
 
@@ -70,7 +120,18 @@
 
 ---------------------------
 ##### 97.交错字符串
->题目描述:
+>题目描述:给定三个字符串 s1、s2、s3，请你帮忙验证 s3 是否是由 s1 和 s2 交错 组成的。
+两个字符串 s 和 t 交错 的定义与过程如下，其中每个字符串都会被分割成若干 非空 子字符串：
+s = s1 + s2 + ... + sn
+t = t1 + t2 + ... + tm
+|n - m| <= 1
+交错 是 s1 + t1 + s2 + t2 + s3 + t3 + ... 或者 t1 + s1 + t2 + s2 + t3 + s3 + ...
+提示：a + b 意味着字符串 a 和 b 连接。
+s1、s2、和 s3 都由小写英文字母组成
+
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/interleaving-string
 
 解题思路：
 
@@ -79,7 +140,7 @@
 空间复杂度：
 
 ```cpp
-
+19:30
 
 ```
 
