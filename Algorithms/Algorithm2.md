@@ -316,8 +316,50 @@ public:
 
 空间复杂度：O(1)
 
-
 * **解法二**
+
+解题思路：动态规划，dp[i][j],i代表起始位置，j代表结束位置。二维动态数组只需要填充右上部分，并且是从左往右一列一列的填充。
+状态转移方程：dp[i][j] = (s[i]==s[j] && dp[i+1][j-1])
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N^2)
+
+```cpp
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        int maxLen = 0;
+        pair<int,int> res;
+        int N = s.size();
+        vector<vector<int>> dp(N, vector<int>(N, 0));
+        for (int j = 0; j < N; j++)
+        {
+            for (int i = 0; i <= j; i++)
+            {
+                if (i == j)
+                    dp[i][j] = 1;
+                else if(j-i==1 || j-i==2)
+                    dp[i][j] = (s[i]==s[j]);
+                else
+                    dp[i][j] = (dp[i+1][j-1]&&s[i]==s[j]);
+                
+                if (dp[i][j] && maxLen<j-i+1)
+                {
+                    maxLen = j-i+1;
+                    res.first = i, res.second = j;
+                }
+            }
+        } 
+        int i = res.first, j = res.second;
+        return s.substr(i, j-i+1);
+    }
+};
+
+```
+
+
+* **解法三**
 
 解题思路：中心扩展法，以一个for循环遍历元素，该元素作为回文子串的中心左右两边扩散。注意需要区分最长回文的子串有奇数个还是偶数个。
 
@@ -329,33 +371,33 @@ public:
 class Solution {
 public:
     string longestPalindrome(string s) {
-        if (s.size() <= 1)
-            return s;
-        int maxStart = 0, maxLen = 0;
-        for (int i =0; i < s.size(); i++)
+        if (s.empty())
+            return string();
+        string ans;
+        int maxLen = 0;
+        for (int i = 0; i < s.size(); i++)
         {
+            //回文串字符数为奇数
             int l = i, r = i;
-            while (0<=l && r<s.size() && s[l]==s[r])//假设最长回文子串有奇数个，i为中间点
+            while (0<=l&&r<s.size() && s[l]==s[r])
+                l--, r++;
+            if (r-l-1 > maxLen)
             {
-                if (maxLen < r-l+1)
-                {
-                    maxLen = r-l+1;
-                    maxStart = l; 
-                }
-                l-- ,r++;
+                maxLen = r - l - 1;
+                ans = s.substr(l+1, maxLen);
             }
+
+            //回文串字符数为偶数
             l = i, r = i+1;
-            while (0<=l && r<s.size() && s[l]==s[r])//假设最长回文子串有偶数个，i为两个中间点左边的那个
+            while (0<=l&&r<s.size() && s[l]==s[r])
+                l--, r++;
+            if (r-l-1 > maxLen)
             {
-                if (maxLen < r-l+1)
-                {
-                    maxLen = r-l+1;
-                    maxStart = l; 
-                }
-                l-- ,r++;
+                maxLen = r - l - 1;
+                ans = s.substr(l+1, maxLen);
             }
         }
-        return s.substr(maxStart, maxLen);
+        return ans;
     }
 };
 
