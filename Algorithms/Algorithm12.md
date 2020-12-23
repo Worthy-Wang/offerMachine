@@ -1,12 +1,14 @@
 - [十二.动态规划专题](#十二动态规划专题)
         - [120.三角形最小路径和](#120三角形最小路径和)
         - [53.最大子序和](#53最大子序和)
+        - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
         - [85.最大矩阵](#85最大矩阵)
         - [97.交错字符串](#97交错字符串)
         - [87.扰乱字符串](#87扰乱字符串)
         - [64.最小路径和](#64最小路径和)
         - [72.编辑距离](#72编辑距离)
         - [91.解码方法](#91解码方法)
+        - [剑指 Offer 46. 把数字翻译成字符串](#剑指-offer-46-把数字翻译成字符串)
         - [115.不同的子序列](#115不同的子序列)
         - [139.单词拆分](#139单词拆分)
         - [140.单词拆分2](#140单词拆分2)
@@ -120,6 +122,49 @@ public:
 <br>
 
 
+-------------------------------------
+##### 84.柱状图中最大的矩形
+>题目描述:给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+求在该柱状图中，能够勾勒出来的矩形的最大面积。
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/largest-rectangle-in-histogram
+
+解题思路：首先想到暴力法，也可以说是中心扩散法；再在暴力法的基础上进行演化，使用单调栈法，栈顶元素作为最大值，可以找到左右两边比它小的元素。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        if (heights.empty())
+            return 0;
+        heights.push_back(0);
+        int ans = 0;
+        stack<int> stk;
+        for (int i = 0; i < heights.size(); i++)
+        {
+            while (!stk.empty() && heights[i]<heights[stk.top()])
+            {
+                int mid = stk.top();
+                stk.pop();
+                int l = stk.empty()? -1 : stk.top();
+                int r = i;
+                ans = std::max(ans, (r-l-1)*heights[mid]);
+            }
+            stk.push(i);
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
 ---------------------------
 ##### 85.最大矩阵
 >题目描述:给定一个仅包含 0 和 1 、大小为 rows x cols 的二维二进制矩阵，找出只包含 1 的最大矩形，并返回其面积。
@@ -127,16 +172,70 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/maximal-rectangle
 
-解题思路：
+* **解法一**
 
-时间复杂度：
+解题思路：调用上一题求最大矩阵的解法，一行一行的计算，求解出最大矩阵
 
-空间复杂度：
+时间复杂度：O(M*N)
+
+空间复杂度：O(N)
 
 ```cpp
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        if (heights.empty())
+            return 0;
+        heights.push_back(0);
+        int ans = 0;
+        stack<int> stk;
+        for (int i = 0; i < heights.size(); i++)
+        {
+            while (!stk.empty() && heights[i]<heights[stk.top()])
+            {
+                int mid = stk.top();
+                stk.pop();
+                int l = stk.empty()? -1 : stk.top();
+                int r = i;
+                ans = std::max(ans, (r-l-1)*heights[mid]);
+            }
+            stk.push(i);
+        }
+        heights.pop_back();
+        return ans;
+    }
 
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if (matrix.empty())
+            return 0;
+        int ans = 0;
+        int M = matrix.size(), N = matrix[0].size();
+        vector<vector<int>> nums(M, vector<int>(N));
+        for (int i = 0; i < M; i++)
+            for (int j = 0; j < N; j++)
+                if ('1' == matrix[i][j])
+                    nums[i][j] = 1;
+                else 
+                    nums[i][j] = 0;
+
+        for (int i = 1; i < M; i++)
+            for (int j = 0; j < N; j++)
+                if (0 == nums[i][j])
+                    continue;
+                else
+                    nums[i][j] += nums[i-1][j];
+                    
+        for (int i = 0; i < M; i++)
+        {
+            int res = largestRectangleArea(nums[i]);
+            ans = std::max(ans, res);
+        }
+        return ans;
+    }
+};
 
 ```
+
 
 <br>
 
@@ -360,26 +459,91 @@ public:
 题目数据保证答案肯定是一个 32 位的整数。
 s 只包含数字，并且可能包含前导零。
 
-
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/decode-ways
 
-解题思路：动态规划
-if ('1'<=s[i-1]<='2' && '1'<=s[i]<='6') dp[i] = dp[i-1] + dp[i-2];
-else dp[i] = dp[i-1];
+解题思路：动态规划，先处理遇到 00 10 20 30 的情况
 
 时间复杂度：O(N)
 
 空间复杂度：O(N)
 
 ```cpp
-19:26
+class Solution {
+public:
+    int numDecodings(string s) {
+        if (s.empty() || s[0]=='0')
+            return 0;
+        int n = s.size();
+        unordered_map<int,int> dp;
+        dp[-1] = 1, dp[0] = 1;
+        for (int i = 1; i < n; i++)
+        {
+            int num = stoi(s.substr(i-1,2));
+            if ('0' == s[i]) // 00 10 20 30 40...
+            {
+                if (s[i-1]=='0' || s[i-1]>='3')
+                    return 0;
+                else 
+                    dp[i] = dp[i-2];
+            }
+            else if (11<=num && num<= 26) // 11~26 
+                dp[i] = dp[i-1] + dp[i-2];
+            else //27 28...
+                dp[i] = dp[i-1];
+        }
+        return dp[n-1];
+    }
+};
 
 ```
 
 <br>
 
 
+
+
+
+---------------------------
+##### 剑指 Offer 46. 把数字翻译成字符串
+>题目描述:给定一个数字，我们按照如下规则把它翻译为字符串：0 翻译成 “a” ，1 翻译成 “b”，……，11 翻译成 “l”，……，25 翻译成 “z”。一个数字可能有多个翻译。请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof
+
+解题思路：动态规划，该题 相较于上一题更为简单，因为0可以直接翻译。
+0~9 : dp[i] = dp[i-1];
+10~25: dp[i] = dp[i-1] + dp[i-2];
+26~... : dp[i] = dp[i-1];
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int translateNum(int num) {
+        string s = to_string(num);
+        int n = s.size();
+        unordered_map<int,int> dp;
+        dp[-1] = 1, dp[0] = 1;
+        for (int i = 1; i < n ; i++)
+        {
+            if ('0' == s[i-1]) // 0~9
+                dp[i] = dp[i-1];
+            else if ('1'==s[i-1] || ('2'==s[i-1]&&'0'<=s[i]&&s[i]<='5')) // 10~25
+                dp[i] = dp[i-1] + dp[i-2];
+            else //26...
+                dp[i] = dp[i-1];
+        }
+        return dp[n-1];
+    }
+};
+
+```
+
+<br>
 
 
 ---------------------------
