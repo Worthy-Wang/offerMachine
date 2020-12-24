@@ -4,6 +4,7 @@
         - [56.合并区间](#56合并区间)
         - [57.插入区间](#57插入区间)
         - [76.最小覆盖子串](#76最小覆盖子串)
+        - [415.字符串相加](#415字符串相加)
         - [43.字符串相乘](#43字符串相乘)
         - [30.串联所有单词的子串](#30串联所有单词的子串)
         - [118.杨辉三角](#118杨辉三角)
@@ -185,7 +186,7 @@ s 和 t 由英文字母组成
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/minimum-window-substring
 
-解题思路： 先想到暴力法，两次 for循环，比较后找到最小的子串，需要用hashset来存储t串中的元素。
+解题思路： 先想到暴力法，两次 for循环，比较后找到最小的子串，需要用hashmap来存储t串中的元素。
 再想到用滑动窗口的优化法，设置双指针i j ，当滑动窗口中包含t串中的所有元素时，i++； 没有包含t串中的所有元素时，j++。
 
 时间复杂度：O(N) N为s串的长度
@@ -193,29 +194,145 @@ s 和 t 由英文字母组成
 空间复杂度：O(M) M为t串的长度
 
 ```cpp
-17:46
+class Solution {
+public:
+ 
+bool check(unordered_map<char, int> &Smap, unordered_map<char, int> &Tmap)
+{
+    for (auto &e : Tmap)
+    {
+        if (Smap[e.first] < e.second)
+            return false;
+    }
+    return true;
+}
 
+string minWindow(string s, string t)
+{
+    unordered_map<char, int> Smap, Tmap;
+    for (auto &e : t)
+        Tmap[e]++;
+    int i = 0, j = -1, n = s.size(), minI = 0, minJ = -1, minLen = INT32_MAX;
+    while (j < n)
+    {
+        if (check(Smap, Tmap)) //滑动窗口已经覆盖子串t , i++
+        {
+            while (!Tmap.count(s[i]))
+                i++;
+            if (j - i + 1 < minLen)
+            {
+                minLen = j - i + 1;
+                minI=  i;
+                minJ = j;
+            }
+            Smap[s[i]]--;
+            i++;
+        }
+        else //滑动窗口未覆盖子串t, j++
+        {
+            j++;
+            if (Tmap.count(s[j]))
+                Smap[s[j]]++;
+        }
+    }
+    return s.substr(minI, minJ - minI + 1);
+}
+
+};
 
 ```
 
 <br>
 
+---------------------------
+##### 415.字符串相加
+>题目描述:给定两个字符串形式的非负整数 num1 和num2 ，计算它们的和。
+提示：
+num1 和num2 的长度都小于 5100
+num1 和num2 都只包含数字 0-9
+num1 和num2 都不包含任何前导零
+你不能使用任何內建 BigInteger 库， 也不能直接将输入的字符串转换为整数形式
 
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/add-strings
+
+解题思路：设置进位carry,从后往前逐位进行累加即可
+
+时间复杂度：O(max(M,N))
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    string addStrings(string num1, string num2) {
+        int i = num1.size()-1, j = num2.size()-1, carry = 0;
+        string ans;
+        while (i>=0 || j>=0 || carry)
+        {
+            int x = i>=0 ? num1[i--]-'0' : 0;
+            int y = j>=0 ? num2[j--]-'0' : 0;
+            int sum = x + y + carry;
+            ans = to_string(sum%10) + ans;
+            carry = sum/10;
+        }
+        return ans;
+    }
+};
+```
+
+<br>
 
 
 ---------------------------
 ##### 43.字符串相乘
->题目描述:
+>题目描述:给定两个以字符串形式表示的非负整数 num1 和 num2，返回 num1 和 num2 的乘积，它们的乘积也表示为字符串形式。
+num1 和 num2 的长度小于110。
+num1 和 num2 只包含数字 0-9。
+num1 和 num2 均不以零开头，除非是数字 0 本身。
+不能使用任何标准库的大数类型（比如 BigInteger）或直接将输入转换为整数来处理。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/multiply-strings
 
-时间复杂度：
+解题思路：两个for循环进行累乘，将结果进行累加
 
-空间复杂度：
+时间复杂度：O(M*N)
+
+空间复杂度：O(M+N)
 
 ```cpp
-
-
+class Solution {
+public:
+    string multiply(string num1, string num2) {
+        if ('0'==num1[0] || '0'==num2[0])
+            return "0";
+        reverse(num1.begin(), num1.end());
+        reverse(num2.begin(), num2.end());
+        vector<int> temp(num1.size() + num2.size(), 0);
+        for (int j = 0; j < num2.size(); j++)
+        {
+            for (int i = 0; i < num1.size(); i++)
+            {
+                int multi = (num1[i]-'0') * (num2[j]-'0');
+                multi += temp[i+j];  //还得加上原来已有的
+                temp[i+j] = multi%10;
+                temp[i+j+1] += multi / 10;
+            }
+        }
+        
+        string ans;
+        int i = temp.size()-1;
+        while (0 == temp[i])  //跳过前面的0
+            i--;
+        while (i >= 0)
+        {
+            ans.push_back(temp[i] + '0');
+            i--;
+        }
+        return ans;
+    }
+};
 ```
 
 <br>
@@ -225,16 +342,45 @@ s 和 t 由英文字母组成
 
 ---------------------------
 ##### 30.串联所有单词的子串
->题目描述:
+>题目描述:给定一个字符串 s 和一些长度相同的单词 words。找出 s 中恰好可以由 words 中所有单词串联形成的子串的起始位置。
+注意子串要与 words 中的单词完全匹配，中间不能有其他字符，但不需要考虑 words 中单词串联的顺序。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/substring-with-concatenation-of-all-words
 
-时间复杂度：
+解题思路：暴力法，将words看做一个字符串进行比较即可
 
-空间复杂度：
+时间复杂度：O(N^2)
+
+空间复杂度：O(N)
 
 ```cpp
-17:30
+class Solution {
+public:
+    bool check(string s, unordered_map<string,int>& wordMap, int n, int m)
+    {
+        unordered_map<string,int> hashmap;
+        for (int i = 0; i < s.size(); i+=m)
+            hashmap[s.substr(i, m)]++;
+        return hashmap==wordMap;
+    }
+
+    vector<int> findSubstring(string s, vector<string>& words) {
+        unordered_map<string, int> wordMap;
+        for (auto& e: words)
+            wordMap[e]++;
+        int n = words.size(), m = words[0].size(), wordsLen = m*n;
+        vector<int> ans;
+
+        for (int i = 0; i < s.size()-wordsLen +1; i++)
+        {
+            string s2 = s.substr(i, wordsLen);
+            if (check(s2, wordMap, n, m))
+                ans.push_back(i);
+        }
+        return ans;
+    }
+};
 
 ```
 
@@ -243,17 +389,33 @@ s 和 t 由英文字母组成
 
 ---------------------------
 ##### 118.杨辉三角
->题目描述:
+>题目描述:给定一个非负整数 numRows，生成杨辉三角的前 numRows 行。
+在杨辉三角中，每个数是它左上方和右上方的数的和。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/pascals-triangle
 
-时间复杂度：
+解题思路：杨辉三角的本质是动态规划，直接在for循环中创建数组再加入即可。
 
-空间复杂度：
+时间复杂度：O(N^2)
+
+空间复杂度：O(1)
 
 ```cpp
-
-
+class Solution {
+public:
+    vector<vector<int>> generate(int numRows) {
+        vector<vector<int>> ans;
+        for (int i = 0; i < numRows; i++)
+        {
+            vector<int> vec(i+1,  1);
+            for (int j = 1; j < i; j++)
+                vec[j] = ans[i-1][j] + ans[i-1][j-1];
+            ans.push_back(std::move(vec));
+        }
+        return ans;
+    }
+};
 ```
 
 <br>
@@ -263,16 +425,37 @@ s 和 t 由英文字母组成
 
 ---------------------------
 ##### 119.杨辉三角2
->题目描述:
+>题目描述:给定一个非负索引 k，其中 k ≤ 33，返回杨辉三角的第 k 行。
+在杨辉三角中，每个数是它左上方和右上方的数的和。
+进阶：
+你可以优化你的算法到 O(k) 空间复杂度吗？
+注意此题有一个坑，那就是k是从0开始取的，在程序中我们先将k+1即可。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/pascals-triangle-ii
 
-时间复杂度：
+解题思路：动态规划优化法，用两个交替的数组即可。
 
-空间复杂度：
+时间复杂度：O(K^2)
+
+空间复杂度：O(K)
 
 ```cpp
-
+class Solution {
+public:
+    vector<int> getRow(int rowIndex) {
+        rowIndex++;
+        vector<int> dp0(rowIndex, 1);
+        for (int i = 0; i < rowIndex; i++)
+        {
+            vector<int> dp1(rowIndex, 1);
+            for (int j = 1; j < i; j ++)
+                dp1[j] = dp0[j-1] + dp0[j];
+            dp0 = dp1;
+        }
+        return dp0;
+    }
+};
 
 ```
 
@@ -283,36 +466,95 @@ s 和 t 由英文字母组成
 
 ---------------------------
 ##### 54.螺旋矩阵
->题目描述:
+>题目描述:给定一个包含 m x n 个元素的矩阵（m 行, n 列），请按照顺时针螺旋顺序，返回矩阵中的所有元素。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/spiral-matrix
 
-时间复杂度：
+解题思路：设置上下左右边界即可。
 
-空间复杂度：
+时间复杂度：O(M*N)
+
+空间复杂度：O(1)
 
 ```cpp
-
+class Solution {
+public:
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        if (matrix.empty())
+            return {};
+        vector<int> ans;
+        int M = matrix.size(), N = matrix[0].size();
+        int up = 0, down = M-1, l = 0, r = N-1;//设置上下左右边界
+        while (1)
+        {
+            for (int j = l; j <= r; j++)
+                ans.push_back(matrix[up][j]);
+            if (++up > down)
+                break;
+            for (int i = up; i <= down; i++)
+                ans.push_back(matrix[i][r]);
+            if (--r < l)
+                break;
+            for (int j = r; j >= l; j--)
+                ans.push_back(matrix[down][j]);
+            if (--down < up)
+                break;
+            for (int i = down; i >= up; i--)
+                ans.push_back(matrix[i][l]);
+            if (++l > r)
+                break;
+        }
+        return ans;
+    }
+};
 
 ```
 
 <br>
 
-
-
-
 ---------------------------
 ##### 59.螺旋矩阵2
->题目描述:
+>题目描述:给定一个正整数 n，生成一个包含 1 到 n^2 所有元素，且元素按顺时针顺序螺旋排列的正方形矩阵。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/spiral-matrix-ii
 
-时间复杂度：
+解题思路：螺旋遍历的方法，与上一题解法相同。
 
-空间复杂度：
+时间复杂度：O(N^2)
+
+空间复杂度：O(1)
 
 ```cpp
-
+class Solution {
+public:
+    vector<vector<int>> generateMatrix(int n) {
+        vector<vector<int>> matrix(n, vector<int>(n));
+        int up = 0, down = n-1, l = 0, r = n-1;//设置上下左右边界
+        int cnt = 0;
+        while (1)
+        {
+            for (int j = l; j <= r; j++)
+                matrix[up][j] = ++cnt;
+            if (++up > down)
+                break;
+            for (int i = up; i <= down; i++)
+                matrix[i][r] = ++cnt;
+            if (--r < l)
+                break;
+            for (int j = r; j >= l; j--)
+                matrix[down][j] = ++cnt;
+            if (--down < up)
+                break;
+            for (int i = down; i >= up; i--)
+                matrix[i][l] = ++cnt;
+            if (++l > r)
+                break;
+        }
+        return matrix;
+    }
+};
 
 ```
 
@@ -323,7 +565,17 @@ s 和 t 由英文字母组成
 
 ---------------------------
 ##### 6.Z字形变换
->题目描述:
+>题目描述:将一个给定字符串根据给定的行数，以从上往下、从左到右进行 Z 字形排列。
+比如输入字符串为 "LEETCODEISHIRING" 行数为 3 时，排列如下：
+L   C   I   R
+E T O E S I I G
+E   D   H   N
+之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如："LCIRETOESIIGEDHN"。
+请你实现这个将字符串进行指定行数变换的函数：
+string convert(string s, int numRows);
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/zigzag-conversion
 
 解题思路：
 
@@ -332,7 +584,7 @@ s 和 t 由英文字母组成
 空间复杂度：
 
 ```cpp
-
+19：11
 
 ```
 
