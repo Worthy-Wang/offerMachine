@@ -13,6 +13,7 @@
         - [59.螺旋矩阵2](#59螺旋矩阵2)
         - [6.Z字形变换](#6z字形变换)
         - [29.两数相除](#29两数相除)
+        - [50.Pow(x,n)](#50powxn)
         - [68.文本左右对齐](#68文本左右对齐)
         - [149.直线上最多的点数](#149直线上最多的点数)
 
@@ -577,45 +578,148 @@ string convert(string s, int numRows);
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/zigzag-conversion
 
-解题思路：
+解题思路：创建一个vector<string>数组存储Z字形变换，然后按照行进行读取即可。
 
-时间复杂度：
+时间复杂度：O(N)
 
-空间复杂度：
+空间复杂度：O(N)
 
 ```cpp
-19：11
+class Solution {
+public:
+    string convert(string s, int numRows) {
+        if (numRows == 1)
+            return s;
+        vector<string> vec(numRows);
+        int i = 0, add = 1;
+        for (auto& e: s)
+        {
+            vec[i].push_back(e);
+            i += add;
+            if (i == numRows-1 || i==0)
+                add = -add;
+        }
+        string ans;
+        for (auto& e: vec)
+            ans += e;
+        return ans;
+    }
+};
 
 ```
 
 <br>
-
-
-
 
 ---------------------------
 ##### 29.两数相除
->题目描述:
+>题目描述:给定两个整数，被除数 dividend 和除数 divisor。将两数相除，要求不使用乘法、除法和 mod 运算符。
+返回被除数 dividend 除以除数 divisor 得到的商。
+整数除法的结果应当截去（truncate）其小数部分，例如：truncate(8.345) = 8 以及 truncate(-2.7335) = -2
+被除数和除数均为 32 位有符号整数。
+除数不为 0。
+假设我们的环境只能存储 32 位有符号整数，其数值范围是 [−2^31,  2^31 − 1]。本题中，如果除法结果溢出，则返回 2^31 − 1。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/divide-two-integers
 
-时间复杂度：
+解题思路：既然不能够使用乘除法和mod法，那么就使用不断相减的策略，计算减了多少次即可，需要用快速幂运算进行优化，其中需要注意dividend , divisor的正负号。
 
-空间复杂度：
+时间复杂度：O(logx)
+
+空间复杂度：O(1)
 
 ```cpp
-
+class Solution {
+public:
+    int divide(int dividend, int divisor) {
+        long a = dividend>=0 ? dividend : -(long)dividend;
+        long b = divisor>=0 ? divisor : -(long)divisor;
+        long ans = 0;
+        while (a >= b)
+        {
+            int i = 0;
+            while (a >= (b<<i))
+            {
+                a -= (b<<i);
+                ans += (1<<i);
+                i++;
+            }
+        } 
+        ans =  ((dividend>>31)^(divisor>>31)) ? -ans : ans;
+        return ans>INT32_MAX ? INT32_MAX : ans;
+    }
+};
 
 ```
 
 <br>
 
+---------------------------
+##### 50.Pow(x,n)
+>题目描述:实现 pow(x, n) ，即计算 x 的 n 次幂函数。
+-100.0 < x < 100.0
+n 是 32 位有符号整数，其数值范围是 [−2^31, 2^31 − 1] 。
 
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/powx-n
+
+解题思路：将n看做二进制进行不断往右移位操作，当二进制n最右边为1时，说明此时可以进行累乘。
+
+时间复杂度：O(logN)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    double Pow(double x, long n)
+    {
+        double ans = 1;
+        while (n)
+        {
+            if (n & 0x1)
+                ans *= x;
+            n >>= 1;
+            x *= x;
+        }
+        return ans;
+    }
+
+    double myPow(double x, int n) {
+        if (0 == n)
+            return 1;
+        if (1 == n)
+            return x;
+        if (0 == x)
+            return 0;
+        if (1 == x)
+            return 1;
+
+        if (n < 0)
+            return 1.0 / Pow(x, -(long)n);
+        else
+            return Pow(x, n);
+    }
+};
+
+```
+
+<br>
 
 
 ---------------------------
 ##### 68.文本左右对齐
->题目描述:
+>题目描述:给定一个单词数组和一个长度 maxWidth，重新排版单词，使其成为每行恰好有 maxWidth 个字符，且左右两端对齐的文本。
+你应该使用“贪心算法”来放置给定的单词；也就是说，尽可能多地往每行中放置单词。必要时可用空格 ' ' 填充，使得每行恰好有 maxWidth 个字符。
+要求尽可能均匀分配单词间的空格数量。如果某一行单词间的空格不能均匀分配，则左侧放置的空格数要多于右侧的空格数。
+文本的最后一行应为左对齐，且单词之间不插入额外的空格。
+说明:
+单词是指由非空格字符组成的字符序列。
+每个单词的长度大于 0，小于等于 maxWidth。
+输入单词数组 words 至少包含一个单词。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/text-justification
 
 解题思路：
 
@@ -624,18 +728,40 @@ string convert(string s, int numRows);
 空间复杂度：
 
 ```cpp
-
 
 ```
 
 <br>
 
-
-
-
 ---------------------------
 ##### 149.直线上最多的点数
->题目描述:
+>题目描述:给定一个二维平面，平面上有 n 个点，求最多有多少个点在同一条直线上。
+示例 1:
+输入: [[1,1],[2,2],[3,3]]
+输出: 3
+解释:
+^
+|
+|        o
+|     o
+|  o  
++------------->
+0  1  2  3  4
+示例 2:
+输入: [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
+输出: 4
+解释:
+^
+|
+|  o
+|     o        o
+|        o
+|  o        o
++------------------->
+0  1  2  3  4  5  6
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/max-points-on-a-line
 
 解题思路：
 
@@ -644,7 +770,6 @@ string convert(string s, int numRows);
 空间复杂度：
 
 ```cpp
-
 
 ```
 
