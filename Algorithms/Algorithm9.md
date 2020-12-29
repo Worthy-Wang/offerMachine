@@ -3,6 +3,7 @@
         - [132.分割回文串2](#132分割回文串2)
         - [62.不同路径](#62不同路径)
         - [63.不同路径2](#63不同路径2)
+        - [剑指 Offer 13. 机器人的运动范围](#剑指-offer-13-机器人的运动范围)
         - [51.N皇后](#51n皇后)
         - [52.N皇后2](#52n皇后2)
         - [93.复原IP地址](#93复原ip地址)
@@ -184,6 +185,56 @@ public:
     }
 };
 
+```
+
+<br>
+
+---------------------------------------------
+##### 剑指 Offer 13. 机器人的运动范围
+>题目描述:地上有一个m行n列的方格，从坐标 [0,0] 到坐标 [m-1,n-1] 。一个机器人从坐标 [0, 0] 的格子开始移动，它每次可以向左、右、上、下移动一格（不能移动到方格外），也不能进入行坐标和列坐标的数位之和大于k的格子。例如，当k为18时，机器人能够进入方格 [35, 37] ，因为3+5+3+7=18。但它不能进入方格 [35, 38]，因为3+5+3+8=19。请问该机器人能够到达多少个格子？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof
+
+解题思路：DFS，机器人相当于只能向下或者向右走，需要设置visited数组保存走过的路径，注意不需要回溯。
+
+时间复杂度：O(M*N* K) K是数字的位数
+
+空间复杂度：O(M*N)
+
+```cpp
+class Solution {
+    int ans = 0;
+public:
+    int count(int num)
+    {
+        int ans = 0;
+        while (num)
+        {
+            ans += num % 10;
+            num /= 10;
+        }
+        return ans;
+    }
+
+    void DFS(int m, int n, int i, int j, int k, vector<vector<int>>& visited)
+    {
+        if (i>=m || j>=n || count(i)+count(j)>k || visited[i][j])
+            return;
+        ans++;
+        visited[i][j] = 1;
+        DFS(m, n, i+1, j, k, visited);
+        DFS(m, n, i, j+1, k, visited);
+    }
+
+    int movingCount(int m, int n, int k) {
+        if (m<=0 || n<=0 || k<0)
+            return 0;
+        vector<vector<int>> visited(m, vector<int>(n, 0));
+        DFS(m, n, 0, 0, k, visited);
+        return ans;
+    }
+};
 ```
 
 <br>

@@ -4,7 +4,6 @@
         - [23.合并K个升序链表](#23合并k个升序链表)
         - [147.对链表进行插入排序](#147对链表进行插入排序)
         - [148.排序链表](#148排序链表)
-        - [41.缺失的第一个正数](#41缺失的第一个正数)
         - [75.颜色分类](#75颜色分类)
 
 
@@ -361,50 +360,6 @@ ListNode *quickSort(ListNode *head)
 
 <br>
 
----------------------------
-##### 41.缺失的第一个正数
->题目描述:给你一个未排序的整数数组，请你找出其中没有出现的最小的正整数。
-提示：
-你的算法的时间复杂度应为O(n)，并且只能使用常数级别的额外空间。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/first-missing-positive
-
-解题思路：原地哈希法，也就是将原数组作为哈希表，不断swap保证 下标 i == nums[i] 即可， 不过有下面三种情况时可以直接跳过：
-1.下标i大于数组长度n  2. nums[i]为负数 3.nums[i]与nums[nums[i]]相同。
-另外，由于下标0白占了一个空位，我们需要人为的添加一个0让nums的长度增加一位。
- 
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    int firstMissingPositive(vector<int>& nums) {
-        nums.push_back(0);
-        int n = nums.size();
-        for (int i = 0; i < n; i++)
-        {
-            while (i != nums[i])
-            {
-                if (nums[i]>n-1 || nums[i]<0 || nums[i]==nums[nums[i]])
-                    break;
-                swap(nums[i], nums[nums[i]]);
-            }
-        }
-
-        for (int i = 1; i < n; i++)
-        {
-            if (nums[i] != i)
-                return i; 
-        }
-        return n;
-    }
-};
-```
-
-<br>
 
 ---------------------------
 ##### 75.颜色分类

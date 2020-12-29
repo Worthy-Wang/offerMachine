@@ -2,8 +2,6 @@
     - [线性表专题：数组系列](#线性表专题数组系列)
         - [26.删除排序数组中的重复项](#26删除排序数组中的重复项)
         - [80.删除排序数组中的重复项2](#80删除排序数组中的重复项2)
-        - [33.搜索旋转排序数组](#33搜索旋转排序数组)
-        - [81.搜索旋转排序数组2](#81搜索旋转排序数组2)
         - [4.寻找两个正序数组的中位数](#4寻找两个正序数组的中位数)
         - [128.最长连续序列](#128最长连续序列)
         - [1.两数之和](#1两数之和)
@@ -26,6 +24,8 @@
         - [136.只出现一次的数字](#136只出现一次的数字)
         - [137.只出现一次的数字2](#137只出现一次的数字2)
         - [260.只出现一次的数字3](#260只出现一次的数字3)
+        - [剑指 Offer 03. 数组中重复的数字](#剑指-offer-03-数组中重复的数字)
+        - [41.缺失的第一个正数](#41缺失的第一个正数)
     - [线性表专题：链表系列](#线性表专题链表系列)
         - [2.两数相加](#2两数相加)
         - [445.两数相加2](#445两数相加2)
@@ -152,110 +152,6 @@ public:
 
 ```
 
-<br>
-
--------------------------------
-##### 33.搜索旋转排序数组
->题目描述：给你一个整数数组 nums ，和一个整数 target 。
-该整数数组原本是按升序排列，但输入时在预先未知的某个点上进行了旋转。（例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] ）。
-请你在数组中搜索 target ，如果数组中存在这个目标值，则返回它的索引，否则返回 -1 。注意其中每一个值都是独一无二的
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/search-in-rotated-sorted-array
-
-解题思路：该题采用二分法求解，每一次二分都需要先判断是否与target相等，再利用两个区间：一个左升序数组的左区间，一个是右升序数组的右区间进行判断即可。
-
-时间复杂度：O(logN)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    int search(vector<int>& nums, int target) {
-        if (nums.empty())
-            return -1;
-        int l = 0, r = nums.size()-1;
-        while (l <= r)
-        {
-            int mid = (l + r) >> 1;
-            if (nums[mid] == target)
-                return mid;
-            if (nums[l] == nums[mid]) //无法判断mid落在了左升序还是右升序
-                l++;
-            else if (nums[mid] > nums[l]) //mid位于左升序数组
-            {
-                if (nums[l]<=target && target<=nums[mid])
-                    r = mid - 1;
-                else 
-                    l = mid + 1;
-            }
-            else //mid 位于右升序数组
-            {
-                if (nums[mid]<=target && target<=nums[r])
-                    l = mid + 1;
-                else 
-                    r = mid - 1;
-            }
-        }
-        return -1;
-    }
-};
-
-```
-
-
-<br>
-
------------------------
-##### 81.搜索旋转排序数组2
->题目描述：假设按照升序排序的数组在预先未知的某个点上进行了旋转。
-( 例如，数组 [0,0,1,2,2,5,6] 可能变为 [2,5,6,0,0,1,2] )。
-编写一个函数来判断给定的目标值是否存在于数组中。若存在返回 true，否则返回 false。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/search-in-rotated-sorted-array-ii
-
-解题思路：该题的解决方法与上一题一样，为了方便理解就统一写法，唯一的不同之处在于该题中允许数字重复，那么就在一开始无法判断mid落在左升序还是右升序数组中了。这样可能会造成最坏的O(N)时间复杂度。
-
-时间复杂度：O(logN)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    bool search(vector<int>& nums, int target) {
-          if (nums.empty())
-            return false;
-        int l = 0, r = nums.size()-1;
-        while (l <= r)
-        {
-            int mid = (l + r) >> 1;
-            if (nums[mid] == target)
-                return true;
-            if (nums[l] == nums[mid]) //无法判断mid落在了左升序还是右升序
-                l++;
-            else if (nums[mid] > nums[l]) //mid位于左升序数组
-            {
-                if (nums[l]<=target && target<=nums[mid])
-                    r = mid - 1;
-                else 
-                    l = mid + 1;
-            }
-            else //mid 位于右升序数组
-            {
-                if (nums[mid]<=target && target<=nums[r])
-                    l = mid + 1;
-                else 
-                    r = mid - 1;
-            }
-        }
-        return false;
-    }
-};
-
-```
 
 
 <br>
@@ -1440,6 +1336,86 @@ public:
     }
 };
 
+```
+
+<br>
+
+---------------------------
+##### 剑指 Offer 03. 数组中重复的数字
+>题目描述:找出数组中重复的数字。
+在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。数组中某些数字是重复的，但不知道有几个数字重复了，也不知道每个数字重复了几次。请找出数组中任意一个重复的数字。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof
+
+解题思路：采用原地哈希法，也就是下标和对应的值必须相同，不然就需要不断的交换。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int findRepeatNumber(vector<int>& nums) {
+        if (nums.empty())
+            return -1;        
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (i != nums[i])
+            {
+                if (nums[i] == nums[nums[i]])
+                    return nums[i];
+                swap(nums[i], nums[nums[i]]);
+            }
+        }
+        return -1;
+    }
+};
+```
+
+<br>
+
+
+---------------------------
+##### 41.缺失的第一个正数
+>题目描述:给你一个未排序的整数数组，请你找出其中没有出现的最小的正整数。
+提示：
+你的算法的时间复杂度应为O(n)，并且只能使用常数级别的额外空间。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/first-missing-positive
+
+解题思路：原地哈希法，也就是将原数组作为哈希表，不断swap保证 下标 i == nums[i] 即可， 不过有下面三种情况时可以直接跳过：
+1.下标i大于数组长度n  2. nums[i]为负数 3.nums[i]与nums[nums[i]]相同。
+另外，由于下标0白占了一个空位，我们需要人为的添加一个0让nums的长度增加一位。
+ 
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int firstMissingPositive(vector<int>& nums) {
+        int n = nums.size();
+        nums.insert(nums.begin(), 0);
+
+        for (int i = 1; i <= n; i++)
+        {
+            while (1<=nums[i] && nums[i]<=n && nums[i]!=i)
+            {
+                if (nums[i] == nums[nums[i]])
+                    break;
+                swap(nums[i], nums[nums[i]]);
+            }
+        }
+        for (int i = 1; i <= n; i++)
+            if (nums[i] != i)
+                return i;
+        return n + 1;
+    }
+};
 ```
 
 <br>

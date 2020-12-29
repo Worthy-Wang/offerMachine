@@ -2,7 +2,7 @@
         - [33. 搜索旋转排序数组](#33-搜索旋转排序数组)
         - [81. 搜索旋转排序数组 II](#81-搜索旋转排序数组-ii)
         - [153. 寻找旋转排序数组中的最小值](#153-寻找旋转排序数组中的最小值)
-        - [](#)
+        - [154. 寻找旋转排序数组中的最小值 II](#154-寻找旋转排序数组中的最小值-ii)
         - [34. 在排序数组中查找元素的第一个和最后一个位置](#34-在排序数组中查找元素的第一个和最后一个位置)
         - [35.搜索插入位置](#35搜索插入位置)
         - [74.搜索二维矩阵](#74搜索二维矩阵)
@@ -15,17 +15,47 @@
 ##### 33. 搜索旋转排序数组
 >题目描述:升序排列的整数数组 nums 在预先未知的某个点上进行了旋转（例如， [0,1,2,4,5,6,7] 经旋转后可能变为 [4,5,6,7,0,1,2] ）。
 请你在数组中搜索 target ，如果数组中存在这个目标值，则返回它的索引，否则返回 -1 。
+每一个数都是独一无二的。
 
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/search-in-rotated-sorted-array
 
-解题思路：
+解题思路：二分法，先判断nums[mid]是否等待target，再根据最左边和最右边的两个递增区间判断二分。
 
-时间复杂度：
+时间复杂度：O(logN)
 
-空间复杂度：
+空间复杂度：O(1)
 
 ```cpp
+class Solution {
+public:
+    int search(vector<int>& nums, int target) {
+        int l = 0, r = nums.size()-1;
+        while (l <= r)
+        {
+            int mid = (l + r) >> 1;
+            if (nums[mid] == target)
+                return mid;
+            if (nums[mid] == nums[l]) //无法判断落在左递增区间还是右递增区间
+                l++;
+            else if (nums[mid] > nums[l])//落在左递增区间
+            {
+                if (nums[l]<=target && target<=nums[mid])
+                    r = mid -1;
+                else
+                    l = mid + 1;
+            }else//落在右递增区间
+            {
+                if (nums[mid]<=target && target<=nums[r])
+                    l = mid + 1;
+                else 
+                    r = mid - 1;
+            }
+        }
+        return -1;
+    }
+};
+
 
 ```
 
@@ -33,15 +63,49 @@
 
 ---------------------------
 ##### 81. 搜索旋转排序数组 II
->题目描述:
+>题目描述:假设按照升序排序的数组在预先未知的某个点上进行了旋转。
+( 例如，数组 [0,0,1,2,2,5,6] 可能变为 [2,5,6,0,0,1,2] )。
+编写一个函数来判断给定的目标值是否存在于数组中。若存在返回 true，否则返回 false。
+可能会有相同的数。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/search-in-rotated-sorted-array-ii
 
-时间复杂度：
+解题思路：与上一题的解法相同
 
-空间复杂度：
+时间复杂度：O(logN)
+
+空间复杂度：O(1)
 
 ```cpp
+class Solution {
+public:
+    bool search(vector<int>& nums, int target) {
+        int l = 0, r = nums.size()-1;
+        while (l <= r)
+        {
+            int mid = (l + r) >> 1;
+            if (nums[mid] == target)
+                return true;
+            if (nums[mid] == nums[l]) //无法判断落在左递增区间还是右递增区间
+                l++;
+            else if (nums[mid] > nums[l])//落在左递增区间
+            {
+                if (nums[l]<=target && target<=nums[mid])
+                    r = mid -1;
+                else
+                    l = mid + 1;
+            }else//落在右递增区间
+            {
+                if (nums[mid]<=target && target<=nums[r])
+                    l = mid + 1;
+                else 
+                    r = mid - 1;
+            }
+        }
+        return false;
+    }
+};
 
 ```
 
@@ -51,18 +115,40 @@
 ##### 153. 寻找旋转排序数组中的最小值
 >题目描述:假设按照升序排序的数组在预先未知的某个点上进行了旋转。例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] 。
 请找出其中最小的元素。
+nums 中的所有整数都是 唯一 的。
 
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array
 
-解题思路：
+解题思路：二分法，每一次先判断nums[mid]处于左边的递增区间还是右边的递增区间。若处在左边的递增区间，取最小值后右移；若处在右边的递增区间，取最小值后左移。
 
-时间复杂度：
+时间复杂度：O(logN)
 
-空间复杂度：
+空间复杂度：O(1)
 
 ```cpp
-16:33
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int l = 0, r = nums.size()-1;
+        int ans = INT32_MAX;
+        while (l <= r)
+        {
+            int mid = (l + r) >> 1;
+            if (nums[mid] >= nums[l]) //mid在左边递增区间
+            {
+                ans = std::min(ans, nums[l]);
+                l = mid + 1;
+            }
+            else //mid在右边递增区间
+            {
+                ans = std::min(ans, nums[mid]);
+                r = mid - 1;
+            }
+        }
+        return ans;
+    }
+};
 
 ```
 
@@ -70,16 +156,49 @@
 
 
 ---------------------------
-##### 
->题目描述:
+##### 154. 寻找旋转排序数组中的最小值 II
+>题目描述:假设按照升序排序的数组在预先未知的某个点上进行了旋转。
+( 例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] )。
+请找出其中最小的元素。
+注意数组中可能存在重复的元素。
 
-解题思路：
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii
 
-时间复杂度：
+解题思路：该题解法与上一题相同，只是多了一个条件处理的情况。
 
-空间复杂度：
+时间复杂度：O(logN)
+
+空间复杂度：O(1)
 
 ```cpp
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int l = 0, r = nums.size()-1;
+        int ans = INT32_MAX;
+        while (l <= r)
+        {
+            int mid = (l + r) >> 1;
+            if (nums[mid] == nums[l]) //无法判断mid在哪一个递增区间
+            {
+                ans = std::min(ans, nums[l]);
+                l++;
+            }
+            else if (nums[mid] > nums[l]) //mid在左边递增区间
+            {
+                ans = std::min(ans, nums[l]);
+                l = mid + 1;
+            }
+            else //mid在右边递增区间
+            {
+                ans = std::min(ans, nums[mid]);
+                r = mid - 1;
+            }
+        }
+        return ans;
+    }
+};
 
 ```
 

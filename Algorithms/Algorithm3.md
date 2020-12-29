@@ -1,10 +1,61 @@
 - [三.栈和队列专题](#三栈和队列专题)
+        - [剑指 Offer 09. 用两个栈实现队列](#剑指-offer-09-用两个栈实现队列)
         - [20.有效的括号](#20有效的括号)
         - [32.最长的有效括号](#32最长的有效括号)
         - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
         - [150.逆波兰表达式求值](#150逆波兰表达式求值)
 
 # 三.栈和队列专题
+
+
+
+---------------------------
+##### 剑指 Offer 09. 用两个栈实现队列
+>题目描述:用两个栈实现一个队列。队列的声明如下，请实现它的两个函数 appendTail 和 deleteHead ，分别完成在队列尾部插入整数和在队列头部删除整数的功能。(若队列中没有元素，deleteHead 操作返回 -1 )
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof
+
+解题思路：设置两个队列，左边的队列用来入队，右边的队列用来出队。
+
+时间复杂度：O(1)
+
+空间复杂度：O(1)
+
+```cpp
+class CQueue {
+    std::stack<int> stk1;
+    std::stack<int> stk2;
+public:
+    CQueue() {
+    }
+    
+    void appendTail(int value) {
+        stk1.push(value);
+    }
+    
+    int deleteHead() {
+        if (stk2.empty())
+        {
+            if (stk1.empty())
+                return -1;
+            else
+            {
+                while (!stk1.empty())
+                {
+                    stk2.push(stk1.top());
+                    stk1.pop();
+                }
+            }
+        }
+        int val = stk2.top();
+        stk2.pop();
+        return val;
+    }
+};
+```
+
+<br>
 
 ---------------------------
 ##### 20.有效的括号

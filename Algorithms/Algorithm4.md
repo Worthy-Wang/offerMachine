@@ -8,7 +8,11 @@
         - [99.恢复二叉搜索树](#99恢复二叉搜索树)
         - [100.相同的树](#100相同的树)
         - [101.对称二叉树](#101对称二叉树)
+        - [226. 翻转二叉树](#226-翻转二叉树)
+        - [剑指 Offer 26. 树的子结构](#剑指-offer-26-树的子结构)
         - [110.平衡二叉树](#110平衡二叉树)
+        - [111.二叉树的最小深度](#111二叉树的最小深度)
+        - [104.二叉树的最大深度](#104二叉树的最大深度)
         - [114.二叉树展开为链表](#114二叉树展开为链表)
         - [116.充填每个节点的下一个右侧节点指针](#116充填每个节点的下一个右侧节点指针)
         - [117.充填每个节点的下一个右侧节点指针2](#117充填每个节点的下一个右侧节点指针2)
@@ -19,8 +23,6 @@
         - [98.验证二叉搜索树](#98验证二叉搜索树)
         - [108.将有序数组转换为二叉搜索树](#108将有序数组转换为二叉搜索树)
         - [109.有序链表转换二叉搜索树](#109有序链表转换二叉搜索树)
-        - [111.二叉树的最小深度](#111二叉树的最小深度)
-        - [104.二叉树的最大深度](#104二叉树的最大深度)
         - [112.路径总和](#112路径总和)
         - [113.路径总合2](#113路径总合2)
         - [437.路径总合3](#437路径总合3)
@@ -440,6 +442,74 @@ public:
 
 <br>
 
+
+
+---------------------------
+##### 226. 翻转二叉树
+>题目描述:翻转一棵二叉树。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/invert-binary-tree
+
+解题思路：后续遍历翻转即可
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+        if (!root)
+            return nullptr;
+        invertTree(root->left);
+        invertTree(root->right);
+        swap(root->left, root->right);
+        return root;
+    }
+};
+
+
+```
+
+<br>
+
+
+------------------------------
+##### 剑指 Offer 26. 树的子结构
+>题目描述:输入两棵二叉树A和B，判断B是不是A的子结构。(约定空树不是任意一个树的子结构)
+B是A的子结构， 即 A中有出现和B相同的结构和节点值。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/shu-de-zi-jie-gou-lcof
+
+解题思路：两棵二叉树同时进行递归，只要能将B的所有节点匹配完成即可。
+
+时间复杂度：O(M*N) M是A的节点数，N是B的节点数
+
+空间复杂度：O(M) 最坏的退化成链表的情况也就是M，M一定大于N
+
+```cpp
+class Solution {
+public:
+    bool isSame(TreeNode* A, TreeNode* B)
+    {
+        if (!B) return true;
+        if (!A) return false;
+        return A->val==B->val && isSame(A->left, B->left) && isSame(A->right, B->right);
+    }
+
+    bool isSubStructure(TreeNode* A, TreeNode* B) {
+        if (!A || !B) return false;
+        return isSame(A, B) || isSubStructure(A->left, B) || isSubStructure(A->right, B);
+    }
+};
+```
+
+<br>
+
+
 ---------------------------
 ##### 110.平衡二叉树
 >题目描述:给定一个二叉树，判断它是否是高度平衡的二叉树。
@@ -475,6 +545,83 @@ public:
             return true;
         DFS(root);
         return ans;
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 111.二叉树的最小深度
+>题目描述:给定一个二叉树，找出其最小深度。
+最小深度是从根节点到最近叶子节点的最短路径上的节点数量。
+说明：叶子节点是指没有子节点的节点。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/minimum-depth-of-binary-tree
+
+
+解题思路：DFS前序遍历找出所有的叶子节点并比较所在高度。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    int ans = INT32_MAX;
+public:
+    void DFS(TreeNode* root, int level)
+    {
+        if (!root)
+            return;
+        if (!root->left && !root->right)
+        {
+            ans = std::min(ans, level);
+            return;
+        }
+        DFS(root->left, level+1);
+        DFS(root->right, level+1);
+    }
+
+    int minDepth(TreeNode* root) {
+        if (!root)
+            return 0;
+        DFS(root, 1);
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 104.二叉树的最大深度
+>题目描述:给定一个二叉树，找出其最大深度。
+二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+说明: 叶子节点是指没有子节点的节点。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/maximum-depth-of-binary-tree
+
+解题思路：最大深度也就是高度，可以直接用后序遍历计算。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution
+{
+public:
+    int maxDepth(TreeNode *root)
+    {
+        if (!root)
+            return 0;
+        return std::max(maxDepth(root->left), maxDepth(root->right)) + 1;
     }
 };
 
@@ -1004,74 +1151,6 @@ public:
 
 <br>
 
----------------------------
-##### 111.二叉树的最小深度
->题目描述:给定一个二叉树，找出其最小深度。
-最小深度是从根节点到最近叶子节点的最短路径上的节点数量。
-说明：叶子节点是指没有子节点的节点。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/minimum-depth-of-binary-tree
-
-
-解题思路：递归，找出最深的叶子节点，同时需要判断根节点的左右子树是否存在。
-
-时间复杂度：O(N)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-public:
-    int minDepth(TreeNode* root) {
-        if (!root)
-            return 0;
-        if (!root->left && !root->right)
-            return 1;
-        else if (!root->left)
-            return minDepth(root->right)+1;
-        else if (!root->right)
-            return minDepth(root->left)+1;
-        else
-            return std::min(minDepth(root->left), minDepth(root->right)) + 1;
-    }
-};
-
-
-```
-
-<br>
-
----------------------------
-##### 104.二叉树的最大深度
->题目描述:给定一个二叉树，找出其最大深度。
-二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
-说明: 叶子节点是指没有子节点的节点。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/maximum-depth-of-binary-tree
-
-解题思路：最大深度也就是高度，可以直接用后序遍历计算。
-
-时间复杂度：O(N)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution
-{
-public:
-    int maxDepth(TreeNode *root)
-    {
-        if (!root)
-            return 0;
-        return std::max(maxDepth(root->left), maxDepth(root->right)) + 1;
-    }
-};
-
-```
-
-<br>
 
 ---------------------------
 ##### 112.路径总和

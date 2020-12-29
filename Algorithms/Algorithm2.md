@@ -1,6 +1,8 @@
 - [二.字符串专题](#二字符串专题)
+        - [剑指 Offer 05. 替换空格](#剑指-offer-05-替换空格)
         - [125.验证回文串](#125验证回文串)
         - [28.实现strStr()](#28实现strstr)
+        - [剑指 Offer 20. 表示数值的字符串](#剑指-offer-20-表示数值的字符串)
         - [8.字符串转换整数](#8字符串转换整数)
         - [67.二进制求和](#67二进制求和)
         - [5.最长回文子串](#5最长回文子串)
@@ -17,6 +19,51 @@
 
 
 # 二.字符串专题
+
+
+---------------------------
+##### 剑指 Offer 05. 替换空格
+>题目描述:请实现一个函数，把字符串 s 中的每个空格替换成"%20"。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof
+
+
+解题思路：假设不能够在原字符串s上面修改，那么创建新的串返回，这很简单；如果面试官要求必须在原字符串s上面进行修改，那么先统计出空格的数量（如果原本s的长度够的话就不需要扩容），再对s进行扩容，之后同时从尾部用双指针逆向返回。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    string replaceSpace(string s) {
+        int cnt = 0;
+        for (auto& e: s)
+            if (' ' == e)   
+                cnt++;
+        int n1 = s.size(), n2 = s.size() + cnt*2;
+        s.resize(n2);
+        int i = n1-1, j = n2-1;
+        while (i>=0)
+        {
+            if (s[i] == ' ')
+            {
+                s[j--] = '0';
+                s[j--] = '2';
+                s[j--] = '%';
+                i--;
+            }else
+                s[j--] = s[i--];
+        }
+        return s;
+    }
+};
+```
+
+<br>
+
 
 -----------------------------
 ##### 125.验证回文串
@@ -196,6 +243,71 @@ int strStr(string haystack, string needle)
 
 <br>
 
+
+---------------------------
+##### 剑指 Offer 20. 表示数值的字符串
+>题目描述:请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。例如，字符串"+100"、"5e2"、"-123"、"3.1416"、"-1E-16"、"0123"都表示数值，但"12e"、"1a3.14"、"1.2.3"、"+-5"及"12e+5.4"都不是。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/biao-shi-shu-zhi-de-zi-fu-chuan-lcof
+
+解题思路：先写一个最难的   -3.12e-3    .前后有数字即可，e可存在可不存在，若e存在后面就必须接上数字。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    bool isNumber(string s) {
+        int i = 0;
+        while (isspace(s[i])) i++; //跳过空格
+        if ('+'==s[i] || '-'==s[i]) i++; //跳过+-号
+        bool ans1 = false, ans2 = false;
+        while(isdigit(s[i]))
+        {
+            i++;
+            ans1 = true;
+        }
+        if ('.' == s[i]) i++; //跳过.
+        while(isdigit(s[i]))
+        {
+            i++;
+            ans2 = true;
+        }
+        if (!ans1 && !ans2) //如果小数点前后都没有数字，返回false
+            return false;
+
+        if ('e'==s[i] || 'E'==s[i])//如果数字后面有e的情况
+        {
+            i++;
+            if ('+'==s[i] || '-'==s[i])
+                i++;
+            bool ans3 = false;
+            while(isdigit(s[i]))
+            {
+                i++;
+                ans3 = true;
+            }
+            if (!ans3)
+                return false;
+        }        
+
+        //有效数字遍历完成，往后遍历空格
+        while (i != s.size())
+        {
+            if (!isspace(s[i]))
+                return false;
+            i++;
+        }
+
+        return true;
+    }
+};
+```
+
+<br>
 
 -----------------------------
 ##### 8.字符串转换整数
