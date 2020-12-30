@@ -1,5 +1,7 @@
 - [三.栈和队列专题](#三栈和队列专题)
         - [剑指 Offer 09. 用两个栈实现队列](#剑指-offer-09-用两个栈实现队列)
+        - [剑指 Offer 30. 包含min函数的栈](#剑指-offer-30-包含min函数的栈)
+        - [剑指 Offer 31. 栈的压入、弹出序列](#剑指-offer-31-栈的压入弹出序列)
         - [20.有效的括号](#20有效的括号)
         - [32.最长的有效括号](#32最长的有效括号)
         - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
@@ -56,6 +58,97 @@ public:
 ```
 
 <br>
+
+
+---------------------------
+##### 剑指 Offer 30. 包含min函数的栈
+>题目描述:定义栈的数据结构，请在该类型中实现一个能够得到栈的最小元素的 min 函数在该栈中，调用 min、push 及 pop 的时间复杂度都是 O(1)。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/bao-han-minhan-shu-de-zhan-lcof
+
+解题思路：用两个栈，一个栈存放正常的元素，另一个栈保存此时元素中的最小值。
+
+时间复杂度：min, push, pop, top 均为O(1)
+
+空间复杂度：O(N)
+
+```cpp
+class MinStack {
+    std::stack<int> stk1;
+    std::stack<int> stk2;
+public:
+    /** initialize your data structure here. */
+    MinStack() {
+    }
+    
+    void push(int x) {
+        stk1.push(x);
+        if (stk2.empty())
+            stk2.push(x);
+        else
+        {
+            int val = stk2.top()<=x ? stk2.top() : x;
+            stk2.push(val); 
+        }
+    }
+    
+    void pop() {
+        if (!stk1.empty())
+        {
+            stk1.pop();
+            stk2.pop();
+        }
+    }
+    
+    int top() {
+        return stk1.empty() ? -1 :  stk1.top();
+    }
+    
+    int min() {
+        return stk2.empty() ? INT32_MAX : stk2.top();
+    }
+};
+```
+
+<br>
+
+---------------------------
+##### 剑指 Offer 31. 栈的压入、弹出序列
+>题目描述:输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如，序列 {1,2,3,4,5} 是某栈的压栈序列，序列 {4,5,3,2,1} 是该压栈序列对应的一个弹出序列，但 {4,3,5,1,2} 就不可能是该压栈序列的弹出序列。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof
+
+解题思路：遍历弹栈序列，并设置辅助栈，保证每一次循环都能够进行弹栈即可，若无法弹栈，那么就将压栈序列挨个入栈。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {
+        std::stack<int> stk;
+        int idx = 0;
+        for (int i = 0; i < popped.size(); i++)
+        {
+            while (stk.empty() || stk.top()!=popped[i])
+            {
+                if (idx == pushed.size())
+                    return false;
+                stk.push(pushed[idx++]);
+            }
+            stk.pop();
+        }
+        return true;
+    }
+};
+```
+
+<br>
+
 
 ---------------------------
 ##### 20.有效的括号

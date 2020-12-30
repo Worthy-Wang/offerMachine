@@ -312,44 +312,42 @@ public:
 ```cpp
 class Solution {
 public:
-ListNode *quickSort(ListNode *head)
-{
-    if (!head || !head->next)
-        return head;
-    int key = head->val;
-    ListNode ldummy(-1), rdummy(-1);
-    ListNode *ltail = &ldummy, *rtail = &rdummy; //将链表左右分割
-    for (auto p = head; p; p = p->next)
+    ListNode* quickSort(ListNode* head)
     {
-        if (p->val < key)
+        if (!head)
+            return nullptr;
+        ListNode ldummy(-1), rdummy(-1);
+        ListNode* ltail = &ldummy, *rtail = &rdummy;
+        for (auto cur = head; cur; cur = cur->next)
         {
-            ltail->next = p;
-            ltail = p;
+            if (cur->val < head->val)
+            {
+                ltail->next = cur;
+                ltail = cur;
+            }else
+            {
+                rtail->next = cur;
+                rtail = cur;
+            }
         }
-        else
-        {
-            rtail->next = p;
-            rtail = p;
-        }
-    }
-    ltail->next = nullptr, rtail->next = nullptr;
+        ltail->next = nullptr, rtail->next = nullptr;
 
-    ListNode *newRightHead = quickSort(head->next);
-    ListNode *newleftHead = quickSort(ldummy.next);
-    if (newleftHead)
-    {
-        auto p = newleftHead;
-        while (p->next)
-                p = p->next;
-        p->next = head;
-        head->next = newRightHead;
-        return newleftHead;
+        ListNode* newRight = quickSort(head->next);
+        head->next = newRight;
+        ListNode* newLeft = quickSort(ldummy.next);
+
+        ListNode dummy(-1);
+        dummy.next = newLeft;
+        ListNode* tail = &dummy;
+        while (tail->next)
+            tail = tail->next;
+         tail->next = head;
+         return dummy.next;       
     }
-    else
-        return newRightHead;
-}
 
     ListNode* sortList(ListNode* head) {
+        if (!head)
+            return  nullptr;
         return quickSort(head);
     }
 };

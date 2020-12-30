@@ -5,7 +5,6 @@
         - [102.二叉树的层序遍历](#102二叉树的层序遍历)
         - [107.二叉树的层次遍历2](#107二叉树的层次遍历2)
         - [103.二叉树的锯齿形层次遍历](#103二叉树的锯齿形层次遍历)
-        - [99.恢复二叉搜索树](#99恢复二叉搜索树)
         - [100.相同的树](#100相同的树)
         - [101.对称二叉树](#101对称二叉树)
         - [226. 翻转二叉树](#226-翻转二叉树)
@@ -18,9 +17,12 @@
         - [117.充填每个节点的下一个右侧节点指针2](#117充填每个节点的下一个右侧节点指针2)
         - [105.从前序与中序遍历序列构造二叉树](#105从前序与中序遍历序列构造二叉树)
         - [106.从中序与后序遍历序列构造二叉树](#106从中序与后序遍历序列构造二叉树)
+        - [剑指 Offer 33. 二叉搜索树的后序遍历序列](#剑指-offer-33-二叉搜索树的后序遍历序列)
+        - [剑指 Offer 36. 二叉搜索树与双向链表](#剑指-offer-36-二叉搜索树与双向链表)
+        - [98.验证二叉搜索树](#98验证二叉搜索树)
+        - [99.恢复二叉搜索树](#99恢复二叉搜索树)
         - [96.不同的二叉搜索树](#96不同的二叉搜索树)
         - [95.不同的二叉搜索树2](#95不同的二叉搜索树2)
-        - [98.验证二叉搜索树](#98验证二叉搜索树)
         - [108.将有序数组转换为二叉搜索树](#108将有序数组转换为二叉搜索树)
         - [109.有序链表转换二叉搜索树](#109有序链表转换二叉搜索树)
         - [112.路径总和](#112路径总和)
@@ -307,71 +309,6 @@ public:
 };
 
 ```
-
-<br>
-
----------------------------
-##### 99.恢复二叉搜索树
->题目描述:给你二叉搜索树的根节点 root ，该树中的两个节点被错误地交换。请在不改变其结构的情况下，恢复这棵树。
-进阶：使用 O(n) 空间复杂度的解法很容易实现。你能想出一个只使用常数空间的解决方案吗？
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/recover-binary-search-tree
-
-* **解法一**
-
-解题思路：暴力法，直接进行中序遍历存放在数组中，该题目就变成了 在递增数组中寻找交换位置的两个数 的问题了。找到这两个数之后，再次中序遍历树，标记好节点进行交换。 
-如何在递增数组中找到交换位置的两个数？找出升序数组中的交换位置（假设为x与y）：只需要进行一次遍历，如果只有一个逆序对，那么位置x在前，y在后；假设有两个逆序对，那么对y进行修改在后面的那个即可。
- 
-时间复杂度：O(N)
-
-空间复杂度：O(N)
-
-
-* **解法二**
-
-解题思路：在暴力法的基础上进行改进，不用建立数组，而是在中序遍历的过程中直接用两个指针进行指向即可。遍历过程中仍然是可能会出现一个逆序对或者两个逆序对的情况。
-
-时间复杂度：O(N)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-    TreeNode* x= nullptr;
-    TreeNode* y = nullptr;
-    TreeNode* pre = nullptr;
-public:
-    void DFS(TreeNode* root)
-    {
-        if (!root)
-            return;
-        DFS(root->left);
-        if (!pre)
-            pre = root;
-        else
-        {
-            if (pre->val > root->val)
-            {
-                y = root;
-                if (!x)
-                    x = pre;
-            }
-            pre = root;
-        }
-        DFS(root->right);
-    }
-
-    void recoverTree(TreeNode* root) {
-        if (!root)
-            return;
-        DFS(root);
-        swap(x->val, y->val);
-    }
-};
-
-```
-
 
 <br>
 
@@ -907,6 +844,220 @@ public:
 
 <br>
 
+
+
+---------------------------
+##### 剑指 Offer 33. 二叉搜索树的后序遍历序列
+>题目描述:输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历结果。如果是则返回 true，否则返回 false。假设输入的数组的任意两个数字都互不相同。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof
+
+解题思路：后序遍历结果为 左右根， 二叉搜索树的性质则是 左边小于根， 右边大于根，可以先分别找到 左子树 右子树 根 的分界线，然后再进行递归判断。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    bool ans = true;
+public:
+    void DFS(vector<int>& postorder, int l, int r)
+    {
+        if (l <= r)
+        {
+            int root = postorder[r];
+            int mid = r-1;
+            while (mid>=l && postorder[mid]>root)
+                mid--;
+            for (int i = mid; i >= l; i--)
+                if (postorder[i] > root)
+                {
+                    ans = false;
+                    return;
+                }
+            DFS(postorder, l, mid);
+            DFS(postorder, mid+1, r-1);
+        }
+    }
+
+    bool verifyPostorder(vector<int>& postorder) {
+        if (postorder.empty())
+            return true;
+        DFS(postorder, 0, postorder.size()-1);
+        return ans;
+    }
+};
+```
+
+<br>
+
+
+
+---------------------------
+##### 剑指 Offer 36. 二叉搜索树与双向链表
+>题目描述:输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的循环双向链表。要求不能创建任何新的节点，只能调整树中节点指针的指向。
+我们希望将这个二叉搜索树转化为双向循环链表。链表中的每个节点都有一个前驱和后继指针。对于双向循环链表，第一个节点的前驱是最后一个节点，最后一个节点的后继是第一个节点。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof
+
+解题思路：中序遍历
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    Node* head = nullptr;
+    Node* pre = nullptr;
+public:
+    void DFS(Node* root)
+    {
+        if (!root)
+            return;
+        DFS(root->left);
+        if (!head)
+        {
+            head = root;
+            pre = head;
+        }
+        else
+        {
+            pre->right = root;
+            root->left = pre;
+            pre = root;
+        }
+        DFS(root->right);
+    }
+
+    Node* treeToDoublyList(Node* root) {
+        if (!root)
+            return nullptr;
+        DFS(root);
+        pre->right = head;
+        head->left = pre;
+        return head;
+    }
+};
+
+```
+
+<br>
+
+
+
+---------------------------
+##### 98.验证二叉搜索树
+>题目描述:
+给定一个二叉树，判断其是否是一个有效的二叉搜索树。
+假设一个二叉搜索树具有如下特征：
+节点的左子树只包含小于当前节点的数。
+节点的右子树只包含大于当前节点的数。
+所有左子树和右子树自身必须也是二叉搜索树。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/validate-binary-search-tree
+
+解题思路：根据BST的性质可知中序遍历的结果递增，直接中序遍历判断即可
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    TreeNode* pre = nullptr;
+    bool flag = true;
+public:
+    void  Inorder(TreeNode* root)
+    {
+        if (!root)
+            return;
+        Inorder(root->left);
+        if (!pre)
+            pre = root;
+        else
+        {
+            if (pre->val >= root->val)
+            {
+                flag = false;
+                return;
+            }
+            pre = root;
+        }
+        Inorder(root->right);
+    }
+
+    bool isValidBST(TreeNode* root) {
+        if (!root)
+            return true;
+        Inorder(root);
+        return flag;
+    }
+};
+
+```
+
+<br>
+
+
+
+---------------------------
+##### 99.恢复二叉搜索树
+>题目描述:给你二叉搜索树的根节点 root ，该树中的两个节点被错误地交换。请在不改变其结构的情况下，恢复这棵树。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/recover-binary-search-tree
+
+
+解题思路：在中序遍历的过程中直接用两个指针进行指向即可。遍历过程中仍然是可能会出现一个逆序对或者两个逆序对的情况。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    TreeNode* x= nullptr;
+    TreeNode* y = nullptr;
+    TreeNode* pre = nullptr;
+public:
+    void DFS(TreeNode* root)
+    {
+        if (!root)
+            return;
+        DFS(root->left);
+        if (!pre)
+            pre = root;
+        else
+        {
+            if (pre->val > root->val)
+            {
+                y = root;
+                if (!x)
+                    x = pre;
+            }
+            pre = root;
+        }
+        DFS(root->right);
+    }
+
+    void recoverTree(TreeNode* root) {
+        if (!root)
+            return;
+        DFS(root);
+        swap(x->val, y->val);
+    }
+};
+
+```
+
+
+<br>
+
 ---------------------------
 ##### 96.不同的二叉搜索树
 >题目描述:给定一个整数 n，求以 1 ... n 为节点组成的二叉搜索树有多少种？
@@ -954,16 +1105,15 @@ public:
 ---------------------------
 ##### 95.不同的二叉搜索树2
 >题目描述:给定一个整数 n，生成所有由 1 ... n 为节点所组成的 二叉搜索树 。
- 
 
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/unique-binary-search-trees-ii
 
 解题思路：递归创建法，for循环遍历i， 以i为中心，再向左右递归创建左右子树，然后将得到的左右子树数组，分别拼接到i的左右。
 
-时间复杂度：O(N^2)
+时间复杂度：O()
 
-空间复杂度：O(N)
+空间复杂度：O()
 
 ```cpp
 class Solution {
@@ -1003,62 +1153,11 @@ public:
 
 <br>
 
----------------------------
-##### 98.验证二叉搜索树
->题目描述:
-给定一个二叉树，判断其是否是一个有效的二叉搜索树。
-假设一个二叉搜索树具有如下特征：
-节点的左子树只包含小于当前节点的数。
-节点的右子树只包含大于当前节点的数。
-所有左子树和右子树自身必须也是二叉搜索树。
-
-解题思路：根据BST的性质可知中序遍历的结果递增，直接中序遍历判断即可
-
-时间复杂度：O(N)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-    TreeNode* pre = nullptr;
-    bool flag = true;
-public:
-    void  Inorder(TreeNode* root)
-    {
-        if (!root)
-            return;
-        Inorder(root->left);
-        if (!pre)
-            pre = root;
-        else
-        {
-            if (pre->val >= root->val)
-            {
-                flag = false;
-                return;
-            }
-            pre = root;
-        }
-        Inorder(root->right);
-    }
-
-    bool isValidBST(TreeNode* root) {
-        if (!root)
-            return true;
-        Inorder(root);
-        return flag;
-    }
-};
-
-```
-
-<br>
 
 ---------------------------
 ##### 108.将有序数组转换为二叉搜索树
 >题目描述:将一个按照升序排列的有序数组，转换为一棵高度平衡二叉搜索树。
 本题中，一个高度平衡二叉树是指一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1。
-
 
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree
@@ -1232,7 +1331,7 @@ public:
 <br>
 
 ---------------------------
-##### 437.路径总合3
+##### 437.路径总合3         
 >题目描述:给定一个二叉树，它的每个结点都存放着一个整数值。
 找出路径和等于给定数值的路径总数。
 路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
@@ -1280,6 +1379,7 @@ public:
 ##### 124.二叉树中的最大路径和
 >题目描述:给定一个非空二叉树，返回其最大路径和。
 本题中，路径被定义为一条从树中任意节点出发，沿父节点-子节点连接，达到任意节点的序列。该路径至少包含一个节点，且不一定经过根节点。
+注意：左子树->根->右子树 也算是路径。
 
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/binary-tree-maximum-path-sum
