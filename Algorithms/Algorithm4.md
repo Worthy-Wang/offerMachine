@@ -17,6 +17,7 @@
         - [117.充填每个节点的下一个右侧节点指针2](#117充填每个节点的下一个右侧节点指针2)
         - [105.从前序与中序遍历序列构造二叉树](#105从前序与中序遍历序列构造二叉树)
         - [106.从中序与后序遍历序列构造二叉树](#106从中序与后序遍历序列构造二叉树)
+        - [297. 二叉树的序列化与反序列化](#297-二叉树的序列化与反序列化)
         - [剑指 Offer 33. 二叉搜索树的后序遍历序列](#剑指-offer-33-二叉搜索树的后序遍历序列)
         - [剑指 Offer 36. 二叉搜索树与双向链表](#剑指-offer-36-二叉搜索树与双向链表)
         - [98.验证二叉搜索树](#98验证二叉搜索树)
@@ -786,6 +787,7 @@ public:
 
 <br>
 
+
 ---------------------------
 ##### 106.从中序与后序遍历序列构造二叉树
 >题目描述:根据一棵树的中序遍历与后序遍历构造二叉树。
@@ -837,6 +839,77 @@ public:
         reverse(postorder.begin(), postorder.end());
         int i = 0, l = 0, r = inorder.size()-1;
         return build(postorder, i, inorder, l, r, hashmap);
+    }
+};
+
+```
+
+<br>
+
+
+
+---------------------------
+##### 297. 二叉树的序列化与反序列化
+>题目描述:序列化是将一个数据结构或者对象转换为连续的比特位的操作，进而可以将转换后的数据存储在一个文件或者内存中，同时也可以通过网络传输到另一个计算机环境，采取相反方式重构得到原数据。
+请设计一个算法来实现二叉树的序列化与反序列化。这里不限定你的序列 / 反序列化算法执行逻辑，你只需要保证一个二叉树可以被序列化为一个字符串并且将这个字符串反序列化为原始的树结构。
+说明: 不要使用类的成员 / 全局 / 静态变量来存储状态，你的序列化和反序列化算法应该是无状态的。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree
+
+解题思路：将树转化为string时，前序遍历，保留树节点的值，null用 # 代表；将string创建树时，同样适用前序遍历创建
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Codec {
+public:
+    void DFS(TreeNode* root, stringstream& ss)
+    {
+        if (!root)
+        {
+            ss << "# ";
+            return;
+        }
+
+        ss << root->val << " ";
+        DFS(root->left, ss);
+        DFS(root->right, ss);
+    }
+
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        if (!root)
+            return string();
+        stringstream ss;
+        DFS(root, ss);
+        return ss.str();    
+    }
+
+    TreeNode* build(stringstream& ss)
+    {
+        string s;
+        ss >> s;
+        if (s == "#")
+            return nullptr;
+        else 
+        {
+            int val = stoi(s);
+            TreeNode* node = new TreeNode(val);
+            node->left = build(ss);
+            node->right = build(ss);
+            return node;
+        }
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        if (data.empty()) 
+            return nullptr;
+        stringstream ss(data);
+        return build(ss);    
     }
 };
 

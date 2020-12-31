@@ -1,13 +1,14 @@
 - [七.暴力枚举专题](#七暴力枚举专题)
         - [78.子集](#78子集)
         - [90.子集2](#90子集2)
+        - [77.组合](#77组合)
         - [46.全排列](#46全排列)
         - [47.全排列2](#47全排列2)
-        - [77.组合](#77组合)
         - [17.电话号码的字母组合](#17电话号码的字母组合)
 
 
 # 七.暴力枚举专题
+
 
 ---------------------------
 ##### 78.子集 
@@ -98,6 +99,56 @@ public:
 ```
 
 <br>
+
+
+
+---------------------------
+##### 77.组合
+>题目描述:给定两个整数 n 和 k，返回 1 ... n 中所有可能的 k 个数的组合。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/combinations
+
+解题思路：DFS，该题与全排列的不同之处在于组合的数字要求递增，那么也就是在DFS中需要设置起始位start，并不断往后回溯。
+
+时间复杂度：O()
+
+空间复杂度：O()
+
+```cpp
+class Solution {
+   vector<vector<int>> ans;
+public:
+    void DFS(int n, int k, int start, vector<int>& path)
+    {
+        if (path.size() == k)
+        {
+            ans.push_back(path);
+            return;
+        }
+
+        for (int i = start; i <= n; i++ )
+        {
+            path.push_back(i);
+            DFS(n, k, i+1, path);
+            path.pop_back();
+        }
+    }
+
+
+    vector<vector<int>> combine(int n, int k) {
+        if (n<=0 || k<=0)
+            return {};
+        vector<int> path;
+        DFS(n, k, 1, path);
+        return ans;
+    }
+};
+
+```
+
+<br>
+
 
 
 ---------------------------
@@ -194,53 +245,6 @@ public:
         sort(nums.begin(), nums.end(), std::less<int>());
         vector<int> path, visited(nums.size(), 0);
         DFS(nums, path, visited);
-        return ans;
-    }
-};
-
-```
-
-<br>
-
----------------------------
-##### 77.组合
->题目描述:给定两个整数 n 和 k，返回 1 ... n 中所有可能的 k 个数的组合。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/combinations
-
-解题思路：DFS，该题与全排列的不同之处在于组合的数字要求递增，那么也就是在DFS中需要设置起始位start，并不断往后回溯。
-
-时间复杂度：O()
-
-空间复杂度：O()
-
-```cpp
-class Solution {
-   vector<vector<int>> ans;
-public:
-    void DFS(int n, int k, int start, vector<int>& path)
-    {
-        if (path.size() == k)
-        {
-            ans.push_back(path);
-            return;
-        }
-
-        for (int i = start; i <= n; i++ )
-        {
-            path.push_back(i);
-            DFS(n, k, i+1, path);
-            path.pop_back();
-        }
-    }
-
-
-    vector<vector<int>> combine(int n, int k) {
-        if (n<=0 || k<=0)
-            return {};
-        vector<int> path;
-        DFS(n, k, 1, path);
         return ans;
     }
 };

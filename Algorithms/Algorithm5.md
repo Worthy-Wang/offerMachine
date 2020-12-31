@@ -247,15 +247,15 @@ public:
     ListNode* findMid(ListNode* head)
     {
         ListNode* s = head, *f = head;
-        while (f)
+        while(1)
         {
-            if (!f->next || !f->next->next)
+            if (!f || !f->next || !f->next->next)
                 return s;
             s = s->next;
             f = f->next->next;
         }
         return s;
-    }
+    }    
 
     ListNode* merge(ListNode* l1, ListNode* l2)
     {
@@ -268,8 +268,7 @@ public:
                 tail->next = l1;
                 tail = l1;
                 l1 = l1->next;
-            }
-            else 
+            }else
             {
                 tail->next = l2;
                 tail = l2;
@@ -287,18 +286,17 @@ public:
     {
         if (!head || !head->next)
             return head;
-        ListNode* ltail = findMid(head), *rHead = ltail->next;
-        ltail->next = nullptr; //左右两边断开
-        ListNode* newLhead = mergeSort(head);
-        ListNode* newRhead = mergeSort(rHead);
-        return merge(newLhead, newRhead);
-    }    
+        ListNode* mid = findMid(head);
+        ListNode* l2 = mergeSort(mid->next);
+        mid->next = nullptr;
+        ListNode* l1 = mergeSort(head);
+        return merge(l1, l2);
+    }
 
     ListNode* sortList(ListNode* head) {
         return mergeSort(head);
     }
 };
-
 ```
 
 * **解法二**
@@ -350,8 +348,39 @@ public:
             return  nullptr;
         return quickSort(head);
     }
-};
+};  
 
+```
+
+* **解法三**
+
+解题思路：冒泡排序，不过这里的排序只交换了数值，没有交换节点。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        if (!head || !head->next)
+            return head;
+        ListNode* end = nullptr;
+        while (head->next != end)
+        {
+            ListNode* cur = head;
+            while (cur->next != end)
+            {
+                if (cur->val > cur->next->val)
+                    swap(cur->val, cur->next->val);
+                cur = cur->next;
+            }
+            end = cur;
+        }
+        return head;
+    }
+};
 
 ```
 
