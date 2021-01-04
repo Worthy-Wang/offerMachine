@@ -3,6 +3,10 @@
         - [9.回文数](#9回文数)
         - [56.合并区间](#56合并区间)
         - [57.插入区间](#57插入区间)
+        - [14.最长公共前缀](#14最长公共前缀)
+        - [5.最长回文子串](#5最长回文子串)
+        - [3.无重复字符的最长子串](#3无重复字符的最长子串)
+        - [128.最长连续序列](#128最长连续序列)
         - [76.最小覆盖子串](#76最小覆盖子串)
         - [415.字符串相加](#415字符串相加)
         - [43.字符串相乘](#43字符串相乘)
@@ -173,6 +177,242 @@ public:
 };
 
 ```
+
+<br>
+
+
+-----------------------------
+##### 14.最长公共前缀
+>题目描述：编写一个函数来查找字符串数组中的最长公共前缀。
+如果不存在公共前缀，返回空字符串 ""。
+说明:
+所有输入只包含小写字母 a-z 。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-common-prefix
+
+解题思路：由于字符串数组也是一个M行N列的数组，那么直接按照列进行遍历即可，平均情况是O(k*M),k为前缀长度，最差的情况是O(M*N)。
+
+时间复杂度：O(M)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    string longestCommonPrefix(vector<string>& strs) {
+        if (strs.empty())
+            return string();
+        int j = 0;
+        for (; j < strs[0].size(); j++)
+            for (int i = 0; i < strs.size(); i++)
+                if (strs[i][j] != strs[0][j])
+                    return strs[0].substr(0, j);
+        return strs[0];
+    }
+};
+```
+
+<br>
+
+-----------------------------
+##### 5.最长回文子串
+>题目描述：给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-palindromic-substring
+
+* **解法一**
+
+解题思路：暴力法，用两层for循环O(N^2)，再使用一层for循环判断是否为回文。
+
+时间复杂度：O(N^3)
+
+空间复杂度：O(1)
+
+* **解法二**
+
+解题思路：动态规划，dp[i][j],i代表起始位置，j代表结束位置。二维动态数组只需要填充右上部分，并且是从左往右一列一列的填充。
+状态转移方程：dp[i][j] = (s[i]==s[j] && dp[i+1][j-1])
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N^2)
+
+```cpp
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        int maxLen = 0;
+        pair<int,int> res;
+        int N = s.size();
+        vector<vector<int>> dp(N, vector<int>(N, 0));
+        for (int j = 0; j < N; j++)
+        {
+            for (int i = 0; i <= j; i++)
+            {
+                if (i == j)
+                    dp[i][j] = 1;
+                else if(j-i==1 || j-i==2)
+                    dp[i][j] = (s[i]==s[j]);
+                else
+                    dp[i][j] = (dp[i+1][j-1]&&s[i]==s[j]);
+                
+                if (dp[i][j] && maxLen<j-i+1)
+                {
+                    maxLen = j-i+1;
+                    res.first = i, res.second = j;
+                }
+            }
+        } 
+        int i = res.first, j = res.second;
+        return s.substr(i, j-i+1);
+    }
+};
+
+```
+
+
+* **解法三**
+
+解题思路：中心扩展法，以一个for循环遍历元素，该元素作为回文子串的中心左右两边扩散。注意需要区分最长回文的子串有奇数个还是偶数个。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        if (s.empty())
+            return string();
+        string ans;
+        int maxLen = 0;
+        for (int i = 0; i < s.size(); i++)
+        {
+            //回文串字符数为奇数
+            int l = i, r = i;
+            while (0<=l&&r<s.size() && s[l]==s[r])
+                l--, r++;
+            if (r-l-1 > maxLen)
+            {
+                maxLen = r - l - 1;
+                ans = s.substr(l+1, maxLen);
+            }
+
+            //回文串字符数为偶数
+            l = i, r = i+1;
+            while (0<=l&&r<s.size() && s[l]==s[r])
+                l--, r++;
+            if (r-l-1 > maxLen)
+            {
+                maxLen = r - l - 1;
+                ans = s.substr(l+1, maxLen);
+            }
+        }
+        return ans;
+    }
+};
+
+```
+
+
+<br>
+
+
+
+---------------------------
+##### 3.无重复字符的最长子串
+>题目描述:给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
+s 由英文字母、数字、符号和空格组成
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-substring-without-repeating-characters
+
+解题思路：滑动窗口法，用双指针模拟deque，创建辅助哈希set，双指针指向的范围存放的便是子串，进行一次遍历即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        if (s.empty())
+            return 0;
+        int ans = 0;
+        int i = 0, j = 0;
+        unordered_set<char> hashset;
+        while(j < s.size())
+        {
+            if (hashset.count(s[j]))
+            {
+                while (hashset.count(s[j]))
+                {
+                    hashset.erase(s[i]);
+                    i++;
+                }
+            }
+            hashset.insert(s[j]);
+            ans = std::max(ans, j-i+1);
+            j++;
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+--------------------------
+##### 128.最长连续序列
+>题目描述：给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+要求：你可以设计并实现时间复杂度为 O(n) 的解决方案吗？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-consecutive-sequence
+
+
+解题思路：并查集，下标代表该数字，元素代表从该数字出发能够到达的位置；
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+    unordered_map<int,int> union_find; //并查集
+public:
+    int find(int x)
+    {
+        if (union_find.count(x))
+        {
+            union_find[x] = find(union_find[x]);
+            return union_find[x];
+        }
+        else
+            return x;
+    }
+
+    int longestConsecutive(vector<int>& nums) {
+        for (auto& e: nums)
+            union_find[e-1] = e;
+        int ans = 0;
+        for (auto& e: nums)
+        {
+            union_find[e-1] = find(e);
+            ans = std::max(ans, union_find[e-1]-(e-1));
+        }
+        return ans;
+    }
+};
+
+```
+
 
 <br>
 

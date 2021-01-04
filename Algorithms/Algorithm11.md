@@ -4,7 +4,6 @@
         - [121.买卖股票的最佳时机](#121买卖股票的最佳时机)
         - [122.买卖股票的最佳时机2](#122买卖股票的最佳时机2)
         - [123.买卖股票的最佳时机3](#123买卖股票的最佳时机3)
-        - [3.无重复字符的最长子串](#3无重复字符的最长子串)
         - [11.盛最多水的容器](#11盛最多水的容器)
 
 
@@ -205,50 +204,6 @@ public:
 
 
 
----------------------------
-##### 3.无重复字符的最长子串
->题目描述:给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
-s 由英文字母、数字、符号和空格组成
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/longest-substring-without-repeating-characters
-
-解题思路：滑动窗口法，用双指针模拟deque，创建辅助哈希set，双指针指向的范围存放的便是子串，进行一次遍历即可。
-
-时间复杂度：O(N)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-public:
-    int lengthOfLongestSubstring(string s) {
-        int l = 0, r = 0, ans = 0;
-        unordered_set<char> hashset;
-        while (r < s.size())
-        {
-            if (hashset.count(s[r]))
-            {
-                while (s[l] != s[r])
-                {
-                    hashset.erase(s[l]);
-                    l++;
-                }
-                l++, r++;
-            }else
-            {
-                hashset.insert(s[r]);
-                r++;
-            }
-            ans = std::max(ans, r-l);
-        }   
-        return ans;
-    }
-};
-
-```
-
-<br>
 
 
 

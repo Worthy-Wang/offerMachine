@@ -2,8 +2,8 @@
     - [线性表专题：数组系列](#线性表专题数组系列)
         - [26.删除排序数组中的重复项](#26删除排序数组中的重复项)
         - [80.删除排序数组中的重复项2](#80删除排序数组中的重复项2)
+        - [剑指 Offer 39. 数组中出现次数超过一半的数字](#剑指-offer-39-数组中出现次数超过一半的数字)
         - [4.寻找两个正序数组的中位数](#4寻找两个正序数组的中位数)
-        - [128.最长连续序列](#128最长连续序列)
         - [1.两数之和](#1两数之和)
         - [15.三数之和](#15三数之和)
         - [16.最接近的三数之和](#16最接近的三数之和)
@@ -156,6 +156,57 @@ public:
 
 <br>
 
+
+
+---------------------------
+##### 剑指 Offer 39. 数组中出现次数超过一半的数字
+>题目描述:数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。
+你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof
+
+解题思路：投票法，只需要进行一次遍历即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int majorityElement(vector<int>& nums) {
+        if (nums.empty())
+            return -1;
+        pair<int,int> pairs; //数字，得票
+        pairs.first = nums[0], pairs.second = 1;
+        for (int i = 1; i < nums.size(); i++)
+        {
+            if (nums[i] == pairs.first)
+                pairs.second++;
+            else
+            {
+                pairs.second--;
+                if (0 == pairs.second)
+                {
+                    pairs.first = nums[i];
+                    pairs.second = 1;
+                }
+            }
+        }
+        int cnt = 0;
+        for (auto& e: nums)
+            if (e == pairs.first)
+                cnt++;
+        return cnt>=(double)nums.size()/2 ? pairs.first : -1;
+    }
+};
+
+```
+
+<br>
+
+
 --------------------------
 ##### 4.寻找两个正序数组的中位数
 >题目描述：给定两个大小为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的中位数。
@@ -217,82 +268,7 @@ public:
 
 <br>
 
-----
-##### 128.最长连续序列
->题目描述：给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
-要求：你可以设计并实现时间复杂度为 O(n) 的解决方案吗？
 
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/longest-consecutive-sequence
-
-* **解法一**
-
-解题思路：并查集，下标代表该数字，元素代表从该数字出发能够到达的位置；
-
-时间复杂度：O(N)
-
-空间复杂度：O(N)
-
-
-```cpp
-class Solution {
-    unordered_map<int,int> union_find; 
-public:
-    int find(int x)
-    {
-        return union_find.count(x) ? union_find[x]=find(union_find[x]) :  x;
-    }
-
-    int longestConsecutive(vector<int>& nums) {
-        if (nums.empty())
-            return 0;
-        for(auto& e: nums)
-            union_find[e] = e + 1;
-        
-        int Max = INT32_MIN;
-        for(auto& beg: nums)
-        {
-            int end = find(beg+1);
-            Max = std::max(end-beg, Max);
-        }
-        return Max;
-    }
-};
-
-```
-
-* **解法二**
-
-解题思路：采用常规遍历+哈希表方法，相比于第一种的并查集方法，该方法会超出时间限制，原因是有了大量的重复计算操作
-
-时间复杂度：O(N)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-public:
-    int longestConsecutive(vector<int>& nums) {
-        if (nums.empty())
-            return 0;
-        unordered_map<int,int> hashmap;
-        for(auto& i : nums)
-            hashmap[i] = i;
-        int Max = INT32_MIN;
-        for(auto i: nums)
-        {
-            int cnt = 1;
-            while (hashmap.count(++i))
-                cnt++;
-            Max = std::max(Max, cnt);
-        }
-        return Max;
-    }
-};
-
-```
-
-<br>
 
 ------------------------------
 ##### 1.两数之和

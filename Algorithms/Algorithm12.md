@@ -1,4 +1,8 @@
 - [十二.动态规划专题](#十二动态规划专题)
+        - [62.不同路径](#62不同路径)
+        - [63.不同路径2](#63不同路径2)
+        - [剑指 Offer 13. 机器人的运动范围](#剑指-offer-13-机器人的运动范围)
+        - [剑指 Offer 47. 礼物的最大价值](#剑指-offer-47-礼物的最大价值)
         - [120.三角形最小路径和](#120三角形最小路径和)
         - [343. 整数拆分](#343-整数拆分)
         - [53.最大子序和](#53最大子序和)
@@ -16,6 +20,188 @@
 
 
 # 十二.动态规划专题
+
+
+---------------------------
+##### 62.不同路径
+>题目描述:一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为 “Start” ）。
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+问总共有多少条不同的路径？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/unique-paths
+
+解题思路：动态规划，dp[i][j] = dp[i-1][j] + dp[i][j-1] ，将dp数组的第一行与第一列都设置为1
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(M*N)
+
+```cpp
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        for (int i = 0; i < m; i++)
+            dp[i][0] = 1;
+        for (int j = 0; j < n; j++)
+            dp[0][j] = 1;
+        for (int i = 1; i < m; i++)
+            for (int j = 1; j < n; j++)
+                dp[i][j] = dp[i-1][j] + dp[i][j-1];
+        return dp[m-1][n-1];
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 63.不同路径2
+>题目描述:一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为“Start” ）。
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。
+现在考虑网格中有障碍物。那么从左上角到右下角将会有多少条不同的路径？
+网格中的障碍物和空位置分别用 1 和 0 来表示。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/unique-paths-ii
+
+解题思路：仍然用上一题的dp动态规划法，将有障碍物的地方dp[i][j]=0即可，另外第一行与第一列在遇到障碍物之前dp为1，遇到之后为0
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(M*N)
+
+```cpp
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        if (obstacleGrid.empty())
+            return 0;
+        int m = obstacleGrid.size(), n = obstacleGrid[0].size();
+        vector<vector<int>> dp(m, vector<int>(n, 1));
+        for (int i = 0; i < m; i++)
+            if (1 == obstacleGrid[i][0])
+            {
+                for (int k = i; k < m; k++)
+                    dp[k][0] = 0;
+                break;
+            }
+        for (int j = 0; j < n; j++)
+            if (1 == obstacleGrid[0][j])
+            {
+                for (int k = j; k < n; k++)
+                    dp[0][k] = 0; 
+                break;
+            }
+        for (int i = 1; i < m; i++)
+            for (int j = 1; j < n; j++)
+            {
+                if (1 == obstacleGrid[i][j])
+                    dp[i][j] = 0;
+                else
+                    dp[i][j] = dp[i-1][j] + dp[i][j-1];
+            }
+        return dp[m-1][n-1];
+    }
+};
+
+```
+
+<br>
+
+
+
+---------------------------------------------
+##### 剑指 Offer 13. 机器人的运动范围
+>题目描述:地上有一个m行n列的方格，从坐标 [0,0] 到坐标 [m-1,n-1] 。一个机器人从坐标 [0, 0] 的格子开始移动，它每次可以向左、右、上、下移动一格（不能移动到方格外），也不能进入行坐标和列坐标的数位之和大于k的格子。例如，当k为18时，机器人能够进入方格 [35, 37] ，因为3+5+3+7=18。但它不能进入方格 [35, 38]，因为3+5+3+8=19。请问该机器人能够到达多少个格子？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof
+
+解题思路：DFS，机器人相当于只能向下或者向右走，需要设置visited数组保存走过的路径，注意不需要回溯。
+
+时间复杂度：O(M*N* 3^K) K是数字的位数
+
+空间复杂度：O(M*N)
+
+```cpp
+class Solution {
+    int ans = 0;
+public:
+    int count(int num)
+    {
+        int ans = 0;
+        while (num)
+        {
+            ans += num % 10;
+            num /= 10;
+        }
+        return ans;
+    }
+
+    void DFS(int m, int n, int i, int j, int k, vector<vector<int>>& visited)
+    {
+        if (i>=m || j>=n || count(i)+count(j)>k || visited[i][j])
+            return;
+        ans++;
+        visited[i][j] = 1;
+        DFS(m, n, i+1, j, k, visited);
+        DFS(m, n, i, j+1, k, visited);
+    }
+
+    int movingCount(int m, int n, int k) {
+        if (m<=0 || n<=0 || k<0)
+            return 0;
+        vector<vector<int>> visited(m, vector<int>(n, 0));
+        DFS(m, n, 0, 0, k, visited);
+        return ans;
+    }
+};
+```
+
+<br>
+
+---------------------------
+##### 剑指 Offer 47. 礼物的最大价值
+>题目描述:在一个 m*n 的棋盘的每一格都放有一个礼物，每个礼物都有一定的价值（价值大于 0）。你可以从棋盘的左上角开始拿格子里的礼物，并每次向右或者向下移动一格、直到到达棋盘的右下角。给定一个棋盘及其上面的礼物的价值，请计算你最多能拿到多少价值的礼物？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/li-wu-de-zui-da-jie-zhi-lcof
+
+解题思路：动态规划 dp[i][j] = std::max(dp[i-1][j],dp[i][j-1]) + grid[i][j], 该题也可以直接在原数组上进行修改。
+
+时间复杂度：O(M * N)
+
+空间复杂度：O(M * N)
+
+```cpp
+class Solution {
+public:
+    int maxValue(vector<vector<int>>& grid) {
+        if (grid.empty())
+            return 0;
+        int m = grid.size(), n = grid[0].size(), ans = 0;
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        dp[0][0] = grid[0][0];
+        
+        for (int j = 1; j < n; j++)
+            dp[0][j] = grid[0][j] + dp[0][j-1];
+        for (int i = 1; i < m; i++)
+            dp[i][0] = grid[i][0] + dp[i-1][0];
+        for (int i = 1; i < m; i++)
+            for (int j = 1; j < n; j++)
+                dp[i][j] = std::max(dp[i-1][j], dp[i][j-1]) + grid[i][j];
+        return dp[m-1][n-1];
+    }
+};
+
+```
+
+<br>
+
 
 ---------------------------
 ##### 120.三角形最小路径和
@@ -498,45 +684,44 @@ s 只包含数字，并且可能包含前导零。
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/decode-ways
 
-解题思路：动态规划，先处理遇到 00 10 20 30 的情况
+解题思路：动态规划，先处理遇到 00 10 20 30 ... 的情况，这几种情况中只有 10 20 是合法的。
 
 时间复杂度：O(N)
 
-空间复杂度：O(N)
+空间复杂度：O(1)
 
 ```cpp
 class Solution {
 public:
     int numDecodings(string s) {
-        if (s.empty() || s[0]=='0')
+        if (s.empty() || '0' == s[0])
             return 0;
-        int n = s.size();
-        unordered_map<int,int> dp;
-        dp[-1] = 1, dp[0] = 1;
-        for (int i = 1; i < n; i++)
+        int dp0 = 1, dp1 = 1, dp2 = 1;
+        for (int i = 1; i < s.size(); i++)
         {
-            int num = stoi(s.substr(i-1,2));
-            if ('0' == s[i]) // 00 10 20 30 40...
+            if ('0' == s[i])
             {
-                if (s[i-1]=='0' || s[i-1]>='3')
+                if ('1'==s[i-1] || '2'==s[i-1])
+                    dp2 = dp0;
+                else
                     return 0;
-                else 
-                    dp[i] = dp[i-2];
+            }else
+            {
+                if (('2'==s[i-1]&&'1'<=s[i]&&s[i]<='6') || ('1'==s[i-1]))
+                    dp2 = dp1 + dp0;
+                else
+                    dp2 = dp1;
             }
-            else if (11<=num && num<= 26) // 11~26 
-                dp[i] = dp[i-1] + dp[i-2];
-            else //27 28...
-                dp[i] = dp[i-1];
+            dp0 = dp1;
+            dp1 = dp2;
         }
-        return dp[n-1];
+        return dp2;
     }
 };
 
 ```
 
 <br>
-
-
 
 
 
@@ -548,32 +733,29 @@ public:
 链接：https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof
 
 解题思路：动态规划，该题 相较于上一题更为简单，因为0可以直接翻译。
-0~9 : dp[i] = dp[i-1];
-10~25: dp[i] = dp[i-1] + dp[i-2];
-26~... : dp[i] = dp[i-1];
+
 
 时间复杂度：O(N)
 
-空间复杂度：O(N)
+空间复杂度：O(1)
 
 ```cpp
 class Solution {
 public:
     int translateNum(int num) {
-        string s = to_string(num);
-        int n = s.size();
-        unordered_map<int,int> dp;
-        dp[-1] = 1, dp[0] = 1;
-        for (int i = 1; i < n ; i++)
+        int dp0 = 1, dp1 = 1, dp2 = 1;
+        string s(to_string(num));
+        for (int i = 1; i < s.size(); i++)
         {
-            if ('0' == s[i-1]) // 0~9
-                dp[i] = dp[i-1];
-            else if ('1'==s[i-1] || ('2'==s[i-1]&&'0'<=s[i]&&s[i]<='5')) // 10~25
-                dp[i] = dp[i-1] + dp[i-2];
-            else //26...
-                dp[i] = dp[i-1];
-        }
-        return dp[n-1];
+            int x = stoi(s.substr(i-1, 2));
+            if (10<=x && x<=25)
+                dp2 = dp1 + dp0;
+            else
+                dp2 = dp1;
+            dp0 = dp1;
+            dp1 = dp2;
+        }        
+        return dp2;
     }
 };
 
