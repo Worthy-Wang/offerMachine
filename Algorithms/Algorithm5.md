@@ -1,51 +1,74 @@
-- [五.排序专题](#五排序专题)
-        - [88.合并两个有序数组](#88合并两个有序数组)
-        - [21.合并两个有序链表](#21合并两个有序链表)
-        - [23.合并K个升序链表](#23合并k个升序链表)
-        - [147.对链表进行插入排序](#147对链表进行插入排序)
-        - [148.排序链表](#148排序链表)
-        - [75.颜色分类](#75颜色分类)
-        - [剑指 Offer 40. 最小的k个数](#剑指-offer-40-最小的k个数)
-        - [剑指 Offer 41. 数据流中的中位数](#剑指-offer-41-数据流中的中位数)
-        - [剑指 Offer 45. 把数组排成最小的数](#剑指-offer-45-把数组排成最小的数)
+- [五.树专题](#五树专题)
+        - [144.二叉树的前序遍历](#144二叉树的前序遍历)
+        - [94.二叉树的中序遍历](#94二叉树的中序遍历)
+        - [145.二叉树的后序遍历](#145二叉树的后序遍历)
+        - [102.二叉树的层序遍历](#102二叉树的层序遍历)
+        - [107.二叉树的层次遍历2](#107二叉树的层次遍历2)
+        - [103.二叉树的锯齿形层次遍历](#103二叉树的锯齿形层次遍历)
+        - [100.相同的树](#100相同的树)
+        - [101.对称二叉树](#101对称二叉树)
+        - [226. 翻转二叉树](#226-翻转二叉树)
+        - [剑指 Offer 26. 树的子结构](#剑指-offer-26-树的子结构)
+        - [110.平衡二叉树](#110平衡二叉树)
+        - [111.二叉树的最小深度](#111二叉树的最小深度)
+        - [104.二叉树的最大深度](#104二叉树的最大深度)
+        - [114.二叉树展开为链表](#114二叉树展开为链表)
+        - [116.充填每个节点的下一个右侧节点指针](#116充填每个节点的下一个右侧节点指针)
+        - [117.充填每个节点的下一个右侧节点指针2](#117充填每个节点的下一个右侧节点指针2)
+        - [105.从前序与中序遍历序列构造二叉树](#105从前序与中序遍历序列构造二叉树)
+        - [106.从中序与后序遍历序列构造二叉树](#106从中序与后序遍历序列构造二叉树)
+        - [297. 二叉树的序列化与反序列化](#297-二叉树的序列化与反序列化)
+        - [剑指 Offer 33. 二叉搜索树的后序遍历序列](#剑指-offer-33-二叉搜索树的后序遍历序列)
+        - [剑指 Offer 36. 二叉搜索树与双向链表](#剑指-offer-36-二叉搜索树与双向链表)
+        - [剑指 Offer 54. 二叉搜索树的第k大节点](#剑指-offer-54-二叉搜索树的第k大节点)
+        - [98.验证二叉搜索树](#98验证二叉搜索树)
+        - [99.恢复二叉搜索树](#99恢复二叉搜索树)
+        - [96.不同的二叉搜索树](#96不同的二叉搜索树)
+        - [95.不同的二叉搜索树2](#95不同的二叉搜索树2)
+        - [108.将有序数组转换为二叉搜索树](#108将有序数组转换为二叉搜索树)
+        - [109.有序链表转换二叉搜索树](#109有序链表转换二叉搜索树)
+        - [112.路径总和](#112路径总和)
+        - [113.路径总合2](#113路径总合2)
+        - [437.路径总合3](#437路径总合3)
+        - [124.二叉树中的最大路径和](#124二叉树中的最大路径和)
+        - [129.求根到叶子节点数字之和](#129求根到叶子节点数字之和)
 
 
 
-# 五.排序专题
+# 五.树专题
 
 ---------------------------
-##### 88.合并两个有序数组
+##### 144.二叉树的前序遍历
 >题目描述:
-给你两个有序整数数组 nums1 和 nums2，请你将 nums2 合并到 nums1 中，使 nums1 成为一个有序数组。
-说明：
-初始化 nums1 和 nums2 的元素数量分别为 m 和 n 。
-你可以假设 nums1 有足够的空间（空间大小大于或等于 m + n）来保存 nums2 中的元素。
+给你二叉树的根节点 root ，返回它节点值的 前序 遍历。进阶：递归算法很简单，你可以通过迭代算法完成吗？
  
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/merge-sorted-array
+链接：https://leetcode-cn.com/problems/binary-tree-preorder-traversal
 
-解题思路：双指针，两个指针从后往前移动即可。
+解题思路：用辅助栈来模拟递归，顺序为 根弹栈->右子树入栈->左子树入栈，在弹栈时执行打印操作。
 
-时间复杂度：O(M+N)
+时间复杂度：O(N)
 
-空间复杂度：O(1)
+空间复杂度：O(N)
 
 ```cpp
 class Solution {
 public:
-    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
-        int i = m-1, j = n-1, k = m+n-1;
-        while (0<=i && 0<=j)
+    vector<int> preorderTraversal(TreeNode* root) {
+        if (!root)
+            return {};
+        vector<int> ans;
+        std::stack<TreeNode*> stk;
+        stk.push(root);
+        while (!stk.empty())
         {
-            if (nums1[i] >= nums2[j])
-                nums1[k--] = nums1[i--];
-            else
-                nums1[k--] = nums2[j--];
+            TreeNode* node = stk.top();
+            stk.pop();
+            ans.push_back(node->val);
+            if (node->right) stk.push(node->right);
+            if (node->left) stk.push(node->left);
         }
-        while (0 <= i)
-            nums1[k--] = nums1[i--];
-        while (0 <= j)
-            nums1[k--] = nums2[j--];
+        return ans;
     }
 };
 
@@ -55,44 +78,43 @@ public:
 
 
 ---------------------------
-##### 21.合并两个有序链表
->题目描述:将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+##### 94.二叉树的中序遍历
+>题目描述：给定一个二叉树的根节点 root ，返回它的 中序 遍历。要求使用非递归法。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/merge-two-sorted-lists
+链接：https://leetcode-cn.com/problems/binary-tree-inorder-traversal
 
-解题思路：双指针法创建。
+解题思路：中序遍历的方法与 前序遍历，后续遍历不同，中序遍历在一开始需要从根节点开始，一直向左子树移动并入栈， 然后 弹栈->进入右子树->不断向左子树移动并入栈  执行该操作，直到栈为空才停止。
 
-时间复杂度：O(M+N)
+时间复杂度：O(N)
 
-空间复杂度：O(1)
+空间复杂度：O(N)
 
 ```cpp
 class Solution {
 public:
-    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
-        ListNode dummy(-1);
-        ListNode* tail = &dummy;
-        while (l1 && l2)
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> ans;
+        std::stack<TreeNode*> stk;
+        while  (root)
         {
-            if (l1->val <= l2->val)
+            stk.push(root);
+            root = root->left;
+        }
+        while (!stk.empty())
+        {
+            TreeNode* node = stk.top();
+            stk.pop();
+            ans.push_back(node->val);
+            
+            node = node->right;
+            while(node)
             {
-                tail->next = l1;
-                tail = l1;
-                l1 = l1->next;
-            }
-            else 
-            {
-                tail->next = l2;
-                tail = l2;
-                l2 = l2->next;
+                stk.push(node);
+                node = node->left;
             }
         }
-        if (l1)
-            tail->next = l1;
-        if (l2)
-            tail->next = l2;
-        return dummy.next;
+        return ans; 
     }
 };
 
@@ -102,124 +124,483 @@ public:
 
 
 ---------------------------
-##### 23.合并K个升序链表
->题目描述:给你一个链表数组，每个链表都已经按升序排列。
-请你将所有链表合并到一个升序链表中，返回合并后的链表。
+##### 145.二叉树的后序遍历
+>题目描述:给定一个二叉树，返回它的 后序 遍历。
+进阶: 递归算法很简单，你可以通过迭代算法完成吗？
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/merge-k-sorted-lists
+链接：https://leetcode-cn.com/problems/binary-tree-postorder-traversal
 
-* **解法一**
+解题思路：该题的解题方法可以直接套用 二叉树的前序遍历， 前序遍历的结构为 根左右，后序遍历的结构为 左右根，那么我们可以先求 根右左，再翻转即可。求 根右左 的方法就跟 前序遍历 的方法类似了。
 
-解题思路：用一个for循环，将链表数组中的所有链表都依次按照 两个升序链表合并 的方法进行合并。
+时间复杂度：O(N)
 
-时间复杂度：O(N + 2N + 3N +  .. + KN) ~= O(K^2 * N) N为链表的平均长度，K为链表的个数
-
-空间复杂度：O(1)
-
-
-* **解法二**
-
-解题思路：在解法一中进行优化，不断的两两归并链表直到只剩下最后一个链表。实质上也就是归并排序的链表处理法。
-
-时间复杂度：O(K*N*logK) N为链表的平均长度， K为链表的个数
-
-空间复杂度：O(logK) 
+空间复杂度：O(N)
 
 ```cpp
- class Solution {
+class Solution {
 public:
-    ListNode* merge(ListNode* l1, ListNode* l2)
-    {
-        ListNode dummy(-1);
-        ListNode* tail = &dummy;
-        while (l1 && l2)
+    vector<int> postorderTraversal(TreeNode* root) {
+        if (!root)
+            return {};
+        vector<int> ans;
+        std::stack<TreeNode*> stk;
+        stk.push(root);
+        while (!stk.empty())
         {
-            if (l1->val <= l2->val)
-            {
-                tail->next = l1;
-                tail = l1;
-                l1 = l1->next;
-            }
-            else 
-            {
-                tail->next = l2;
-                tail = l2;
-                l2 = l2->next;
-            }
+            TreeNode* node = stk.top();
+            stk.pop();
+            ans.push_back(node->val);
+            if (node->left) stk.push(node->left);
+            if (node->right) stk.push(node->right);
         }
-        if (l1)
-            tail->next = l1;
-        if (l2)
-            tail->next = l2;
-        return dummy.next;
+        reverse(ans.begin(), ans.end());
+        return ans;
     }
+};
 
-    ListNode* mergeSort(vector<ListNode*>& lists, int l, int r)
-    {
-        if (l == r)
-            return lists[l];
-        else if (l > r)
-            return nullptr;
+```
+
+<br>
+
+
+---------------------------
+##### 102.二叉树的层序遍历
+>题目描述:给你一个二叉树，请你返回其按 层序遍历 得到的节点值。 （即逐层地，从左到右访问所有节点）。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/binary-tree-level-order-traversal
+
+解题思路：调用辅助队列，每一次都将队列中的节点出队并将其左右子树重新入队，直到队列为空
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        if (!root)
+            return {};
+        std::queue<TreeNode*> que;
+        vector<vector<int>> ans;
+        que.push(root);
+        while (!que.empty())
+        {
+            vector<int> vec;
+            std::queue<TreeNode*> tempQue;
+            while (!que.empty())
+            {
+                TreeNode* node = que.front();
+                que.pop();
+                vec.push_back(node->val);
+                if (node->left) tempQue.push(node->left);
+                if (node->right) tempQue.push(node->right);
+            }
+            swap(tempQue, que);
+            ans.push_back(std::move(vec));
+        }  
+        return ans;
+    }
+};
+
+
+```
+
+<br>
+
+---------------------------
+##### 107.二叉树的层次遍历2
+>题目描述:给定一个二叉树，返回其节点值自底向上的层次遍历。 （即按从叶子节点所在层到根节点所在的层，逐层从左向右遍历）
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii
+
+解题思路：该题是 二叉树的层序遍历 变形题，只需要将 层序遍历的结果进行一次翻转即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> levelOrderBottom(TreeNode* root) {
+        if (!root)
+            return {};
+        std::queue<TreeNode*> que;
+        vector<vector<int>> ans;
+        que.push(root);
+        while (!que.empty())
+        {
+            vector<int> vec;
+            std::queue<TreeNode*> tempQue;
+            while (!que.empty())
+            {
+                TreeNode* node = que.front();
+                que.pop();
+                vec.push_back(node->val);
+                if (node->left) tempQue.push(node->left);
+                if (node->right) tempQue.push(node->right);
+            }
+            swap(tempQue, que);
+            ans.push_back(std::move(vec));
+        }
+        reverse(ans.begin(), ans.end());  
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 103.二叉树的锯齿形层次遍历
+>题目描述:给定一个二叉树，返回其节点值的锯齿形层次遍历。（即先从左往右，再从右往左进行下一层遍历，以此类推，层与层之间交替进行）。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal
+
+解题思路：该题是 二叉树的层序遍历 变形题，只需要每一次重新入队完毕，再各一次进行一次翻转即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
+        if (!root)
+            return {};
+        int cnt = 0;
+        std::queue<TreeNode*> que;
+        vector<vector<int>> ans;
+        que.push(root);
+        while (!que.empty())
+        {
+            vector<int> vec;
+            std::queue<TreeNode*> tempQue;
+            while (!que.empty())
+            {
+                TreeNode* node = que.front();
+                que.pop();
+                vec.push_back(node->val);
+                if (node->left) tempQue.push(node->left);
+                if (node->right) tempQue.push(node->right);
+            }
+            swap(tempQue, que);
+            if (cnt & 0x1)
+                reverse(vec.begin(), vec.end());
+            ans.push_back(std::move(vec));
+            cnt++;
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 100.相同的树
+>题目描述:给定两个二叉树，编写一个函数来检验它们是否相同。
+如果两个树在结构上相同，并且节点具有相同的值，则认为它们是相同的。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/same-tree
+
+解题思路： 两个二叉树同时进行前序遍历，判断 根 && 左 && 右 是否相同。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        if (!p && !q)
+            return true;
+        else if (!p || !q)
+            return false;
         else
-        {
-            int mid = (l + r) >> 1;
-            ListNode* left = mergeSort(lists, l, mid);
-            ListNode* right = mergeSort(lists, mid+1, r);
-            return merge(left, right);
-        }
+            return p->val==q->val && isSameTree(p->left,q->left) && isSameTree(p->right, q->right);
+    }
+};
+```
+
+<br>
+
+---------------------------
+##### 101.对称二叉树
+>题目描述:给定一个二叉树，检查它是否是镜像对称的。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/symmetric-tree
+
+解题思路：递归法，判断A树与B树是否为对称，也就是需要比较A->val==B->val， A->left==B->right， A->right==B->left 判断是否相等即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    bool isSymmetric(TreeNode* A, TreeNode* B)
+    {
+        if (!A && !B)
+            return true;
+        else if (!A || !B)
+            return false;
+        else
+            return A->val==B->val && isSymmetric(A->left, B->right) && isSymmetric(A->right, B->left);
     }
 
-    ListNode* mergeKLists(vector<ListNode*>& lists) {
-        if (lists.empty())
-            return nullptr;
-        int l = 0, r = lists.size()-1;
-        return mergeSort(lists, l, r);
+    bool isSymmetric(TreeNode* root) {
+        if (!root)
+            return true;
+        return isSymmetric(root->left, root->right);
     }
 };
 
 ```
 
-
 <br>
 
 
+
 ---------------------------
-##### 147.对链表进行插入排序
->题目描述:对链表进行插入排序。
+##### 226. 翻转二叉树
+>题目描述:翻转一棵二叉树。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/insertion-sort-list
+链接：https://leetcode-cn.com/problems/invert-binary-tree
 
-解题思路：插入排序的链表版
+解题思路：后续遍历翻转即可
 
-时间复杂度：O(N^2)
+时间复杂度：O(N)
 
 空间复杂度：O(1)
 
 ```cpp
 class Solution {
 public:
-    ListNode* insertionSortList(ListNode* head) {
-        ListNode dummy(-1);
-        ListNode* cur = head;
+    TreeNode* invertTree(TreeNode* root) {
+        if (!root)
+            return nullptr;
+        invertTree(root->left);
+        invertTree(root->right);
+        swap(root->left, root->right);
+        return root;
+    }
+};
+
+
+```
+
+<br>
+
+
+------------------------------
+##### 剑指 Offer 26. 树的子结构
+>题目描述:输入两棵二叉树A和B，判断B是不是A的子结构。(约定空树不是任意一个树的子结构)
+B是A的子结构， 即 A中有出现和B相同的结构和节点值。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/shu-de-zi-jie-gou-lcof
+
+解题思路：两棵二叉树同时进行递归，只要能将B的所有节点匹配完成即可。
+
+时间复杂度：O(M*N) M是A的节点数，N是B的节点数
+
+空间复杂度：O(M) 最坏的退化成链表的情况也就是M，M一定大于N
+
+```cpp
+class Solution {
+public:
+    bool isSame(TreeNode* A, TreeNode* B)
+    {
+        if (!B) return true;
+        if (!A) return false;
+        return A->val==B->val && isSame(A->left, B->left) && isSame(A->right, B->right);
+    }
+
+    bool isSubStructure(TreeNode* A, TreeNode* B) {
+        if (!A || !B) return false;
+        return isSame(A, B) || isSubStructure(A->left, B) || isSubStructure(A->right, B);
+    }
+};
+```
+
+<br>
+
+
+---------------------------
+##### 110.平衡二叉树
+>题目描述:给定一个二叉树，判断它是否是高度平衡的二叉树。
+本题中，一棵高度平衡二叉树定义为：
+一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/balanced-binary-tree
+
+解题思路：后序遍历的方法，递归函数返回的是树的高度，分别得到左子树与右子树的高度，并计算差的绝对值判断是否平衡。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    bool ans = true;
+public:
+    int DFS(TreeNode* root)
+    {
+        if (!root)
+            return 0;
+        int l = DFS(root->left);
+        int r = DFS(root->right);
+        if (abs(l-r)>1)
+            ans = false;
+        return std::max(l, r) + 1;
+    }
+
+    bool isBalanced(TreeNode* root) {
+        if (!root)
+            return true;
+        DFS(root);
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 111.二叉树的最小深度
+>题目描述:给定一个二叉树，找出其最小深度。
+最小深度是从根节点到最近叶子节点的最短路径上的节点数量。
+说明：叶子节点是指没有子节点的节点。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/minimum-depth-of-binary-tree
+
+
+解题思路：DFS前序遍历找出所有的叶子节点并比较所在高度。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    int ans = INT32_MAX;
+public:
+    void DFS(TreeNode* root, int level)
+    {
+        if (!root)
+            return;
+        if (!root->left && !root->right)
+        {
+            ans = std::min(ans, level);
+            return;
+        }
+        DFS(root->left, level+1);
+        DFS(root->right, level+1);
+    }
+
+    int minDepth(TreeNode* root) {
+        if (!root)
+            return 0;
+        DFS(root, 1);
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 104.二叉树的最大深度
+>题目描述:给定一个二叉树，找出其最大深度。
+二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+说明: 叶子节点是指没有子节点的节点。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/maximum-depth-of-binary-tree
+
+解题思路：最大深度也就是高度，可以直接用后序遍历计算。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution
+{
+public:
+    int maxDepth(TreeNode *root)
+    {
+        if (!root)
+            return 0;
+        return std::max(maxDepth(root->left), maxDepth(root->right)) + 1;
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 114.二叉树展开为链表
+>题目描述:给定一个二叉树，原地将它展开为一个单链表。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list
+
+解题思路：1.将右子树连接到左子树的右边最后一个节点右边； 2.左子树转移到右子树 3.向右子树移动。 循环该过程
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    void flatten(TreeNode* root) {
+        TreeNode* pre = nullptr, *next = nullptr, *cur = root;
         while (cur)
         {
-            ListNode* t = cur->next;
-
-            ListNode *p = &dummy;
-            while (p->next)
+            if (cur->left)
             {
-                if (p->next->val >= cur->val)
-                    break;
-                p = p->next;
-            }
-            cur->next = p->next;
-            p->next = cur;
-
-            cur = t;
+                pre = cur->left;
+                while (pre->right)
+                    pre = pre->right;
+                pre->right = cur->right;
+                next = cur->left;
+                cur->left = nullptr;
+                cur->right = next;
+            }   
+            cur = cur->right;    
         }
-        return dummy.next;
+        
     }
 };
 
@@ -228,397 +609,510 @@ public:
 <br>
 
 ---------------------------
-##### 148.排序链表
->题目描述:给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+##### 116.充填每个节点的下一个右侧节点指针
+>题目描述:给定一个 完美二叉树 ，其所有叶子节点都在同一层，每个父节点都有两个子节点。二叉树定义如下：
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+初始状态下，所有 next 指针都被设置为 NULL。
 进阶：
-你可以在 O(n log n) 时间复杂度和常数级空间复杂度下，对链表进行排序吗？
- 
+你只能使用常量级额外空间。
+使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
+
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/sort-list
+链接：https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node
 
-* **解法一**
+解题思路：利用已经创建好的next指针，不断右移，将左右子树的next指针迭代填充。每一次cur指针只负责连接left指针和right指针（如果有）的next，如果没由下一层的话，那么就直接返回。
 
-解题思路：归并排序，需要通过快慢指针找到节点的中间位置。
-
-时间复杂度：O(NlogN)
-
-空间复杂度：O(logN)
-
-```cpp
-class Solution {
-public:
-    ListNode* findMid(ListNode* head)
-    {
-        ListNode* s = head, *f = head;
-        while(1)
-        {
-            if (!f || !f->next || !f->next->next)
-                return s;
-            s = s->next;
-            f = f->next->next;
-        }
-        return s;
-    }    
-
-    ListNode* merge(ListNode* l1, ListNode* l2)
-    {
-        ListNode dummy(-1);
-        ListNode* tail = &dummy;
-        while (l1 && l2)
-        {
-            if (l1->val <= l2->val)
-            {
-                tail->next = l1;
-                tail = l1;
-                l1 = l1->next;
-            }else
-            {
-                tail->next = l2;
-                tail = l2;
-                l2 = l2->next;
-            }
-        }
-        if (l1)
-            tail->next = l1;
-        if (l2)
-            tail->next = l2;
-        return dummy.next;
-    }
-
-    ListNode* mergeSort(ListNode* head)
-    {
-        if (!head || !head->next)
-            return head;
-        ListNode* mid = findMid(head);
-        ListNode* l2 = mergeSort(mid->next);
-        mid->next = nullptr;
-        ListNode* l1 = mergeSort(head);
-        return merge(l1, l2);
-    }
-
-    ListNode* sortList(ListNode* head) {
-        return mergeSort(head);
-    }
-};
-```
-
-* **解法二**
-
-解题思路：快速排序，找parition分割点时，需要用两个临时节点连接左右链表，左边的链表比key值小，右边的链表比key值大。
-
-时间复杂度：O(NlogN)
-
-空间复杂度：O(logN)
-
-```cpp
-class Solution {
-public:
-    ListNode* quickSort(ListNode* head)
-    {
-        if (!head)
-            return nullptr;
-        ListNode ldummy(-1), rdummy(-1);
-        ListNode* ltail = &ldummy, *rtail = &rdummy;
-        for (auto cur = head; cur; cur = cur->next)
-        {
-            if (cur->val < head->val)
-            {
-                ltail->next = cur;
-                ltail = cur;
-            }else
-            {
-                rtail->next = cur;
-                rtail = cur;
-            }
-        }
-        ltail->next = nullptr, rtail->next = nullptr;
-
-        ListNode* newRight = quickSort(head->next);
-        head->next = newRight;
-        ListNode* newLeft = quickSort(ldummy.next);
-
-        ListNode dummy(-1);
-        dummy.next = newLeft;
-        ListNode* tail = &dummy;
-        while (tail->next)
-            tail = tail->next;
-         tail->next = head;
-         return dummy.next;       
-    }
-
-    ListNode* sortList(ListNode* head) {
-        if (!head)
-            return  nullptr;
-        return quickSort(head);
-    }
-};  
-
-```
-
-* **解法三**
-
-解题思路：冒泡排序，不过这里的排序只交换了数值，没有交换节点。
-
-时间复杂度：O(N^2)
+时间复杂度：O(N)
 
 空间复杂度：O(1)
 
 ```cpp
 class Solution {
 public:
-    ListNode* sortList(ListNode* head) {
-        if (!head || !head->next)
-            return head;
-        ListNode* end = nullptr;
-        while (head->next != end)
+    Node* connect(Node* root) {
+        if (!root)
+            return nullptr;
+        Node* cur = root;
+        while (cur)
         {
-            ListNode* cur = head;
-            while (cur->next != end)
+            Node* nextLevel = cur->left;
+            if (!nextLevel)
+                break;
+            while (cur)
             {
-                if (cur->val > cur->next->val)
-                    swap(cur->val, cur->next->val);
+                cur->left->next = cur->right;
+                if (cur->next)
+                    cur->right->next = cur->next->left;
                 cur = cur->next;
             }
-            end = cur;
+            cur = nextLevel;
         }
+        return root;
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 117.充填每个节点的下一个右侧节点指针2
+>题目描述:给定一个二叉树
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+初始状态下，所有 next 指针都被设置为 NULL。
+进阶：
+你只能使用常量级额外空间。
+使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node-ii
+
+解题思路：该题将完美二叉树改成了普通的二叉树，只需要在上一题的基础上添加更多的条件判断即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    Node* connect(Node* root) {
+        if (!root)
+            return nullptr;
+        Node* cur = root;
+        while (cur)
+        {
+            Node* nextLevel = nullptr, *pre = nullptr;
+            while (cur)
+            {
+                if (cur->left)
+                {
+                    if (!nextLevel) nextLevel = cur->left;
+                    if (!pre)
+                        pre = cur->left;
+                    else
+                    {
+                        pre->next = cur->left;
+                        pre = cur->left;
+                    }
+                }
+                if (cur->right)
+                {
+                    if (!nextLevel) nextLevel = cur->right;
+                    if (!pre)
+                        pre = cur->right;
+                    else
+                    {
+                        pre->next = cur->right;
+                        pre = cur->right;
+                    }
+                }
+                cur = cur->next;
+            }
+            cur = nextLevel;
+        }
+        return root;
+    }
+};
+
+```
+
+<br>
+
+------------------------------
+##### 105.从前序与中序遍历序列构造二叉树
+>题目描述：根据一棵树的前序遍历与中序遍历构造二叉树。
+注意:
+你可以假设树中没有重复的元素。
+例如，给出
+前序遍历 preorder = [3,9,20,15,7]
+中序遍历 inorder = [9,3,15,20,7]
+返回如下的二叉树：
+    3
+   / \
+  9  20
+    /  \
+   15   7
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal
+
+解题思路：前序遍历的元素存放的是根节点，代表了根节点创建的顺序；前序遍历的元素同样也可以将中序遍历分成左右子树，其中需要规定左右子树的范围，如果范围越界则说明左子树或者右子树为空。其中需要创建一个哈希表记录 前序遍历 的元素 在中序遍历 中的下标。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    TreeNode*  build(vector<int>& nums, int& i, vector<int>& inorder, int l, int r, unordered_map<int,int>& hashmap)
+    {
+        if (l <= r)
+        {
+            int value = nums[i++];
+            TreeNode* node = new TreeNode(value);
+            int mid = hashmap[value];
+            node->left = build(nums, i, inorder, l, mid-1, hashmap);
+            node->right = build(nums, i, inorder, mid+1, r, hashmap);
+            return node;
+        }
+        else
+            return nullptr;
+    }
+
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        if (inorder.empty())
+            return nullptr;
+        unordered_map<int,int> hashmap;
+        for (int i = 0; i < inorder.size(); i++)
+            hashmap[inorder[i]] = i;
+        int i = 0, l = 0, r = inorder.size()-1;
+        return build(preorder, i, inorder, l, r, hashmap);
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 106.从中序与后序遍历序列构造二叉树
+>题目描述:根据一棵树的中序遍历与后序遍历构造二叉树。
+注意:
+你可以假设树中没有重复的元素。
+例如，给出
+中序遍历 inorder = [9,3,15,20,7]
+后序遍历 postorder = [9,15,7,20,3]
+返回如下的二叉树：
+    3
+   / \
+  9  20
+    /  \
+   15   7
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal
+
+解题思路：该方法实质上与上一题相同，可以先将后序遍历翻转变成 根->右->左 的结构，然后仍然是将其作为 中序遍历 划分左右子树的依据，按照 根 左 右 的顺序创建即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    TreeNode*  build(vector<int>& nums, int& i, vector<int>& inorder, int l, int r, unordered_map<int,int>& hashmap)
+    {
+        if (l <= r)
+        {
+            int value = nums[i++];
+            TreeNode* node = new TreeNode(value);
+            int mid = hashmap[value];
+            node->right = build(nums, i, inorder, mid+1, r, hashmap);
+            node->left = build(nums, i, inorder, l, mid-1, hashmap);
+            return node;
+        }
+        else
+            return nullptr;
+    }
+
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        if (inorder.empty())
+            return nullptr;
+        unordered_map<int,int> hashmap;
+        for (int i = 0; i < inorder.size(); i++)
+            hashmap[inorder[i]] = i;
+        reverse(postorder.begin(), postorder.end());
+        int i = 0, l = 0, r = inorder.size()-1;
+        return build(postorder, i, inorder, l, r, hashmap);
+    }
+};
+
+```
+
+<br>
+
+
+
+---------------------------
+##### 297. 二叉树的序列化与反序列化
+>题目描述:序列化是将一个数据结构或者对象转换为连续的比特位的操作，进而可以将转换后的数据存储在一个文件或者内存中，同时也可以通过网络传输到另一个计算机环境，采取相反方式重构得到原数据。
+请设计一个算法来实现二叉树的序列化与反序列化。这里不限定你的序列 / 反序列化算法执行逻辑，你只需要保证一个二叉树可以被序列化为一个字符串并且将这个字符串反序列化为原始的树结构。
+说明: 不要使用类的成员 / 全局 / 静态变量来存储状态，你的序列化和反序列化算法应该是无状态的。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree
+
+解题思路：将树转化为string时，前序遍历，保留树节点的值，null用 # 代表；将string创建树时，同样适用前序遍历创建
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Codec {
+public:
+    void DFS(TreeNode* root, stringstream& ss)
+    {
+        if (!root)
+        {
+            ss << "# ";
+            return;
+        }
+
+        ss << root->val << " ";
+        DFS(root->left, ss);
+        DFS(root->right, ss);
+    }
+
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        if (!root)
+            return string();
+        stringstream ss;
+        DFS(root, ss);
+        return ss.str();    
+    }
+
+    TreeNode* build(stringstream& ss)
+    {
+        string s;
+        ss >> s;
+        if (s == "#")
+            return nullptr;
+        else 
+        {
+            int val = stoi(s);
+            TreeNode* node = new TreeNode(val);
+            node->left = build(ss);
+            node->right = build(ss);
+            return node;
+        }
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        if (data.empty()) 
+            return nullptr;
+        stringstream ss(data);
+        return build(ss);    
+    }
+};
+
+```
+
+<br>
+
+
+
+---------------------------
+##### 剑指 Offer 33. 二叉搜索树的后序遍历序列
+>题目描述:输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历结果。如果是则返回 true，否则返回 false。假设输入的数组的任意两个数字都互不相同。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof
+
+解题思路：后序遍历结果为 左右根， 二叉搜索树的性质则是 左边小于根， 右边大于根，可以先分别找到 左子树 右子树 根 的分界线，然后再进行递归判断。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    bool ans = true;
+public:
+    void DFS(vector<int>& postorder, int l, int r)
+    {
+        if (l <= r)
+        {
+            int root = postorder[r];
+            int mid = r-1;
+            while (mid>=l && postorder[mid]>root)
+                mid--;
+            for (int i = mid; i >= l; i--)
+                if (postorder[i] > root)
+                {
+                    ans = false;
+                    return;
+                }
+            DFS(postorder, l, mid);
+            DFS(postorder, mid+1, r-1);
+        }
+    }
+
+    bool verifyPostorder(vector<int>& postorder) {
+        if (postorder.empty())
+            return true;
+        DFS(postorder, 0, postorder.size()-1);
+        return ans;
+    }
+};
+```
+
+<br>
+
+
+
+---------------------------
+##### 剑指 Offer 36. 二叉搜索树与双向链表
+>题目描述:输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的循环双向链表。要求不能创建任何新的节点，只能调整树中节点指针的指向。
+我们希望将这个二叉搜索树转化为双向循环链表。链表中的每个节点都有一个前驱和后继指针。对于双向循环链表，第一个节点的前驱是最后一个节点，最后一个节点的后继是第一个节点。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof
+
+解题思路：中序遍历
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    Node* head = nullptr;
+    Node* pre = nullptr;
+public:
+    void DFS(Node* root)
+    {
+        if (!root)
+            return;
+        DFS(root->left);
+        if (!head)
+        {
+            head = root;
+            pre = head;
+        }
+        else
+        {
+            pre->right = root;
+            root->left = pre;
+            pre = root;
+        }
+        DFS(root->right);
+    }
+
+    Node* treeToDoublyList(Node* root) {
+        if (!root)
+            return nullptr;
+        DFS(root);
+        pre->right = head;
+        head->left = pre;
         return head;
     }
 };
 
 ```
 
-
 <br>
 
 
 ---------------------------
-##### 75.颜色分类
->题目描述:给定一个包含红色、白色和蓝色，一共 n 个元素的数组，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
-此题中，我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
-进阶：
-你可以不使用代码库中的排序函数来解决这道题吗？
-你能想出一个仅使用常数空间的一趟扫描算法吗？
+##### 剑指 Offer 54. 二叉搜索树的第k大节点
+>题目描述:给定一棵二叉搜索树，请找出其中第k大的节点。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/sort-colors
+链接：https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof
 
-
-解题思路：双指针法，设置快慢指针执行两次，每一次分别在慢指针出处安置好 0, 1 这三个数。
+解题思路：右 根 左 顺序遍历二叉搜索树
 
 时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    void sortColors(vector<int>& nums) {
-        int i = 0, j = 0;
-        for (int j = 0; j < nums.size(); j++)
-            if (0 == nums[j])
-                swap(nums[i++], nums[j]);
-        for (int j = i; j < nums.size(); j++)
-            if (1 == nums[j])
-                swap(nums[i++], nums[j]);
-    }
-};
-
-
-
-```
-
-<br>
-
-
-
----------------------------
-##### 剑指 Offer 40. 最小的k个数
->题目描述:输入整数数组 arr ，找出其中最小的 k 个数。例如，输入4、5、1、6、2、7、3、8这8个数字，则最小的4个数字是1、2、3、4。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof
-
-* **解法一**
-
-解题思路：该题为经典的topk算法题，解法一使用快速排序法。
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    int partition(vector<int>& nums, int l, int r)
-    {
-        int key = nums[l];
-        int i = l, j = r;
-        while (i < j)
-        {
-            while (i<j && nums[j]>=key) j--;
-            if (i<j) nums[i++] = nums[j];
-            while (i<j && nums[i]<key) i++;
-            if (i<j) nums[j--] = nums[i]; 
-        }
-        nums[i] = key;
-        return i;
-    }
-
-    vector<int> quickSort(vector<int>& nums, int k)
-    {
-        int l = 0, r = nums.size()-1;
-        while (l <= r)
-        {
-            int mid = partition(nums, l, r);
-            if (mid == k-1)
-                return vector<int>(nums.begin(), nums.begin()+k);
-            else if (mid < k-1)
-                l = mid + 1;
-            else 
-                r = mid - 1;
-        }   
-        return {};
-    }
-
-    vector<int> getLeastNumbers(vector<int>& arr, int k) {
-        if (k<=0 || k>arr.size())
-            return {};
-        return quickSort(arr, k);
-    }
-};
-
-```
-
-* **解法二**
-
-解题思路：该题为经典的topk算法题，解法二使用原地的堆排序法。
-
-时间复杂度：O(NlogK)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    void heapAdjust(vector<int>& nums, int beg, int end)
-    {
-        int dad = beg, son = 2 * dad + 1;
-        while (son <= end)
-        {
-            if (son+1<=end && nums[son+1]>=nums[son]) son = son+1;
-            if (nums[dad] >= nums[son]) break;
-            swap(nums[dad], nums[son]);
-            dad = son;
-            son = dad * 2 + 1;
-        }
-    }
-
-    vector<int> heapSort(vector<int>& nums, int pos)
-    {
-        //先创建大小为k的最大堆
-        for (int i = (pos-1)/2; i >= 0; i--)
-            heapAdjust(nums, i, pos);
-        //创建好最大堆之后，将数组后面的元素依次和堆顶进行比较
-        for (int i = pos+1; i<nums.size(); i++)
-            if (nums[i] < nums[0])
-            {
-                swap(nums[0], nums[i]);
-                heapAdjust(nums, 0, pos);
-            }
-        return vector<int>(nums.begin(), nums.begin()+pos+1);
-    }
-
-    vector<int> getLeastNumbers(vector<int>& arr, int k) {
-        if (k<=0 || k>arr.size())
-            return {};
-        return heapSort(arr, k-1);        
-    }
-};
-
-```
-
-* **解法三**
-
-解题思路：该题为经典的topk算法题，解法三使用STL库中的堆法。
-
-时间复杂度：O(NlogK)
-
-空间复杂度：O(K)
-
-```cpp
-class Solution {
-public:
-    vector<int> getLeastNumbers(vector<int>& arr, int k) {
-        if (k<=0 || k>arr.size())
-            return {};
-        std::priority_queue<int, vector<int>, std::less<int>> heap; //最大堆
-        for (int i = 0; i < k; i++)
-            heap.push(arr[i]);
-        for (int i = k; i < arr.size(); i++)
-            if (arr[i] < heap.top())
-            {
-                heap.push(arr[i]);
-                heap.pop();
-            }
-        vector<int> ans;
-        while(!heap.empty())
-        {
-            ans.push_back(heap.top());
-            heap.pop();
-        }
-        return ans;
-    }
-};
-
-```
-
-<br>
-
----------------------------
-##### 剑指 Offer 41. 数据流中的中位数
->题目描述:如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。
-例如，
-[2,3,4] 的中位数是 3
-[2,3] 的中位数是 (2 + 3) / 2 = 2.5
-设计一个支持以下两种操作的数据结构：
-void addNum(int num) - 从数据流中添加一个整数到数据结构中。
-double findMedian() - 返回目前所有元素的中位数。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof
-
-解题思路：设置两个堆，左边为最大堆，右边为最小堆，且保证右边的堆始终比左边的堆大；这也就是说，如果要加入一个数，得先进左边堆，再进右边的堆。
-
-时间复杂度：addNum:O(logN) findMedian:O(1)
 
 空间复杂度：O(N)
 
 ```cpp
-class MedianFinder {
-    std::priority_queue<int, vector<int>, std::less<int>> lheap;//左边的大顶堆
-    std::priority_queue<int, vector<int>, std::greater<int>> rheap;//右边的小顶堆
+class Solution {
+    int ans = 0;
+    int cnt = 0;
 public:
-    /** initialize your data structure here. */
-    MedianFinder() {
-    }
-    
-    void addNum(int num) {
-        lheap.push(num);
-        rheap.push(lheap.top());
-        lheap.pop();
-        if (lheap.size() < rheap.size())
+    void DFS(TreeNode* root, int k)
+    {
+        if (!root)
+            return;
+        DFS(root->right, k);
+        cnt++;
+        if (cnt == k)
         {
-            lheap.push(rheap.top());
-            rheap.pop();
+            ans = root->val;
+            return;
         }
+        DFS(root->left, k);
     }
-    
-    double findMedian() {
-        int n = lheap.size() + rheap.size();
-        if (n & 0x1)
-            return lheap.top();
+
+    int kthLargest(TreeNode* root, int k) {
+        if (!root || k<=0)
+            return -1;
+        DFS(root, k);
+        return ans;
+    }
+};
+```
+
+<br>
+
+
+---------------------------
+##### 98.验证二叉搜索树
+>题目描述:
+给定一个二叉树，判断其是否是一个有效的二叉搜索树。
+假设一个二叉搜索树具有如下特征：
+节点的左子树只包含小于当前节点的数。
+节点的右子树只包含大于当前节点的数。
+所有左子树和右子树自身必须也是二叉搜索树。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/validate-binary-search-tree
+
+解题思路：根据BST的性质可知中序遍历的结果递增，直接中序遍历判断即可
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    TreeNode* pre = nullptr;
+    bool flag = true;
+public:
+    void  Inorder(TreeNode* root)
+    {
+        if (!root)
+            return;
+        Inorder(root->left);
+        if (!pre)
+            pre = root;
         else
-            return (double)(lheap.top()+rheap.top())/2;
+        {
+            if (pre->val >= root->val)
+            {
+                flag = false;
+                return;
+            }
+            pre = root;
+        }
+        Inorder(root->right);
+    }
+
+    bool isValidBST(TreeNode* root) {
+        if (!root)
+            return true;
+        Inorder(root);
+        return flag;
     }
 };
 
@@ -629,30 +1123,322 @@ public:
 
 
 ---------------------------
-##### 剑指 Offer 45. 把数组排成最小的数
->题目描述:输入一个非负整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
-输出结果可能非常大，所以你需要返回一个字符串而不是整数
-拼接起来的数字可能会有前导 0，最后结果不需要去掉前导 0
+##### 99.恢复二叉搜索树
+>题目描述:给你二叉搜索树的根节点 root ，该树中的两个节点被错误地交换。请在不改变其结构的情况下，恢复这棵树。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof
+链接：https://leetcode-cn.com/problems/recover-binary-search-tree
 
-解题思路：自定义排序
 
-时间复杂度：O(NlogN)
+解题思路：在中序遍历的过程中直接用两个指针进行指向即可。遍历过程中仍然是可能会出现一个逆序对或者两个逆序对的情况。
 
-空间复杂度：O(1)
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    TreeNode* x= nullptr;
+    TreeNode* y = nullptr;
+    TreeNode* pre = nullptr;
+public:
+    void DFS(TreeNode* root)
+    {
+        if (!root)
+            return;
+        DFS(root->left);
+        if (!pre)
+            pre = root;
+        else
+        {
+            if (pre->val > root->val)
+            {
+                y = root;
+                if (!x)
+                    x = pre;
+            }
+            pre = root;
+        }
+        DFS(root->right);
+    }
+
+    void recoverTree(TreeNode* root) {
+        if (!root)
+            return;
+        DFS(root);
+        swap(x->val, y->val);
+    }
+};
+
+```
+
+
+<br>
+
+---------------------------
+##### 96.不同的二叉搜索树
+>题目描述:给定一个整数 n，求以 1 ... n 为节点组成的二叉搜索树有多少种？
+示例:
+输入: 3
+输出: 5
+解释:
+给定 n = 3, 一共有 5 种不同结构的二叉搜索树:
+   1         3     3      2      1
+    \       /     /      / \      \
+     3     2     1      1   3      2
+    /     /       \                 \
+   2     1         2                 3
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/unique-binary-search-trees
+
+解题思路：动态规划法，dp[i] 代表长度为i的整数可以构成BST的数量，求解n时，需要从 1 ~ n 作为根，计算出左右两边可能的情况。 1 2 3 4 5
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N)
 
 ```cpp
 class Solution {
 public:
-    string minNumber(vector<int>& nums) {
-        sort(nums.begin(), nums.end(), [&](int lhs, int rhs){
-            return to_string(lhs)+to_string(rhs) < to_string(rhs)+to_string(lhs);
-        });
-        string ans;
-        for (auto& e: nums)
-            ans += to_string(e);
+    int numTrees(int n) {
+        if (0 == n)
+            return 0;
+        if (1 == n)
+            return 1;
+        vector<int> dp(n+1, 0);
+        dp[0] = 1, dp[1] = 1;
+        for (int i = 2; i <= n; i++)
+            for (int j = 1; j <= i; j++)
+                dp[i] += dp[j-1] * dp[i-j];
+        return dp[n];
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 95.不同的二叉搜索树2
+>题目描述:给定一个整数 n，生成所有由 1 ... n 为节点所组成的 二叉搜索树 。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/unique-binary-search-trees-ii
+
+解题思路：递归创建法，for循环遍历i， 以i为中心，再向左右递归创建左右子树，然后将得到的左右子树数组，分别拼接到i的左右。
+
+时间复杂度：O()
+
+空间复杂度：O()
+
+```cpp
+class Solution {
+public:
+    vector<TreeNode*> generateTrees(int l, int r) {
+        if (l <= r)
+        {
+            vector<TreeNode*> ans;
+            for (int k = l; k <= r; k++)
+            { 
+                vector<TreeNode*> left = generateTrees(l, k-1);
+                vector<TreeNode*> right = generateTrees(k+1, r);
+                for (int i = 0; i < left.size(); i++)
+                {
+                    for (int j = 0; j < right.size(); j++)
+                    {
+                        TreeNode* node = new TreeNode(k);
+                        node->left = left[i];
+                        node->right = right[j];
+                        ans.push_back(node);
+                    }
+                }
+            }
+            return ans;
+        }else
+            return vector<TreeNode*>{nullptr};
+    }
+
+    vector<TreeNode*> generateTrees(int n) {
+        if (0 == n)
+            return {};
+        return generateTrees(1, n);
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 108.将有序数组转换为二叉搜索树
+>题目描述:将一个按照升序排列的有序数组，转换为一棵高度平衡二叉搜索树。
+本题中，一个高度平衡二叉树是指一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree
+
+解题思路：不断在升序数组中进行二分递归，就可以保证生成的BST高度平衡。
+
+时间复杂度：O(N)
+
+空间复杂度：O(logN)
+
+```cpp
+class Solution {
+public:
+    TreeNode* build(vector<int>& nums, int l, int r)
+    {
+        if (l <= r)
+        {
+            int mid = (l + r) >> 1;
+            TreeNode* node = new TreeNode(nums[mid]);
+            node->left = build(nums, l, mid-1);
+            node->right = build(nums, mid+1, r);
+            return node;
+        }
+        else
+            return nullptr;
+    }
+
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        if (nums.empty())
+            return nullptr;
+        int l = 0, r = nums.size()-1;
+        return build(nums, l, r);
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 109.有序链表转换二叉搜索树
+>题目描述:给定一个单链表，其中的元素按升序排序，将其转换为高度平衡的二叉搜索树。
+本题中，一个高度平衡二叉树是指一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/convert-sorted-list-to-binary-search-tree
+
+解题思路：该题仍然使用二分递归法创建AVL树，链表的递归使用快慢指针求解。
+
+时间复杂度：O(N)
+
+空间复杂度：O(logN)
+
+```cpp
+class Solution {
+public:
+    ListNode* findMid(ListNode* start, ListNode* end)
+    {
+        if(start==end || start->next==end)
+            return start;
+        ListNode* s = start, *f = start;
+        while (1)
+        {
+            if (f==end || f->next==end)
+                return s;
+            s = s->next;
+            f = f->next->next;
+        }
+    }
+
+    TreeNode* build(ListNode* start, ListNode* end)
+    {
+        if (start==end)
+            return nullptr;
+        ListNode* mid = findMid(start, end);
+        TreeNode* node = new TreeNode(mid->val);
+        node->left = build(start, mid);
+        node->right = build(mid->next, end);
+        return node;
+    }
+
+    TreeNode* sortedListToBST(ListNode* head) {
+        if (!head)
+            return nullptr;
+        return build(head, nullptr);
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 112.路径总和
+>题目描述:给定一个二叉树和一个目标和，判断该树中是否存在根节点到叶子节点的路径，这条路径上所有节点值相加等于目标和。
+说明: 叶子节点是指没有子节点的节点。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/path-sum
+
+解题思路：递归法，遍历到所有的叶子节点并进行判断。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    bool hasPathSum(TreeNode* root, int sum) {
+        if (!root)
+            return false;
+        if (root->val==sum && !root->left && !root->right)
+            return true;
+        return hasPathSum(root->left, sum-root->val) || hasPathSum(root->right, sum-root->val);
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 113.路径总合2
+>题目描述:给定一个二叉树和一个目标和，找到所有从根节点到叶子节点路径总和等于给定目标和的路径。
+说明: 叶子节点是指没有子节点的节点。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/path-sum-ii
+
+解题思路：DFS，用一个path 来记录走过的路径。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    vector<vector<int>> ans;
+public:
+    void DFS(TreeNode* root, int sum, vector<int>& path)
+    {
+        if (!root)
+            return;
+        if (root->val==sum && !root->left && !root->right)
+        {
+            path.push_back(root->val);
+            ans.push_back(path);
+            path.pop_back();
+            return;
+        }
+
+        path.push_back(root->val);
+        DFS(root->left, sum-root->val, path);
+        DFS(root->right, sum-root->val, path);
+        path.pop_back();
+    }
+
+    vector<vector<int>> pathSum(TreeNode* root, int sum) {
+        if (!root)
+            return {};
+        vector<int> path;
+        DFS(root, sum, path);
         return ans;
     }
 };
@@ -661,4 +1447,137 @@ public:
 
 <br>
 
+---------------------------
+##### 437.路径总合3         
+>题目描述:给定一个二叉树，它的每个结点都存放着一个整数值。
+找出路径和等于给定数值的路径总数。
+路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+二叉树不超过1000个节点，且节点数值范围是 [-1000000,1000000] 的整数。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/path-sum-iii
+
+解题思路：遍历整个树的所有节点，以每一个节点为初始起点往下遍历，查看是否有路径总合相等的节点。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    int cnt = 0;
+public:
+    void count(TreeNode* root, int sum)
+    {
+        if (!root)
+            return;
+        if (root->val == sum)
+            cnt++;
+        
+        count(root->left, sum-root->val);
+        count(root->right, sum-root->val);
+    }
+
+    int pathSum(TreeNode* root, int sum) {
+        if (!root)
+            return 0;
+        count(root, sum);
+        pathSum(root->left, sum);
+        pathSum(root->right, sum);
+        return cnt;
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 124.二叉树中的最大路径和
+>题目描述:给定一个非空二叉树，返回其最大路径和。
+本题中，路径被定义为一条从树中任意节点出发，沿父节点-子节点连接，达到任意节点的序列。该路径至少包含一个节点，且不一定经过根节点。
+注意：左子树->根->右子树 也算是路径。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/binary-tree-maximum-path-sum
+
+解题思路：后序遍历的方法，不断将计算出来的结果与保留的最大值进行比较
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    int Max = INT32_MIN;
+public:
+    int DFS(TreeNode* root)
+    {
+        if (!root)
+            return 0;
+        int l = DFS(root->left);
+        int r = DFS(root->right);
+        int subTreeSum = root->val + std::max(l, r);//该节点作为子树的最大贡献值
+        int sum = root->val + l + r; //该节点作为根节点的最大贡献值
+        Max = std::max(Max, sum);
+        return std::max(subTreeSum, 0);
+    }
+
+    int maxPathSum(TreeNode* root) {
+        if (!root)
+            return 0;
+        DFS(root);
+        return Max;
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 129.求根到叶子节点数字之和
+>题目描述:给定一个二叉树，它的每个结点都存放一个 0-9 的数字，每条从根到叶子节点的路径都代表一个数字。
+例如，从根到叶子节点路径 1->2->3 代表数字 123。
+计算从根到叶子节点生成的所有数字之和。
+说明: 叶子节点是指没有子节点的节点。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/sum-root-to-leaf-numbers
+
+解题思路：DFS，遍历整个二叉树并将结果存入sum总合。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    int sum = 0;
+public:
+    void DFS(TreeNode* root, int num)
+    {
+        if (!root)
+            return;
+        if (!root->left && !root->right)
+        {
+            sum += num*10 + root->val;
+            return;
+        }
+
+        DFS(root->left, num*10+root->val);
+        DFS(root->right, num*10+root->val);
+    }
+
+    int sumNumbers(TreeNode* root) {
+        if (!root)
+            return 0;
+        DFS(root, 0);
+        return sum;
+    }
+};
+
+```
+
+<br>
 

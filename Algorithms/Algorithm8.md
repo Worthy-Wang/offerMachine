@@ -1,75 +1,198 @@
-- [八.BFS专题](#八bfs专题)
-        - [127.单词接龙](#127单词接龙)
-        - [126.单词接龙2](#126单词接龙2)
-        - [130.被围绕的区域](#130被围绕的区域)
+- [八.暴力枚举专题](#八暴力枚举专题)
+        - [78.子集](#78子集)
+        - [90.子集2](#90子集2)
+        - [77.组合](#77组合)
+        - [46.全排列](#46全排列)
+        - [47.全排列2](#47全排列2)
+        - [17.电话号码的字母组合](#17电话号码的字母组合)
 
 
-# 八.BFS专题
+# 八.暴力枚举专题
+
 
 ---------------------------
-##### 127.单词接龙
->题目描述:给定两个单词（beginWord 和 endWord）和一个字典，找到从 beginWord 到 endWord 的最短转换序列的长度。转换需遵循如下规则：
-每次转换只能改变一个字母。
-转换过程中的中间单词必须是字典中的单词。
-说明:
-如果不存在这样的转换序列，返回 0。
-所有单词具有相同的长度。
-所有单词只由小写字母组成。
-字典中不存在重复的单词。
-你可以假设 beginWord 和 endWord 是非空的，且二者不相同。
+##### 78.子集 
+>题目描述:给定一组不含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+说明：解集不能包含重复的子集。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/word-ladder
+链接：https://leetcode-cn.com/problems/subsets
 
-解题思路：BFS广度优先遍历，将问题转化为找广度优先遍历树的最小匹配的深度，需要设置visited记录已访问的单词，设置辅助队列执行BFS。
+解题思路：子集的本质是求 组合 ，此题也实质上是 组合 的变形题，用DFS即可。需要求解出所有解。
 
-时间复杂度：
+时间复杂度：O(n* 2^n)，将nums数组的长度看成n，用二进制位的思想组合子集即可算出 时间复杂度
 
-空间复杂度：
+空间复杂度：O(N)
 
 ```cpp
 class Solution {
+    vector<vector<int>> ans;
 public:
-    bool compare(string& s1, string& s2)
+    void DFS(vector<int>& nums, int start, vector<int>& path)
     {
-        int diff = 0;
-        for (int i = 0; i < s1.size(); i++)
-            if (s1[i] != s2[i])
-                diff++;
-        return diff==1;
+        ans.push_back(path);
+        for (int i = start; i < nums.size(); i++)
+        {
+            path.push_back(nums[i]);
+            DFS(nums, i + 1, path);
+            path.pop_back();
+        }
     }
 
-    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
-        //BFS
-        int height = 1;
-        vector<int> visited(wordList.size(), 0);
-        std::queue<string> que;
-        que.push(beginWord);
-        while (!que.empty())
-        {
-            std::queue<string> tQue;
-            while (!que.empty())
-            {
-                string s = que.front();
-                que.pop();
-                for (int i = 0; i < wordList.size(); i++)
-                {
-                    if (visited[i])
-                        continue;
-                    if (compare(s, wordList[i]))
-                    {
-                        visited[i] = 1;
-                        tQue.push(wordList[i]);
-                        if (wordList[i] == endWord)
-                            return height+1;
-                    }
-                }
-            }
-            swap(tQue, que);
-            height++;
-        }
-        return 0;
+    vector<vector<int>> subsets(vector<int>& nums) {
+        if (nums.empty())
+            return {};
+        vector<int> path;
+        DFS(nums, 0, path);
+        return ans;
+    }
+};
 
+
+```
+
+<br>
+
+
+---------------------------
+##### 90.子集2
+>题目描述:
+给定一个可能包含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+说明：解集不能包含重复的子集。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/subsets-ii
+
+解题思路：在 子集1 的基础上进行剪枝即可。
+
+时间复杂度：O(N * 2^n)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    vector<vector<int>> ans;
+public:
+    void DFS(vector<int>& nums, int start, vector<int>& path)
+    {
+        ans.push_back(path);
+        for (int i = start; i < nums.size(); i++)
+        {
+            if (start<i && nums[i]==nums[i-1])
+                continue;
+            path.push_back(nums[i]);
+            DFS(nums, i + 1, path);
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        if (nums.empty())
+            return {};
+        sort(nums.begin(), nums.end(), std::less<int>());
+        vector<int> path;
+        DFS(nums, 0, path);
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+
+---------------------------
+##### 77.组合
+>题目描述:给定两个整数 n 和 k，返回 1 ... n 中所有可能的 k 个数的组合。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/combinations
+
+解题思路：DFS，该题与全排列的不同之处在于组合的数字要求递增，那么也就是在DFS中需要设置起始位start，并不断往后回溯。
+
+时间复杂度：O(2^K)
+
+空间复杂度：O(K)
+
+```cpp
+class Solution {
+   vector<vector<int>> ans;
+public:
+    void DFS(int n, int k, int start, vector<int>& path)
+    {
+        if (path.size() == k)
+        {
+            ans.push_back(path);
+            return;
+        }
+
+        for (int i = start; i <= n; i++ )
+        {
+            path.push_back(i);
+            DFS(n, k, i+1, path);
+            path.pop_back();
+        }
+    }
+
+
+    vector<vector<int>> combine(int n, int k) {
+        if (n<=0 || k<=0)
+            return {};
+        vector<int> path;
+        DFS(n, k, 1, path);
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+
+---------------------------
+##### 46.全排列
+>题目描述:给定一个 没有重复 数字的序列，返回其所有可能的全排列。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/permutations
+
+解题思路：DFS法，设置path变量用来存放走过的路径，visited用来保存变量是否已经访问过。
+
+时间复杂度：O(N!)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+   vector<vector<int>> ans;
+public:
+    void DFS(vector<int>& nums, vector<int>& path, vector<int>& visited)
+    {
+        if (path.size() == nums.size())
+        {
+            ans.push_back(path);
+            return;
+        }
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (1 == visited[i])
+                continue;
+            visited[i] = 1;
+            path.push_back(nums[i]);
+            DFS(nums, path, visited);
+            path.pop_back();
+            visited[i] = 0;
+        }
+    }
+
+    vector<vector<int>> permute(vector<int>& nums) {
+        if (nums.empty())
+            return {};
+        vector<int> path, visited(nums.size(), 0);
+        DFS(nums, path, visited);
+        return ans;
     }
 };
 
@@ -79,28 +202,52 @@ public:
 
 
 ---------------------------
-##### 126.单词接龙2
->题目描述:给定两个单词（beginWord 和 endWord）和一个字典 wordList，找出所有从 beginWord 到 endWord 的最短转换序列。转换需遵循如下规则：
-每次转换只能改变一个字母。
-转换后得到的单词必须是字典中的单词。
-说明:
-如果不存在这样的转换序列，返回一个空列表。
-所有单词具有相同的长度。
-所有单词只由小写字母组成。
-字典中不存在重复的单词。
-你可以假设 beginWord 和 endWord 是非空的，且二者不相同。
+##### 47.全排列2
+>题目描述:给定一个可包含重复数字的序列 nums ，按任意顺序 返回所有不重复的全排列。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/word-ladder-ii
+链接：https://leetcode-cn.com/problems/permutations-ii
 
-解题思路：
+解题思路：相比于上一题全排列，只需要先进行一次排列，并在过程中剪枝即可。
 
-时间复杂度：
+时间复杂度：O(NlogN + N!)
 
-空间复杂度：
+空间复杂度：O(N)
 
 ```cpp
+class Solution {
+    vector<vector<int>> ans;
+public:
+    void DFS(vector<int>& nums, vector<int>& path, vector<int>& visited)
+    {
+        if (path.size() == nums.size())
+        {
+            ans.push_back(path);
+            return;
+        }
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (1 == visited[i])
+                continue;
+            if (0<i && nums[i]==nums[i-1] && !visited[i-1])//剪枝
+                continue;
+            visited[i] = 1;
+            path.push_back(nums[i]);
+            DFS(nums, path, visited);
+            path.pop_back();
+            visited[i] = 0;
+        }
+    }
 
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        if (nums.empty())
+            return {};
+        sort(nums.begin(), nums.end(), std::less<int>());
+        vector<int> path, visited(nums.size(), 0);
+        DFS(nums, path, visited);
+        return ans;
+    }
+};
 
 ```
 
@@ -108,62 +255,52 @@ public:
 
 
 ---------------------------
-##### 130.被围绕的区域
->题目描述:给定一个二维的矩阵，包含 'X' 和 'O'（字母 O）。
-找到所有被 'X' 围绕的区域，并将这些区域里所有的 'O' 用 'X' 填充。
-被围绕的区间不会存在于边界上，换句话说，任何边界上的 'O' 都不会被填充为 'X'。 任何不在边界上，或不与边界上的 'O' 相连的 'O' 最终都会被填充为 'X'。如果两个元素在水平或垂直方向相邻，则称它们是“相连”的。
+##### 17.电话号码的字母组合
+>题目描述:给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。此题需要看原链接。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/surrounded-regions
+链接：https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number
 
-解题思路：DFS法，并通过设置visited数组判断是否已经走过该点，visited数组最后可以作为置X的标准。
+解题思路：回溯法
 
-时间复杂度：O(M*N)
+时间复杂度：O(K^N) K是数字对应字符串的平均长度
 
-空间复杂度：O(N*M)
+空间复杂度：O(N) N是数字字符串的长度
 
 ```cpp
 class Solution {
+    vector<string> ans;
+    unordered_map<char, string> hashmap{{'2',"abc"}, {'3',"def"},{'4',"ghi"},{'5',"jkl"},{'6',"mno"},{'7',"pqrs"},{'8',"tuv"}, {'9', "wxyz"}};
 public:
-    void DFS(vector<vector<char>>& board, int i, int j, int M, int N, vector<vector<int>>& visited)
+    void DFS(string& digits, int start, string& path)
     {
-        if (i<0 || i>=M || j<0 || j>=N)
+        if (path.size() == digits.size())
+        {
+            ans.push_back(path);
             return;
-        if (visited[i][j] || 'X'==board[i][j])
-            return;
-        
-        visited[i][j] = 1;
-        DFS(board, i+1, j, M, N, visited);
-        DFS(board, i-1, j, M, N, visited);
-        DFS(board, i, j+1, M, N, visited);
-        DFS(board, i, j-1, M, N, visited);
+        }
+
+        string s = hashmap[digits[start]];
+        for (int i = 0; i < s.size(); i++)
+        {
+            path.push_back(s[i]);
+            DFS(digits, start+1, path);
+            path.pop_back();
+        }
     }
 
-    void solve(vector<vector<char>>& board) {
-        if (board.empty())
-            return;
-        int M = board.size(), N = board[0].size();
-        vector<vector<int>> visited(M, vector<int>(N, 0));
-        for (int i = 0; i < M; i++)
-        {
-            DFS(board, i, 0, M, N, visited);
-            DFS(board, i, N-1, M, N, visited);
-        }
-        for (int j = 0; j < N; j++)
-        {
-            DFS(board, 0, j, M, N, visited);
-            DFS(board, M-1, j, M, N, visited);
-        }
-        
-        for (int i = 1; i < M-1; i++)
-            for (int j = 1; j < N-1; j++)
-                if ('O'==board[i][j] && !visited[i][j])
-                    board[i][j] = 'X';
+    vector<string> letterCombinations(string digits) {
+        if (digits.empty())
+            return {};
+        string path;
+        DFS(digits, 0, path);
+        return ans;
     }
 };
 
 ```
 
 <br>
+
 
 

@@ -1,50 +1,59 @@
-- [七.暴力枚举专题](#七暴力枚举专题)
-        - [78.子集](#78子集)
-        - [90.子集2](#90子集2)
-        - [77.组合](#77组合)
-        - [46.全排列](#46全排列)
-        - [47.全排列2](#47全排列2)
-        - [17.电话号码的字母组合](#17电话号码的字母组合)
+- [六.查找专题](#六查找专题)
+        - [33. 搜索旋转排序数组](#33-搜索旋转排序数组)
+        - [81. 搜索旋转排序数组 II](#81-搜索旋转排序数组-ii)
+        - [153. 寻找旋转排序数组中的最小值](#153-寻找旋转排序数组中的最小值)
+        - [154. 寻找旋转排序数组中的最小值 II](#154-寻找旋转排序数组中的最小值-ii)
+        - [剑指 Offer 53 - II. 0～n-1中缺失的数字](#剑指-offer-53---ii-0n-1中缺失的数字)
+        - [34. 在排序数组中查找元素的第一个和最后一个位置](#34-在排序数组中查找元素的第一个和最后一个位置)
+        - [35.搜索插入位置](#35搜索插入位置)
+        - [74.搜索二维矩阵](#74搜索二维矩阵)
 
 
-# 七.暴力枚举专题
 
+# 七.查找专题
 
 ---------------------------
-##### 78.子集 
->题目描述:给定一组不含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
-说明：解集不能包含重复的子集。
+##### 33. 搜索旋转排序数组
+>题目描述:升序排列的整数数组 nums 在预先未知的某个点上进行了旋转（例如， [0,1,2,4,5,6,7] 经旋转后可能变为 [4,5,6,7,0,1,2] ）。
+请你在数组中搜索 target ，如果数组中存在这个目标值，则返回它的索引，否则返回 -1 。
+每一个数都是独一无二的。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/subsets
+链接：https://leetcode-cn.com/problems/search-in-rotated-sorted-array
 
-解题思路：子集的本质是求 组合 ，此题也实质上是 组合 的变形题，用DFS即可。需要求解出所有解。
+解题思路：二分法，先判断nums[mid]是否等待target，再根据最左边和最右边的两个递增区间判断二分。
 
-时间复杂度：O(n* 2^n)，将nums数组的长度看成n，用二进制位的思想组合子集即可算出 时间复杂度
+时间复杂度：O(logN)
 
-空间复杂度：O(N)
+空间复杂度：O(1)
 
 ```cpp
 class Solution {
-    vector<vector<int>> ans;
 public:
-    void DFS(vector<int>& nums, int start, vector<int>& path)
-    {
-        ans.push_back(path);
-        for (int i = start; i < nums.size(); i++)
+    int search(vector<int>& nums, int target) {
+        int l = 0, r = nums.size()-1;
+        while (l <= r)
         {
-            path.push_back(nums[i]);
-            DFS(nums, i + 1, path);
-            path.pop_back();
+            int mid = (l + r) >> 1;
+            if (nums[mid] == target)
+                return mid;
+            if (nums[mid] == nums[l]) //无法判断落在左递增区间还是右递增区间
+                l++;
+            else if (nums[mid] > nums[l])//落在左递增区间
+            {
+                if (nums[l]<=target && target<=nums[mid])
+                    r = mid -1;
+                else
+                    l = mid + 1;
+            }else//落在右递增区间
+            {
+                if (nums[mid]<=target && target<=nums[r])
+                    l = mid + 1;
+                else 
+                    r = mid - 1;
+            }
         }
-    }
-
-    vector<vector<int>> subsets(vector<int>& nums) {
-        if (nums.empty())
-            return {};
-        vector<int> path;
-        DFS(nums, 0, path);
-        return ans;
+        return -1;
     }
 };
 
@@ -53,146 +62,251 @@ public:
 
 <br>
 
+---------------------------
+##### 81. 搜索旋转排序数组 II
+>题目描述:假设按照升序排序的数组在预先未知的某个点上进行了旋转。
+( 例如，数组 [0,0,1,2,2,5,6] 可能变为 [2,5,6,0,0,1,2] )。
+编写一个函数来判断给定的目标值是否存在于数组中。若存在返回 true，否则返回 false。
+可能会有相同的数。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/search-in-rotated-sorted-array-ii
+
+解题思路：与上一题的解法相同
+
+时间复杂度：O(logN)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    bool search(vector<int>& nums, int target) {
+        int l = 0, r = nums.size()-1;
+        while (l <= r)
+        {
+            int mid = (l + r) >> 1;
+            if (nums[mid] == target)
+                return true;
+            if (nums[mid] == nums[l]) //无法判断落在左递增区间还是右递增区间
+                l++;
+            else if (nums[mid] > nums[l])//落在左递增区间
+            {
+                if (nums[l]<=target && target<=nums[mid])
+                    r = mid -1;
+                else
+                    l = mid + 1;
+            }else//落在右递增区间
+            {
+                if (nums[mid]<=target && target<=nums[r])
+                    l = mid + 1;
+                else 
+                    r = mid - 1;
+            }
+        }
+        return false;
+    }
+};
+
+```
+
+<br>
 
 ---------------------------
-##### 90.子集2
+##### 153. 寻找旋转排序数组中的最小值
+>题目描述:假设按照升序排序的数组在预先未知的某个点上进行了旋转。例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] 。
+请找出其中最小的元素。
+nums 中的所有整数都是 唯一 的。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array
+
+解题思路：二分法，每一次先判断nums[mid]处于左边的递增区间还是右边的递增区间。若处在左边的递增区间，取最小值后右移；若处在右边的递增区间，取最小值后左移。
+
+时间复杂度：O(logN)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int l = 0, r = nums.size()-1;
+        int ans = INT32_MAX;
+        while (l <= r)
+        {
+            int mid = (l + r) >> 1;
+            if (nums[mid] >= nums[l]) //mid在左边递增区间
+            {
+                ans = std::min(ans, nums[l]);
+                l = mid + 1;
+            }
+            else //mid在右边递增区间
+            {
+                ans = std::min(ans, nums[mid]);
+                r = mid - 1;
+            }
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 154. 寻找旋转排序数组中的最小值 II
+>题目描述:假设按照升序排序的数组在预先未知的某个点上进行了旋转。
+( 例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] )。
+请找出其中最小的元素。
+注意数组中可能存在重复的元素。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii
+
+解题思路：该题解法与上一题相同，只是多了一个条件处理的情况。
+
+时间复杂度：O(logN)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int l = 0, r = nums.size()-1;
+        int ans = INT32_MAX;
+        while (l <= r)
+        {
+            int mid = (l + r) >> 1;
+            if (nums[mid] == nums[l]) //无法判断mid在哪一个递增区间
+            {
+                ans = std::min(ans, nums[l]);
+                l++;
+            }
+            else if (nums[mid] > nums[l]) //mid在左边递增区间
+            {
+                ans = std::min(ans, nums[l]);
+                l = mid + 1;
+            }
+            else //mid在右边递增区间
+            {
+                ans = std::min(ans, nums[mid]);
+                r = mid - 1;
+            }
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 剑指 Offer 53 - II. 0～n-1中缺失的数字
+>题目描述：在范围0～n-1内的n个数字中有且只有一个数字不在该数组中，请找出这个数字。该数组从0开始递增。
+示例 1:
+输入: [0,1,3]
+输出: 2
+示例 2:
+输入: [0,1,2,3,4,5,6,7,9]
+输出: 8
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/que-shi-de-shu-zi-lcof
+
+解题思路：递增数组，二分查找，充分利用数组有序，下标与元素对应这两个条件。
+
+时间复杂度：O(logN)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int missingNumber(vector<int>& nums) {
+        if (nums.empty())
+            return 0;
+        int l = 0, r = nums.size()-1;
+        while (l <= r)
+        {
+            int mid = (l + r) >> 1;
+            if (mid == nums[mid])
+                l = mid + 1;
+            else if (mid != nums[mid])
+                r = mid - 1;
+        }
+        return l;
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 34. 在排序数组中查找元素的第一个和最后一个位置
 >题目描述:
-给定一个可能包含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
-说明：解集不能包含重复的子集。
+给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。
+如果数组中不存在目标值 target，返回 [-1, -1]。
+进阶：
+你可以设计并实现时间复杂度为 O(log n) 的算法解决此问题吗？
 
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/subsets-ii
+解题思路：本题可以通过实现 lower_bound 和 upper_bound函数来实现，也就是用二分法求开始位置和结束位置。
 
-解题思路：在 子集1 的基础上进行剪枝即可。
+时间复杂度：O(logn)
 
-时间复杂度：O(N * 2^n)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-    vector<vector<int>> ans;
-public:
-    void DFS(vector<int>& nums, int start, vector<int>& path)
-    {
-        ans.push_back(path);
-        for (int i = start; i < nums.size(); i++)
-        {
-            if (start<i && nums[i]==nums[i-1])
-                continue;
-            path.push_back(nums[i]);
-            DFS(nums, i + 1, path);
-            path.pop_back();
-        }
-    }
-
-    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
-        if (nums.empty())
-            return {};
-        sort(nums.begin(), nums.end(), std::less<int>());
-        vector<int> path;
-        DFS(nums, 0, path);
-        return ans;
-    }
-};
-
-```
-
-<br>
-
-
-
----------------------------
-##### 77.组合
->题目描述:给定两个整数 n 和 k，返回 1 ... n 中所有可能的 k 个数的组合。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/combinations
-
-解题思路：DFS，该题与全排列的不同之处在于组合的数字要求递增，那么也就是在DFS中需要设置起始位start，并不断往后回溯。
-
-时间复杂度：O(2^K)
-
-空间复杂度：O(K)
+空间复杂度：O(1)
 
 ```cpp
 class Solution {
-   vector<vector<int>> ans;
 public:
-    void DFS(int n, int k, int start, vector<int>& path)
+    int lower_bound(vector<int>& nums, int target)
     {
-        if (path.size() == k)
+        int l = 0, r = nums.size();
+        while (l < r)
         {
-            ans.push_back(path);
-            return;
+            int mid = (l + r) >> 1;
+            if (nums[mid] < target)
+                l = mid + 1;
+            else if (nums[mid] > target)
+                r = mid;
+            else
+                r = mid;
         }
-
-        for (int i = start; i <= n; i++ )
-        {
-            path.push_back(i);
-            DFS(n, k, i+1, path);
-            path.pop_back();
-        }
+        return l;
     }
 
-
-    vector<vector<int>> combine(int n, int k) {
-        if (n<=0 || k<=0)
-            return {};
-        vector<int> path;
-        DFS(n, k, 1, path);
-        return ans;
-    }
-};
-
-```
-
-<br>
-
-
-
----------------------------
-##### 46.全排列
->题目描述:给定一个 没有重复 数字的序列，返回其所有可能的全排列。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/permutations
-
-解题思路：DFS法，设置path变量用来存放走过的路径，visited用来保存变量是否已经访问过。
-
-时间复杂度：O(N!)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-   vector<vector<int>> ans;
-public:
-    void DFS(vector<int>& nums, vector<int>& path, vector<int>& visited)
+    int upper_bound(vector<int>& nums, int target)
     {
-        if (path.size() == nums.size())
+        int l = 0, r = nums.size();
+        while (l < r)
         {
-            ans.push_back(path);
-            return;
+            int mid = (l + r) >> 1;
+            if (nums[mid] < target)
+                l = mid + 1;
+            else if (nums[mid] > target)
+                r = mid;
+            else
+                l = mid+1;
         }
-        for (int i = 0; i < nums.size(); i++)
-        {
-            if (1 == visited[i])
-                continue;
-            visited[i] = 1;
-            path.push_back(nums[i]);
-            DFS(nums, path, visited);
-            path.pop_back();
-            visited[i] = 0;
-        }
+        return r-1;
     }
 
-    vector<vector<int>> permute(vector<int>& nums) {
-        if (nums.empty())
-            return {};
-        vector<int> path, visited(nums.size(), 0);
-        DFS(nums, path, visited);
-        return ans;
+    vector<int> searchRange(vector<int>& nums, int target) {
+        if (nums.empty() || target<nums.front() || target>nums.back())
+            return vector<int>{-1, -1};
+        int l = lower_bound(nums, target);
+        int r = upper_bound(nums, target);
+        if (l <= r)
+            return vector<int>{l, r};
+        else
+            return vector<int>{-1, -1};
     }
 };
 
@@ -202,50 +316,35 @@ public:
 
 
 ---------------------------
-##### 47.全排列2
->题目描述:给定一个可包含重复数字的序列 nums ，按任意顺序 返回所有不重复的全排列。
+##### 35.搜索插入位置
+>题目描述:给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
+你可以假设数组中无重复元素。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/permutations-ii
+链接：https://leetcode-cn.com/problems/search-insert-position
 
-解题思路：相比于上一题全排列，只需要先进行一次排列，并在过程中剪枝即可。
+解题思路：用二分法可以找到该目标值下标，或者说是插入的顺序。
 
-时间复杂度：O(NlogN + N!)
+时间复杂度：O(logN)
 
-空间复杂度：O(N)
+空间复杂度：O(1)
 
 ```cpp
 class Solution {
-    vector<vector<int>> ans;
 public:
-    void DFS(vector<int>& nums, vector<int>& path, vector<int>& visited)
-    {
-        if (path.size() == nums.size())
+    int searchInsert(vector<int>& nums, int target) {
+        int l = 0, r = nums.size()-1;
+        while (l <= r)
         {
-            ans.push_back(path);
-            return;
+            int mid = (l + r) >> 1;
+            if (nums[mid] == target)
+                return mid;
+            else if (nums[mid] < target)
+                l = mid + 1;
+            else 
+                r = mid - 1;
         }
-        for (int i = 0; i < nums.size(); i++)
-        {
-            if (1 == visited[i])
-                continue;
-            if (0<i && nums[i]==nums[i-1] && !visited[i-1])//剪枝
-                continue;
-            visited[i] = 1;
-            path.push_back(nums[i]);
-            DFS(nums, path, visited);
-            path.pop_back();
-            visited[i] = 0;
-        }
-    }
-
-    vector<vector<int>> permuteUnique(vector<int>& nums) {
-        if (nums.empty())
-            return {};
-        sort(nums.begin(), nums.end(), std::less<int>());
-        vector<int> path, visited(nums.size(), 0);
-        DFS(nums, path, visited);
-        return ans;
+        return l;
     }
 };
 
@@ -255,52 +354,51 @@ public:
 
 
 ---------------------------
-##### 17.电话号码的字母组合
->题目描述:给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。此题需要看原链接。
-
+##### 74.搜索二维矩阵
+>题目描述:编写一个高效的算法来判断 m x n 矩阵中，是否存在一个目标值。该矩阵具有如下特性：
+每行中的整数从左到右按升序排列。
+每行的第一个整数大于前一行的最后一个整数。
+ 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number
+链接：https://leetcode-cn.com/problems/search-a-2d-matrix
 
-解题思路：回溯法
+* **解法一**
 
-时间复杂度：O(K^N) K是数字对应字符串的平均长度
+解题思路：从右上角开始寻找，这样可以找准单一变量，向左减小，向下增大。
 
-空间复杂度：O(N) N是数字字符串的长度
+时间复杂度：O(M+N)
+
+空间复杂度：O(1)
+
+* **解法二**
+
+解题思路：将二维当做一维，直接进行二分法。
+
+时间复杂度：O(log(M*N))
+
+空间复杂度：O(1)
 
 ```cpp
 class Solution {
-    vector<string> ans;
-    unordered_map<char, string> hashmap{{'2',"abc"}, {'3',"def"},{'4',"ghi"},{'5',"jkl"},{'6',"mno"},{'7',"pqrs"},{'8',"tuv"}, {'9', "wxyz"}};
 public:
-    void DFS(string& digits, int start, string& path)
-    {
-        if (path.size() == digits.size())
+    bool searchMatrix(vector<vector<int>>& matrix, int target) {
+        if (matrix.empty())
+            return false;
+        int m = matrix.size(), n = matrix[0].size();
+        int l = 0, r = m * n - 1;
+        while (l <= r)
         {
-            ans.push_back(path);
-            return;
+            int mid = (l + r) >> 1;
+            if (matrix[mid/n][mid%n] == target)
+                return true;
+            else if (matrix[mid/n][mid%n] > target)
+                r = mid - 1;
+            else 
+                l = mid + 1;
         }
-
-        string s = hashmap[digits[start]];
-        for (int i = 0; i < s.size(); i++)
-        {
-            path.push_back(s[i]);
-            DFS(digits, start+1, path);
-            path.pop_back();
-        }
-    }
-
-    vector<string> letterCombinations(string digits) {
-        if (digits.empty())
-            return {};
-        string path;
-        DFS(digits, 0, path);
-        return ans;
+        return false;
     }
 };
-
 ```
 
 <br>
-
-
-
