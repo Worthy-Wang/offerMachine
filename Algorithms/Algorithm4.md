@@ -1,10 +1,12 @@
 - [四.栈和队列专题](#四栈和队列专题)
         - [剑指 Offer 09. 用两个栈实现队列](#剑指-offer-09-用两个栈实现队列)
         - [剑指 Offer 30. 包含min函数的栈](#剑指-offer-30-包含min函数的栈)
+        - [剑指 Offer 59 - II. 队列的最大值](#剑指-offer-59---ii-队列的最大值)
         - [剑指 Offer 31. 栈的压入、弹出序列](#剑指-offer-31-栈的压入弹出序列)
         - [20.有效的括号](#20有效的括号)
         - [32.最长的有效括号](#32最长的有效括号)
         - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
+        - [239. 滑动窗口最大值](#239-滑动窗口最大值)
         - [150.逆波兰表达式求值](#150逆波兰表达式求值)
 
 # 四.栈和队列专题
@@ -112,6 +114,59 @@ public:
 ```
 
 <br>
+
+
+
+
+
+---------------------------
+##### 剑指 Offer 59 - II. 队列的最大值
+>题目描述:请定义一个队列并实现函数 max_value 得到队列里的最大值，要求函数max_value、push_back 和 pop_front 的均摊时间复杂度都是O(1)。
+若队列为空，pop_front 和 max_value 需要返回 -1
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof
+
+解题思路：用两个辅助queue，一个存放元素的值，一个作为单调递减队列
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class MaxQueue {
+    std::deque<int> que1;
+    std::deque<int> que2;
+public:
+    MaxQueue() {
+    }
+    
+    int max_value() {
+        return que2.empty() ? -1 : que2.front();
+    }
+    
+    void push_back(int value) {
+        que1.push_back(value);
+        while (!que2.empty() && value>que2.back())
+            que2.pop_back();
+        que2.push_back(value);
+    }
+    
+    int pop_front() {
+        if (que1.empty())
+            return -1;
+        int val = que1.front();
+        que1.pop_front();
+        if (que2.front() == val)
+            que2.pop_front();
+        return val;
+    }
+};
+
+```
+
+<br>
+
 
 ---------------------------
 ##### 剑指 Offer 31. 栈的压入、弹出序列
@@ -307,6 +362,66 @@ public:
 ```
 
 <br>
+
+
+
+
+---------------------------
+##### 239. 滑动窗口最大值
+>题目描述:给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+返回滑动窗口中的最大值。
+滑动窗口的位置                最大值
+---------------               -----
+[1  3  -1] -3  5  3  6  7       3
+ 1 [3  -1  -3] 5  3  6  7       3
+ 1  3 [-1  -3  5] 3  6  7       5
+ 1  3  -1 [-3  5  3] 6  7       5
+ 1  3  -1  -3 [5  3  6] 7       6
+ 1  3  -1  -3  5 [3  6  7]      7
+
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/sliding-window-maximum
+
+解题思路：用一个单调deque作为辅助，存放的是单调递减的元素下标，当新的元素更大不满足单调减的特性时需要从队尾出队，当deque长度超长时需要从队头出队。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        if (nums.empty() || nums.size()<k )
+            return {};
+        std::deque<int> deque;//存储下标
+        for (int i = 0; i < k; ++i)
+        {
+            while (!deque.empty() && nums[i]>=nums[deque.back()])
+                deque.pop_back();
+            deque.push_back(i);
+        }
+        vector<int> ans{nums[deque.front()]};
+        for (int i = k; i < nums.size(); i++)
+        {
+            if (i - deque.front() >= k)
+                deque.pop_front();
+            while (!deque.empty() && nums[i]>=nums[deque.back()])
+                deque.pop_back();
+            deque.push_back(i);
+            ans.push_back(nums[deque.front()]);
+        }
+        return ans;
+    }
+};
+
+
+```
+
+<br>
+
+
 
 ---------------------------
 ##### 150.逆波兰表达式求值

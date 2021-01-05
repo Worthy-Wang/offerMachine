@@ -1,5 +1,7 @@
 - [三.字符串专题](#三字符串专题)
+        - [151. 翻转字符串里的单词](#151-翻转字符串里的单词)
         - [剑指 Offer 05. 替换空格](#剑指-offer-05-替换空格)
+        - [剑指 Offer 58 - II. 左旋转字符串](#剑指-offer-58---ii-左旋转字符串)
         - [125.验证回文串](#125验证回文串)
         - [28.实现strStr()](#28实现strstr)
         - [剑指 Offer 20. 表示数值的字符串](#剑指-offer-20-表示数值的字符串)
@@ -17,6 +19,78 @@
 
 
 # 三.字符串专题
+
+
+---------------------------
+##### 151. 翻转字符串里的单词
+给定一个字符串，逐个翻转字符串中的每个单词。
+无空格字符构成一个 单词 。
+输入字符串可以在前面或者后面包含多余的空格，但是反转后的字符不能包括。
+如果两个单词间有多余的空格，将反转后单词间的空格减少到只含一个。
+进阶：
+请尝试使用 O(1) 额外空间复杂度的原地解法。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/reverse-words-in-a-string
+
+* **解法一**
+
+解题思路：stringstream 作为辅助
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    string reverseWords(string s) {
+        stringstream ss(s);
+        string res, temp;
+        while (ss >> temp)
+            res = temp + " " + res;
+        return res.substr(0, res.size()-1);
+    }
+};
+
+```
+
+
+* **解法二**
+
+解题思路：循环遍历该字符串
+
+时间复杂度：O(N)
+
+空间复杂度：O(1) 
+
+```cpp
+class Solution {
+public:
+    string reverseWords(string s) {
+        string res;
+        int i = 0, j = 0;
+        while (j < s.size())
+        {
+            while (j<s.size() && isspace(s[j]))
+                j++;
+            i = j;
+            while (j<s.size() && !isspace(s[j]))
+                j++;
+            if (i < s.size())
+                res = s.substr(i, j-i) + " " + res;
+        }
+        res.pop_back();
+        return res;
+    }
+};
+
+```
+
+
+<br>
+
+
 
 
 ---------------------------
@@ -56,6 +130,35 @@ public:
                 s[j--] = s[i--];
         }
         return s;
+    }
+};
+```
+
+<br>
+
+
+
+
+---------------------------
+##### 剑指 Offer 58 - II. 左旋转字符串
+>题目描述:字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。比如，输入字符串"abcdefg"和数字2，该函数将返回左旋转两位得到的结果"cdefgab"。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof
+
+解题思路：直接使用字符串的拼接即可
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    string reverseLeftWords(string s, int n) {
+        if (n<=0 || n>s.size())
+            return s;
+        return s.substr(n, s.size()-n) + s.substr(0, n);
     }
 };
 ```

@@ -21,6 +21,7 @@
         - [50.Pow(x,n)](#50powxn)
         - [68.文本左右对齐](#68文本左右对齐)
         - [149.直线上最多的点数](#149直线上最多的点数)
+        - [剑指 Offer 61. 扑克牌中的顺子](#剑指-offer-61-扑克牌中的顺子)
 
 
 # 十五.细节实现专题
@@ -366,6 +367,9 @@ public:
 ```
 
 <br>
+
+
+
 
 --------------------------
 ##### 128.最长连续序列
@@ -1051,6 +1055,46 @@ public:
 空间复杂度：
 
 ```cpp
+
+```
+
+<br>
+
+
+
+
+---------------------------
+##### 剑指 Offer 61. 扑克牌中的顺子
+>题目描述:从扑克牌中随机抽5张牌，判断是不是一个顺子，即这5张牌是不是连续的。2～10为数字本身，A为1，J为11，Q为12，K为13，而大、小王为 0 ，可以看成任意数字。A 不能视为 14。
+数组长度为 5 
+数组的数取值为 [0, 13] .
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof
+
+解题思路：先排序，再判断数组中有无重复元素，再判断前后的元素值的差值即可。
+
+时间复杂度：O(1)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    bool isStraight(vector<int>& nums) {
+        sort(nums.begin(), nums.end(), std::less<int>());
+        for (int i = 0; i < nums.size(); ++i)
+        {
+            if (0 == nums[i])
+                continue;
+            if (0<i && nums[i-1]==nums[i])
+                return false;
+        }
+        int i = 0;
+        while (0 == nums[i]) ++i;
+        return nums.back()-nums[i] <= 4;
+    }
+};
 
 ```
 
