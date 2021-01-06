@@ -19,6 +19,8 @@
         - [140.单词拆分2](#140单词拆分2)
         - [剑指 Offer 49. 丑数](#剑指-offer-49-丑数)
         - [剑指 Offer 62. 圆圈中最后剩下的数字](#剑指-offer-62-圆圈中最后剩下的数字)
+        - [123.买卖股票的最佳时机3](#123买卖股票的最佳时机3)
+        - [剑指 Offer 66. 构建乘积数组](#剑指-offer-66-构建乘积数组)
 
 
 # 十三.动态规划专题
@@ -972,3 +974,95 @@ public:
 ```
 
 <br>
+
+
+
+---------------------------
+##### 123.买卖股票的最佳时机3
+>题目描述:给定一个数组，它的第 i 个元素是一支给定的股票在第 i 天的价格。
+设计一个算法来计算你所能获取的最大利润。你最多可以完成 两笔 交易。
+注意: 你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii
+
+解题思路：动态规划法，创建两个动态规划数组 left 与 right ，left记录 [0, i] 能够收获的最大收益， right记录 [i, n] 能够收获的最大收益；
+left[i]：设置最小值，从左到右遍历，并存放得到的最大利润
+right[i]：设置最大值，从右到左遍历，并存放得到的最大利润
+最后找出left[i]+right[i]的最大值即可。 
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        vector<int> left(n), right(n);
+        left[0] = 0, right[n-1] = 0;
+        int minPrice = prices[0], maxPrice = prices[n-1];
+        for (int i = 1; i < n; i++)
+        {
+            minPrice = std::min(minPrice, prices[i]);
+            left[i] = std::max(left[i-1], prices[i]-minPrice);
+        }
+        for (int i = n-2; i >= 0; i-- )
+        {
+            maxPrice = std::max(prices[i], maxPrice);
+            right[i] = std::max(right[i+1], maxPrice - prices[i]);         
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++)
+            ans = std::max(left[i]+right[i], ans);
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+
+
+
+
+---------------------------
+##### 剑指 Offer 66. 构建乘积数组
+>题目描述:给定一个数组 A[0,1,…,n-1]，请构建一个数组 B[0,1,…,n-1]，其中 B 中的元素 B[i]=A[0]×A[1]×…×A[i-1]×A[i+1]×…×A[n-1]。不能使用除法。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/gou-jian-cheng-ji-shu-zu-lcof
+
+解题思路：动态规划，构建left 和 right 两个动态规划数组保存 累乘的积。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    vector<int> constructArr(vector<int>& a) {
+        if (a.empty())
+            return {};
+        int n = a.size();
+        vector<int> left(n), right(n);
+        left[0] = 1, right[n-1] = 1;
+        for (int i = 1; i < n; i++)
+            left[i] = left[i-1] * a[i-1];
+        for (int i = n-2; i >= 0; i--)
+            right[i] = right[i+1] * a[i+1];
+        vector<int> ans;
+        for (int i = 0; i < n; i++)
+            ans.push_back(left[i]*right[i]);
+        return ans;
+    }
+};
+
+```
+
+<br>
+

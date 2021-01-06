@@ -63,22 +63,20 @@ public:
 class Solution {
 public:
     int jump(vector<int>& nums) {
-        if (nums.size()<=1)
+        if (nums.size() <= 1)
             return 0;
-        int r = 0, nextPos = nums[0], cnt = 0;
-        for (int i = 0; i < nums.size(); i++)
+        int maxPos = 0, end = nums[0], ans = 0;
+        for (int i = 0; i < nums.size()-1; ++i)
         {
-            r = std::max(r, i + nums[i]);
-            if (nextPos >= nums.size()-1) 
-                return cnt+1;
-            if (i == nextPos)
+            maxPos = std::max(maxPos, i+nums[i]);
+            if (i == end)
             {
-                cnt++;
-                nextPos = r;
+                ++ans;
+                end = maxPos;
             }
-        }   
-        return cnt;
-    }   
+        }
+        return ans + 1;
+    }
 };
 
 ```

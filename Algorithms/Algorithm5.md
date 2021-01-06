@@ -27,6 +27,8 @@
         - [95.不同的二叉搜索树2](#95不同的二叉搜索树2)
         - [108.将有序数组转换为二叉搜索树](#108将有序数组转换为二叉搜索树)
         - [109.有序链表转换二叉搜索树](#109有序链表转换二叉搜索树)
+        - [235. 二叉搜索树的最近公共祖先](#235-二叉搜索树的最近公共祖先)
+        - [236. 二叉树的最近公共祖先](#236-二叉树的最近公共祖先)
         - [112.路径总和](#112路径总和)
         - [113.路径总合2](#113路径总合2)
         - [437.路径总合3](#437路径总合3)
@@ -1366,6 +1368,97 @@ public:
 ```
 
 <br>
+
+
+
+
+---------------------------
+##### 235. 二叉搜索树的最近公共祖先
+>题目描述:给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree
+
+解题思路：中序遍历，找到第一个节点的val 满足  p->val<=val<=q->val 这样的节点即为BST的最近公共祖先。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    TreeNode* ans = nullptr;
+public:
+    void DFS(TreeNode* root, TreeNode* p, TreeNode* q)
+    {
+        if (!root)
+            return;
+        DFS(root->left, p, q);
+        if (p->val<=root->val && root->val<=q->val)
+        {
+            ans = root;
+            return;
+        }
+        DFS(root->right, p, q);
+    }
+
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if (!root || !p || !q)
+            return nullptr;
+        TreeNode* l = p->val<=q->val ? p : q;
+        TreeNode* r = p->val>q->val ? p : q;
+        DFS(root, l, r);
+        return ans;
+    }
+};
+
+
+```
+
+<br>
+
+
+
+
+---------------------------
+##### 236. 二叉树的最近公共祖先
+>题目描述:给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree
+
+解题思路：后序遍历，若p q 在左子树中的话就传递上来，没有的话就传递 nullptr.
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if (!root)
+            return nullptr;
+        if (root==p || root==q)
+            return root;
+        TreeNode* l = lowestCommonAncestor(root->left, p, q);
+        TreeNode* r = lowestCommonAncestor(root->right, p, q);
+        if (l && r)
+            return root;
+        else if (!l && !r)
+            return nullptr;
+        else
+            return l ? l : r;
+    }
+};
+```
+
+<br>
+
+
+
 
 
 ---------------------------
