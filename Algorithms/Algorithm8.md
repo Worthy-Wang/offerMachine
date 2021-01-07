@@ -2,6 +2,7 @@
         - [78.子集](#78子集)
         - [90.子集2](#90子集2)
         - [77.组合](#77组合)
+        - [31.下一个排列](#31下一个排列)
         - [46.全排列](#46全排列)
         - [47.全排列2](#47全排列2)
         - [17.电话号码的字母组合](#17电话号码的字母组合)
@@ -149,6 +150,48 @@ public:
 
 <br>
 
+
+
+
+----------------------------
+##### 31.下一个排列
+
+>题目描述：实现获取 下一个排列 的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
+如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
+必须 原地 修改，只允许使用额外常数空间。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/next-permutation
+
+解题思路：两次遍历再加上局部反转即可；第一次遍历从rbegin出发找到第一个降序的数nums[i]，第二次遍历从rbegin出发找到第一个大于nums[i]的数，交换后从i的位置往后进行反转。具体代码为两个for if 即可搞定。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    void nextPermutation(vector<int>& nums) {
+        if (nums.size() < 2)
+            return;
+        for (int i = nums.size()-2; i >= 0; --i)
+            if (nums[i] < nums[i+1])
+                for (int j = nums.size()-1; j > i; j--)
+                    if (nums[j] > nums[i])
+                    {
+                        swap(nums[i], nums[j]);
+                        reverse(nums.begin()+i+1, nums.end());
+                        return;
+                    }
+        //已经是最大的排列
+        reverse(nums.begin(), nums.end());
+    }
+};
+```
+
+<br>
 
 
 ---------------------------
