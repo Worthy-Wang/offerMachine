@@ -5,6 +5,7 @@
         - [31.下一个排列](#31下一个排列)
         - [46.全排列](#46全排列)
         - [47.全排列2](#47全排列2)
+        - [60.排列序列](#60排列序列)
         - [17.电话号码的字母组合](#17电话号码的字母组合)
 
 
@@ -295,6 +296,131 @@ public:
 ```
 
 <br>
+
+
+
+---------------------
+##### 60.排列序列
+
+>题目描述：给出集合 [1,2,3,...,n]，其所有元素共有 n! 种排列。
+按大小顺序列出所有排列情况，并一一标记，当 n = 3 时, 所有排列如下：
+"123"
+"132"
+"213"
+"231"
+"312"
+"321"
+给定 n 和 k，返回第 k 个排列。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/permutation-sequence
+
+
+* **解法一**
+
+解题思路：按照求全排列的思路进行计算，该方法超时
+
+时间复杂度：O(N*N!)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+    int cnt = 0;
+    string ans;
+public:
+    void DFS(string& s, int k, string& path, vector<int>& visited)
+    {
+        if (path.size() == s.size())
+        {
+            cnt++;
+            if (cnt == k)
+                ans = path;
+            return;
+        }
+
+        for (int i = 0; i < s.size(); i++)
+        {
+            if (visited[i])
+                continue;
+            visited[i] = 1;
+            path.push_back(s[i]);
+            DFS(s, k, path, visited);
+            path.pop_back();
+            visited[i] = 0;
+        }
+    }
+
+    string getPermutation(int n, int k) {
+        if (n<=0 || k<=0)
+            return string();
+        string s, path;
+        for (int i = 1; i <= n; i++)
+            s.push_back(i+'0');
+        vector<int> visited(n, 0);
+        DFS(s, k, path, visited);
+        return ans;
+    }
+};
+
+```
+
+* **解法二**
+
+
+解题思路：在上一方法的基础上进行优化，用DFS递归的方法来进行无回溯的一次遍历，由于中间需要计算阶乘，所以时间复杂度为O(N^2)。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N)
+
+
+```cpp
+
+class Solution {
+public:
+    int getFactorial(int n)
+    {
+        int ans = 1;
+        for (int i = 1; i <= n; i++)
+            ans *= i;
+        return ans;
+    }
+
+    void DFS(string& s, int k, string& ans, unordered_set<int>& visited)
+    {
+        for (int i = 0; i < s.size(); i++)
+        {
+            if (visited.count(s[i]))
+                continue;
+            int factorial = getFactorial(s.size()-visited.size()-1);
+            if (factorial < k)
+            {
+                k -= factorial;
+                continue;
+            }
+            
+            ans.push_back(s[i]);
+            visited.insert(s[i]);
+            DFS(s, k, ans, visited);
+            return;
+        }
+    }
+
+    string getPermutation(int n, int k) {
+        string s, ans;
+        unordered_set<int> visited;
+        for (int i = 1; i <= n; i++)
+            s.push_back(i + '0');
+        DFS(s, k, ans, visited);
+        return ans;
+    }
+};
+```
+
+<br>
+
 
 
 ---------------------------

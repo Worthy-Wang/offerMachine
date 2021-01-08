@@ -2,13 +2,15 @@
         - [131.分割回文串](#131分割回文串)
         - [132.分割回文串2](#132分割回文串2)
         - [剑指 Offer 13. 机器人的运动范围](#剑指-offer-13-机器人的运动范围)
+        - [36.有效的数独](#36有效的数独)
+        - [37.解数独](#37解数独)
         - [51.N皇后](#51n皇后)
         - [52.N皇后2](#52n皇后2)
+        - [149.直线上最多的点数](#149直线上最多的点数)
         - [93.复原IP地址](#93复原ip地址)
         - [39.组合总合](#39组合总合)
         - [40.组合总合2](#40组合总合2)
         - [22.括号生成](#22括号生成)
-        - [37.解数独](#37解数独)
         - [79.单词搜索](#79单词搜索)
 
 
@@ -148,6 +150,138 @@ public:
 <br>
 
 
+
+-----------------------------------
+##### 36.有效的数独
+>题目描述：判断一个 9x9 的数独是否有效。只需要根据以下规则，验证已经填入的数字是否有效即可。
+数字 1-9 在每一行只能出现一次。
+数字 1-9 在每一列只能出现一次。
+数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/valid-sudoku
+
+解题思路：设置行，类，宫三种类型的辅助二维数组，每一个二维数组有9行，每一行可以存储 1~9 10个数字，进行一次遍历即可。
+
+时间复杂度：O(1)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    bool isValidSudoku(vector<vector<char>>& board) {
+        if (board.empty())
+            return false;
+        vector<vector<int>> rows(9, vector<int>(10, 0));
+        vector<vector<int>> columns(9, vector<int>(10, 0));
+        vector<vector<vector<int>>> boxes(3, vector<vector<int>>(3, vector<int>(10, 0)));
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (board[i][j] != '.')
+                {
+                    int num = board[i][j] - '0';
+                    if (rows[i][num] || columns[j][num] || boxes[i/3][j/3][num])
+                        return false;
+                    else
+                    {
+                        rows[i][num]++;
+                        columns[j][num]++;
+                        boxes[i/3][j/3][num]++;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 37.解数独
+>题目描述:编写一个程序，通过填充空格来解决数独问题。
+一个数独的解法需遵循如下规则：
+数字 1-9 在每一行只能出现一次。
+数字 1-9 在每一列只能出现一次。
+数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。
+空白格用 '.' 表示。
+答案被标成红色。
+给定的数独序列只包含数字 1-9 和字符 '.' 。
+你可以假设给定的数独只有唯一解。
+给定数独永远是 9x9 形式的。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/sudoku-solver
+
+解题思路：解题思路与上一题相似，设置三个辅助数组判断数字有没有在 行，列，宫 中出现，将所有的空白存入数组依次进行填充，并记录下填充空白的个数；然后使用递归法一次填充空白即可。
+
+时间复杂度：
+
+空间复杂度：
+
+```cpp
+class Solution {
+private:
+    int rows[9][10] = {0};//rows[i][j] 表示第 i 行是否存在 j
+    int cols[9][10] = {0};//cols[i][j] 表示第 i 列是否存在 j
+    int grid[3][3][10] = {0};//grid[i][j][k] 表示第 {i, j} 个九宫格是否存在 k
+    vector<pair<int, int>> spaces;//记录下空白格的坐标   
+    vector<vector<char>> ans;
+public:
+    void dfs(vector<vector<char>>& board, int idx){
+        //已经遍历完了空格，成功完成
+        if(idx == spaces.size()){
+            ans = board;
+            return;
+        }
+        pair<int, int> axis = spaces[idx];
+        int row = axis.first, col = axis.second;//当前空格的行和列
+        //找到合法的可以填写的数字
+        for(int i = 1; i <= 9; i ++){
+            if(!rows[row][i] && !cols[col][i] && !grid[row/3][col/3][i]){
+                board[row][col] = i + '0';
+                rows[row][i] = 1; cols[col][i] = 1;
+                grid[row/3][col/3][i] = 1;
+                dfs(board, idx + 1);
+                //回溯
+                board[row][col] = '.';
+                rows[row][i] = 0; cols[col][i] = 0;
+                grid[row/3][col/3][i] = 0;
+            }
+        }
+    }
+
+    void solveSudoku(vector<vector<char>>& board) {
+        //初始化
+        for(int i = 0; i < 9; i ++){
+            for(int j = 0; j < 9; j ++){
+                if(board[i][j] == '.') spaces.push_back({i, j});
+                else{
+                    rows[i][board[i][j] - '0'] = 1;
+                    cols[j][board[i][j] - '0'] = 1;
+                    grid[i/3][j/3][board[i][j] - '0'] = 1;
+                }
+            }
+        }
+        dfs(board, 0);
+        board = ans;
+    }
+};
+
+
+```
+
+<br>
+
+
+
+
 ---------------------------
 ##### 51.N皇后
 >题目描述:n 皇后问题研究的是如何将 n 个皇后放置在 n×n 的棋盘上，并且使皇后彼此之间不能相互攻击。
@@ -169,37 +303,34 @@ public:
 ```cpp
 class Solution {
     vector<vector<string>> ans;
+    unordered_map<int,int> rows,  columns, line1, line2;
 public:
-    void DFS(int n, int i, vector<string>& path, unordered_map<int,int>& columns, unordered_map<int,int>& rightSubLeft, unordered_map<int,int>& rightAddLeft)
+    void DFS(vector<string>& board, int n, int i)
     {
         if (i == n)
         {
-            ans.push_back(path);
-            return;
+            ans.push_back(board);
+            return;            
         }
 
-        for (int j = 0; j < n; j++)
+        for (int j = 0; j < n; ++j)
         {
-            if (columns[j] || rightSubLeft[j-i] || rightAddLeft[j+i])
+            if (rows[i] || columns[j] || line1[i+j] || line2[i-j])
                 continue;
-            path[i][j] = 'Q';
-            columns[j]=1 , rightSubLeft[j-i]=1, rightAddLeft[j+i]=1; 
-            DFS(n, i+1, path, columns, rightSubLeft, rightAddLeft);
-            path[i][j] = '.';
-            columns[j]=0 , rightSubLeft[j-i]=0, rightAddLeft[j+i]=0; 
+            rows[i] = 1, columns[j] = 1, line1[i+j] = 1, line2[i-j] = 1;
+            board[i][j] = 'Q';
+            DFS(board, n, i+1);
+            board[i][j] = '.';
+            rows[i] = 0, columns[j] = 0, line1[i+j] = 0, line2[i-j] = 0;
         }
     }
 
     vector<vector<string>> solveNQueens(int n) {
-        if (n <= 0)
-            return {};
-        vector<string> path(n, string(n, '.'));
-        unordered_map<int,int> columns, rightSubLeft, rightAddLeft;
-        DFS(n, 0, path, columns, rightSubLeft, rightAddLeft);
+        vector<string> board(n, string(n, '.'));
+        DFS(board, n, 0);
         return ans;
     }
 };
-
 ```
 
 <br>
@@ -223,8 +354,9 @@ public:
 ```cpp
 class Solution {
     int ans = 0;
+    unordered_map<int,int> rows, columns, line1, line2;
 public:
-    void DFS(int n, int i, unordered_map<int,int>& columns, unordered_map<int,int>& rightSubLeft, unordered_map<int,int>& rightAddLeft)
+    void DFS(int i, int n)
     {
         if (i == n)
         {
@@ -232,21 +364,20 @@ public:
             return;
         }
 
-        for (int j = 0; j < n; j++)
+        for (int j = 0; j < n; ++j)
         {
-            if (columns[j] || rightSubLeft[j-i] || rightAddLeft[j+i])
+            if (rows[i] || columns[j] || line1[i+j] || line2[i-j])
                 continue;
-            columns[j]=1 , rightSubLeft[j-i]=1, rightAddLeft[j+i]=1; 
-            DFS(n, i+1, columns, rightSubLeft, rightAddLeft);
-            columns[j]=0 , rightSubLeft[j-i]=0, rightAddLeft[j+i]=0; 
+            rows[i] = 1, columns[j] = 1, line1[i+j] = 1, line2[i-j] = 1;
+            DFS(i+1, n);
+            rows[i] = 0, columns[j] = 0, line1[i+j] = 0, line2[i-j] = 0;
         }
     }
 
     int totalNQueens(int n) {
-        if (n <= 0)
+        if (n<=0)
             return 0;
-        unordered_map<int,int> columns, rightSubLeft, rightAddLeft;
-        DFS(n, 0, columns, rightSubLeft, rightAddLeft);
+        DFS(0, n);
         return ans;
     }
 };
@@ -254,6 +385,93 @@ public:
 ```
 
 <br>
+
+
+---------------------------
+##### 149.直线上最多的点数
+>题目描述:给定一个二维平面，平面上有 n 个点，求最多有多少个点在同一条直线上。
+示例 1:
+输入: [[1,1],[2,2],[3,3]]
+输出: 3
+解释:
+^
+|
+|        o
+|     o
+|  o  
++------------->
+0  1  2  3  4
+示例 2:
+输入: [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
+输出: 4
+解释:
+^
+|
+|  o
+|     o        o
+|        o
+|  o        o
++------------------->
+0  1  2  3  4  5  6
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/max-points-on-a-line
+
+解题思路：
+
+时间复杂度：
+
+空间复杂度：
+
+```cpp
+class Solution {
+public:
+    int gcd(int a, int b)
+    {
+            while (b != 0) {
+            int temp = a % b;
+            a = b;
+            b = temp;
+        }
+        return a;
+    }
+
+    int maxPoints(vector<vector<int>>& points) {
+        if (points.size() < 3)
+            return points.size();
+        int ans = 0;
+        for (int i = 0; i < points.size(); ++i)
+        {
+            int dup = 0;
+            int curMax = 0;
+            unordered_map<string, int> hashmap;
+            for (int j = i + 1; j < points.size(); ++j)
+            {
+                int diffX = points[j][0] - points[i][0];
+                int diffY = points[j][1] - points[i][1];
+                if (0==diffX && 0==diffY)
+                {
+                    ++dup;
+                    continue;
+                }
+                int GCD = gcd(diffX, diffY);
+                string key = to_string(diffX/GCD) + " " + to_string(diffY/GCD);
+                hashmap[key]++;
+                curMax = std::max(curMax, hashmap[key]);
+            }
+            ans = std::max(ans, curMax+1+dup);
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+
+
 
 
 ---------------------------
@@ -476,82 +694,6 @@ public:
 <br>
 
 
----------------------------
-##### 37.解数独
->题目描述:编写一个程序，通过填充空格来解决数独问题。
-一个数独的解法需遵循如下规则：
-数字 1-9 在每一行只能出现一次。
-数字 1-9 在每一列只能出现一次。
-数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。
-空白格用 '.' 表示。
-答案被标成红色。
-给定的数独序列只包含数字 1-9 和字符 '.' 。
-你可以假设给定的数独只有唯一解。
-给定数独永远是 9x9 形式的。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/sudoku-solver
-
-解题思路：
-
-
-时间复杂度：
-
-空间复杂度：
-
-```cpp
-class Solution {
-private:
-    int rows[9][10] = {0};//rows[i][j] 表示第 i 行是否存在 j
-    int cols[9][10] = {0};//cols[i][j] 表示第 i 列是否存在 j
-    int grid[3][3][10] = {0};//grid[i][j][k] 表示第 {i, j} 个九宫格是否存在 k
-    vector<pair<int, int>> spaces;//记录下空白格的坐标   
-    vector<vector<char>> ans;
-public:
-    void dfs(vector<vector<char>>& board, int idx){
-        //已经遍历完了空格，成功完成
-        if(idx == spaces.size()){
-            ans = board;
-            return;
-        }
-        pair<int, int> axis = spaces[idx];
-        int row = axis.first, col = axis.second;//当前空格的行和列
-        //找到合法的可以填写的数字
-        for(int i = 1; i <= 9; i ++){
-            if(!rows[row][i] && !cols[col][i] && !grid[row/3][col/3][i]){
-                board[row][col] = i + '0';
-                rows[row][i] = 1; cols[col][i] = 1;
-                grid[row/3][col/3][i] = 1;
-                dfs(board, idx + 1);
-                //回溯
-                board[row][col] = '.';
-                rows[row][i] = 0; cols[col][i] = 0;
-                grid[row/3][col/3][i] = 0;
-            }
-        }
-    }
-
-    void solveSudoku(vector<vector<char>>& board) {
-        //初始化
-        for(int i = 0; i < 9; i ++){
-            for(int j = 0; j < 9; j ++){
-                if(board[i][j] == '.') spaces.push_back({i, j});
-                else{
-                    rows[i][board[i][j] - '0'] = 1;
-                    cols[j][board[i][j] - '0'] = 1;
-                    grid[i/3][j/3][board[i][j] - '0'] = 1;
-                }
-            }
-        }
-        dfs(board, 0);
-        board = ans;
-    }
-};
-
-
-```
-
-<br>
 
 
 ---------------------------

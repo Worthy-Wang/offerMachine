@@ -1,10 +1,52 @@
 - [十五.位操作专题](#十五位操作专题)
+        - [89.格雷编码](#89格雷编码)
         - [剑指 Offer 64. 求1+2+…+n](#剑指-offer-64-求12n)
         - [剑指 Offer 65. 不用加减乘除做加法](#剑指-offer-65-不用加减乘除做加法)
 
 
 
 # 十五.位操作专题
+
+
+
+---------------------------------
+##### 89.格雷编码
+>题目描述：格雷编码是一个二进制数字系统，在该系统中，两个连续的数值仅有一个位数的差异。
+给定一个代表编码总位数的非负整数 n，打印其格雷编码序列。即使有多个不同答案，你也只需要返回其中一种。
+格雷编码序列必须以 0 开头。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/gray-code
+
+解题思路：设置一个标志位pos（pos初始值为 1），pos在每一次遍历中都需要左移一位，然后再加到返回值的vector数组里，每一次的遍历都通过pos相加创建新的数，然后再将这些数加到返回值数组里面。
+
+时间复杂度：O(2^n)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    vector<int> grayCode(int n) {
+        vector<int> ans{0};
+        int pos = 1;
+        for (int i = 1; i <= n; i++)
+        {
+            vector<int> temp = ans;
+            for (auto it = temp.rbegin(); it != temp.rend(); it++)
+            {
+                *it += pos;
+                ans.push_back(*it);
+            }
+            pos <<= 1;
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
 
 
 

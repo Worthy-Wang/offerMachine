@@ -9,13 +9,10 @@
         - [16.最接近的三数之和](#16最接近的三数之和)
         - [18.四数之和](#18四数之和)
         - [27.移除元素](#27移除元素)
-        - [60.排列序列](#60排列序列)
-        - [36.有效的数独](#36有效的数独)
         - [42.接雨水](#42接雨水)
         - [48.旋转图像](#48旋转图像)
         - [66.加一](#66加一)
         - [70.爬楼梯](#70爬楼梯)
-        - [89.格雷编码](#89格雷编码)
         - [73.矩阵置零](#73矩阵置零)
         - [134.加油站](#134加油站)
         - [135.分发糖果](#135分发糖果)
@@ -539,128 +536,6 @@ public:
 <br>
 
 
----------------------
-##### 60.排列序列
-
->题目描述：给出集合 [1,2,3,...,n]，其所有元素共有 n! 种排列。
-按大小顺序列出所有排列情况，并一一标记，当 n = 3 时, 所有排列如下：
-"123"
-"132"
-"213"
-"231"
-"312"
-"321"
-给定 n 和 k，返回第 k 个排列。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/permutation-sequence
-
-解题思路：此题实质上属于一次遍历的DFS问题，用DFS递归的方法来进行无回溯的一次遍历，由于中间需要计算阶乘，所以时间复杂度为O(N^2)。
-
-时间复杂度：O(N^2)
-
-空间复杂度：O(N)
-
-
-```cpp
-
-class Solution {
-public:
-    int getFactorial(int n)
-    {                       
-        int res = 1;
-        for(int i = n; i >= 1; i--)
-            res *= i;
-        return res;
-    }
-
-    void DFS(vector<int>& nums, int k, vector<int>& visited, string& res, int& level)
-    {
-        for (int i = 0; i < nums.size(); i++)
-        {
-            if (visited[i])
-                continue;
-            int skip = getFactorial(nums.size()-1-level);
-            if (k > skip)
-            {
-                k -= skip;
-                continue;
-            }
-            visited[i] = 1;
-            res.push_back(nums[i] + '0');
-            level++;
-            DFS(nums, k, visited, res, level);
-            return;//后面的不用执行
-        }
-    }
-
-    string getPermutation(int n, int k) {
-        vector<int> nums;
-        for(int i = 1; i <= n; i++)
-            nums.push_back(i);
-        int level = 0;
-        string res;
-        vector<int> visited(n, 0);
-        DFS(nums, k, visited, res, level);
-        return res;
-    }
-};
-
-```
-
-<br>
-
------------------------------------
-##### 36.有效的数独
->题目描述：判断一个 9x9 的数独是否有效。只需要根据以下规则，验证已经填入的数字是否有效即可。
-数字 1-9 在每一行只能出现一次。
-数字 1-9 在每一列只能出现一次。
-数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/valid-sudoku
-
-解题思路：设置行，类，宫三种类型的辅助二维数组，每一个二维数组有9行，每一行可以存储 1~9 10个数字，进行一次遍历即可。
-
-时间复杂度：O(1)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    bool isValidSudoku(vector<vector<char>>& board) {
-        if (board.empty())
-            return false;
-        vector<vector<int>> rows(9, vector<int>(10, 0));
-        vector<vector<int>> columns(9, vector<int>(10, 0));
-        vector<vector<int>> boxes(9, vector<int>(10, 0));
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                if (board[i][j] != '.')
-                {
-                    int num = board[i][j] - '0';
-                    if (rows[i][num] || columns[j][num] || boxes[i/3*3+j/3][num])
-                        return false;
-                    else
-                    {
-                        rows[i][num]++;
-                        columns[j][num]++;
-                        boxes[i/3*3+j/3][num]++;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-};
-
-```
-
-<br>
-
 --------------------------
 ##### 42.接雨水
 
@@ -734,7 +609,7 @@ public:
 
 * **解法三**
 
-解题思路：双指针法，分别放置左右指针位于数组头尾部，可以让两个指针向中间靠拢，并且让左右两指针的较小值作为蓄水处（另外一个较大值就可以作为蓄水的屏障），设置左最大值和右最大值，左指针只负责左部的蓄水，右指针只负责右部的蓄水。
+解题思路：双指针法，分别放置左右指针位于数组头尾部，可以让两个指针向中间靠拢，并且让左右两指针的较小值作为蓄水处（另外一个较大值就可以作为蓄水的屏障），设置左最大值和右最大值并不断更新。
 
 时间复杂度：O(N)
 
@@ -811,7 +686,7 @@ public:
 
 
 
-<br>
+
 
 -----------------------------------
 ##### 66.加一
@@ -832,25 +707,26 @@ public:
 class Solution {
 public:
     vector<int> plusOne(vector<int>& digits) {
-        int n = digits.size();
-        int i = n-1;
-        for (; i >= 0; i--)
+        if (digits.empty())
+            return {};
+        reverse(digits.begin(), digits.end());
+        int carry = 1;
+        for (int i = 0; i < digits.size(); ++i)
         {
-            if (9 == digits[i])
-                digits[i] = 0;
-            else
-            {
-                digits[i]++;
-                break;
-            }
+            int sum = digits[i] + carry;
+            carry = sum / 10;
+            digits[i] = sum % 10;
         }
-        if (-1 == i && digits[0] == 0)
-            digits.insert(digits.begin(), 1);
+        if (carry)
+            digits.push_back(1);
+        reverse(digits.begin(), digits.end());
         return digits;
     }
 };
 
 ```
+
+
 
 
 <br>
@@ -892,46 +768,6 @@ public:
 };
 
 ```
-
-
----------------------------------
-##### 89.格雷编码
->题目描述：格雷编码是一个二进制数字系统，在该系统中，两个连续的数值仅有一个位数的差异。
-给定一个代表编码总位数的非负整数 n，打印其格雷编码序列。即使有多个不同答案，你也只需要返回其中一种。
-格雷编码序列必须以 0 开头。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/gray-code
-
-解题思路：设置一个标志位pos（pos初始值为 1），pos在每一次遍历中都需要左移一位，然后再加到返回值的vector数组里，每一次的遍历都通过pos相加创建新的数，然后再将这些数加到返回值数组里面。
-
-时间复杂度：O(2^n)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    vector<int> grayCode(int n) {
-        vector<int> ans{0};
-        int pos = 1;
-        for (int i = 1; i <= n; i++)
-        {
-            vector<int> temp = ans;
-            for (auto it = temp.rbegin(); it != temp.rend(); it++)
-            {
-                *it += pos;
-                ans.push_back(*it);
-            }
-            pos <<= 1;
-        }
-        return ans;
-    }
-};
-
-```
-
-<br>
 
 --------------------
 ##### 73.矩阵置零
