@@ -6,6 +6,8 @@
         - [52.N皇后2](#52n皇后2)
         - [149.直线上最多的点数](#149直线上最多的点数)
         - [42.接雨水](#42接雨水)
+        - [135.分发糖果](#135分发糖果)
+        - [41.缺失的第一个正数](#41缺失的第一个正数)
         - [](#)
         - [](#-1)
 
@@ -588,6 +590,102 @@ public:
 
 
 
+--------------------------------
+##### 135.分发糖果
+>题目描述：老师想给孩子们分发糖果，有 N 个孩子站成了一条直线，老师会根据每个孩子的表现，预先给他们评分。
+你需要按照以下要求，帮助老师给这些孩子分发糖果：
+每个孩子至少分配到 1 个糖果。
+相邻的孩子中，评分高的孩子必须获得更多的糖果。
+那么这样下来，老师**至少**需要准备多少颗糖果呢？
+示例 1:
+输入: [1,0,2]
+输出: 5
+解释: 你可以分别给这三个孩子分发 2、1、2 颗糖果。
+示例 2:
+输入: [1,2,2]
+输出: 4
+解释: 你可以分别给这三个孩子分发 1、2、1 颗糖果。第三个孩子只得到 1 颗糖果，这已满足上述两个条件。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/candy
+
+
+解题思路：设置辅助数组存放每个孩子的糖果数，初始值均为1（满足第一个条件），在分别从左往右，从右往左遍历增加糖果数（满足第二个条件）。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int candy(vector<int>& ratings) {
+        int n = ratings.size();
+        vector<int> candy(n, 1);
+        for (int i = 1; i < n; i++)
+            if (ratings[i]>ratings[i-1] &&  candy[i] <= candy[i-1])
+                    candy[i] = candy[i-1]+1;
+        for (int i = n-2; i >= 0; i--)
+            if (ratings[i] > ratings[i+1] && candy[i] <= candy[i+1])
+                    candy[i] = candy[i+1]+1;
+        int sum = 0;
+        for (auto& i: candy)
+            sum += i;
+        return sum;
+    }
+};
+
+```
+
+
+
+<br>
+
+
+
+
+---------------------------
+##### 41.缺失的第一个正数
+>题目描述:给你一个未排序的整数数组，请你找出其中没有出现的最小的正整数。
+提示：
+你的算法的时间复杂度应为O(n)，并且只能使用常数级别的额外空间。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/first-missing-positive
+
+解题思路：原地哈希法，也就是将原数组作为哈希表，不断swap保证 下标 i == nums[i] 即可， 不过有下面三种情况时可以直接跳过：
+1.下标i大于数组长度n  2. nums[i]为负数 3.nums[i]与nums[nums[i]]相同。
+另外，由于下标0白占了一个空位，我们需要人为的添加一个0让nums的长度增加一位。
+ 
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int firstMissingPositive(vector<int>& nums) {
+        int n = nums.size();
+        nums.insert(nums.begin(), 0);
+
+        for (int i = 1; i <= n; i++)
+        {
+            while (1<=nums[i] && nums[i]<=n && nums[i]!=i)
+            {
+                if (nums[i] == nums[nums[i]])
+                    break;
+                swap(nums[i], nums[nums[i]]);
+            }
+        }
+        for (int i = 1; i <= n; i++)
+            if (nums[i] != i)
+                return i;
+        return n + 1;
+    }
+};
+```
+
+<br>
 
 
 
