@@ -3,13 +3,13 @@
         - [445.两数相加2](#445两数相加2)
         - [206.反转链表](#206反转链表)
         - [92.反转链表2](#92反转链表2)
+        - [25.K个一组翻转链表](#25k个一组翻转链表)
         - [86.分隔链表](#86分隔链表)
         - [83.删除排序链表中的重复元素](#83删除排序链表中的重复元素)
         - [82.删除排序链表中的重复元素2](#82删除排序链表中的重复元素2)
         - [61.旋转链表](#61旋转链表)
         - [19.删除链表的倒数第N个节点](#19删除链表的倒数第n个节点)
         - [24.两两交换链表中的节点](#24两两交换链表中的节点)
-        - [25.K个一组翻转链表](#25k个一组翻转链表)
         - [138.复制带随机指针的链表](#138复制带随机指针的链表)
         - [141.环形链表](#141环形链表)
         - [142.环形链表2](#142环形链表2)
@@ -268,6 +268,79 @@ public:
 
 <br>
 
+
+
+-----------------------------------
+##### 25.K个一组翻转链表
+>题目描述：给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+k 是一个正整数，它的值小于或等于链表的长度。
+如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+示例：
+给你这个链表：1->2->3->4->5
+当 k = 2 时，应当返回: 2->1->4->3->5
+当 k = 3 时，应当返回: 3->2->1->4->5
+你的算法只能使用常数的额外空间。
+你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/reverse-nodes-in-k-group
+
+解题思路：对链表进行k个k个的遍历，先专门写一个函数用于转置链表的k个元素（需要返回新的首尾节点），该题相当于是 翻转链表 题的难度加大题。该题的关键点在于设置好指针，指向 上一个链表的尾结点 和 下一个链表的头结点。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    pair<ListNode*, ListNode*> reverseList(ListNode* head, ListNode* tail)
+    {
+        ListNode dummy(-1);
+        dummy.next = head;
+        ListNode* cur = head, *end = tail->next;
+        while (cur != end)
+        {
+            auto t = cur->next;
+            cur->next = dummy.next;
+            dummy.next = cur;
+            cur = t;
+        }
+        return make_pair(tail, head);
+    }
+
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        if (k<=1 || !head || !head->next)
+            return head;
+        ListNode dummy(-1);
+        dummy.next = head;
+        ListNode* pre = &dummy;
+        while (1)
+        {
+            ListNode* cur = pre;
+            for (int i = 0; i < k; i++)
+            {
+                cur = cur->next;    
+                if (!cur)
+                    return dummy.next;
+            }
+            ListNode* rightHead = cur->next;
+            pair<ListNode*,ListNode*> newPair = reverseList(pre->next, cur);
+            ListNode* newHead = newPair.first, *newTail = newPair.second;
+            pre->next = newHead;
+            pre = newTail;
+            newTail->next = rightHead;
+        }
+        return dummy.next;
+    }
+};
+
+```
+
+<br>
+
+
 -----------------------------------
 ##### 86.分隔链表
 >题目描述：给定一个链表和一个特定值 x，对链表进行分隔，使得所有小于 x 的节点都在大于或等于 x 的节点之前。
@@ -324,24 +397,25 @@ public:
 
 空间复杂度：O(1)
 
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/
+
+
 ```cpp
 class Solution {
 public:
     ListNode* deleteDuplicates(ListNode* head) {
-        ListNode dummy(-1);
-        ListNode *tail = &dummy;
-        for (auto p = head; p; p=p->next)
-        {
-            if (tail==&dummy || tail->val!=p->val)
+        if (!head || !head->next)
+            return head;
+        ListNode* tail = head;
+        for (auto cur = head; cur; cur = cur->next)
+            if (cur->val != tail->val)
             {
-                tail->next = p;
-                tail = p;
+                tail->next = cur;
+                tail = cur;
             }
-            else
-                continue;
-        }
         tail->next = nullptr;
-        return dummy.next;
+        return head;
     }
 };
 
@@ -399,7 +473,7 @@ public:
 
 -----------------------------------
 ##### 61.旋转链表
->题目描述：给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
+>题目描述：给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。k可以大于链表长度
 示例 1:
 输入: 1->2->3->4->5->NULL, k = 2
 输出: 4->5->1->2->3->NULL
@@ -501,7 +575,7 @@ public:
 链接：https://leetcode-cn.com/problems/swap-nodes-in-pairs
 
 
-解题思路：只进行一次遍历即可，设置pre指针，l指针，r指针；pre指针在前，l，r指针指向需要交换的两个节点，不断往后迭代。
+解题思路：只进行一次遍历即可，不断往后迭代。
 
 时间复杂度：O(N)
 
@@ -516,88 +590,16 @@ public:
             return head;
         ListNode dummy(-1);
         dummy.next = head;
-        ListNode* pre = &dummy, *l = pre->next, *r = l->next;
-        while  (1)
+        ListNode* cur = &dummy;
+        while (cur)
         {
-            l->next = r->next;
-            pre->next = r;
-            r->next = l;
-            
-            pre = l;
-            l = pre->next;
-            if (!l) break;
-            r = l->next;
-            if (!r) break;
-        }
-        return dummy.next;
-    }
-};
-
-```
-
-<br>
-
------------------------------------
-##### 25.K个一组翻转链表
->题目描述：给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
-k 是一个正整数，它的值小于或等于链表的长度。
-如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
-示例：
-给你这个链表：1->2->3->4->5
-当 k = 2 时，应当返回: 2->1->4->3->5
-当 k = 3 时，应当返回: 3->2->1->4->5
-你的算法只能使用常数的额外空间。
-你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/reverse-nodes-in-k-group
-
-解题思路：对链表进行k个k个的遍历，先专门写一个函数用于转置链表的k个元素（需要返回新的首尾节点），该题相当于是 翻转链表 题的难度加大题。该题的关键点在于设置好指针，指向 上一个链表的尾结点 和 下一个链表的头结点。
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-
-```cpp
-class Solution {
-public:
-    pair<ListNode*, ListNode*> reverseList(ListNode* head, ListNode* tail)
-    {
-        ListNode dummy(-1);
-        dummy.next = head;
-        ListNode* cur = head, *end = tail->next;
-        while (cur != end)
-        {
-            auto t = cur->next;
-            cur->next = dummy.next;
-            dummy.next = cur;
-            cur = t;
-        }
-        return make_pair(tail, head);
-    }
-
-    ListNode* reverseKGroup(ListNode* head, int k) {
-        if (k<=1 || !head || !head->next)
-            return head;
-        ListNode dummy(-1);
-        dummy.next = head;
-        ListNode* pre = &dummy;
-        while (1)
-        {
-            ListNode* cur = pre;
-            for (int i = 0; i < k; i++)
-            {
-                cur = cur->next;
-                if (!cur)
-                    return dummy.next;
-            }
-            ListNode* rightHead = cur->next;
-            pair<ListNode*,ListNode*> newPair = reverseList(pre->next, cur);
-            ListNode* newHead = newPair.first, *newTail = newPair.second;
-            pre->next = newHead;
-            pre = newTail;
-            newTail->next = rightHead;
+            if (!cur || !cur->next || !cur->next->next)
+                break;
+            ListNode* l1 = cur->next, *l2 = cur->next->next;
+            l1->next = l2->next;
+            l2->next = l1;
+            cur->next = l2;
+            cur = l1;
         }
         return dummy.next;
     }
@@ -662,38 +664,27 @@ public:
     Node* copyRandomList(Node* head) {
         if (!head)
             return nullptr;
-        //创建新链表
-        auto cur = head;
-        while(cur)
+        for(auto cur = head; cur; cur = cur->next->next)
         {
             Node* node = new Node(cur->val);
             node->next = cur->next;
             cur->next = node;
-            cur = cur->next->next;
         }
-        //填充新链表的random指针
-        auto p = head, q = head->next;
-        while (p && q)
+        for (auto cur = head; cur; cur = cur->next->next)
+            cur->next->random = cur->random ? cur->random->next :nullptr;
+        Node dummy(-1);
+        Node *tail = &dummy;
+        for (auto cur = head; cur; cur = cur->next)
         {
-            q->random = (p->random? p->random->next : nullptr);
-            p = p->next->next;
-            if (q->next)
-                q = q->next->next;
+            Node* node = cur->next;
+            cur->next = cur->next->next;
+            tail->next = node;
+            tail = node;    
         }
-        //将 新旧链表拆开
-        Node* head2 = head->next;
-        p = head, q =head2;
-        while (p && q)
-        {
-            p->next = q->next;
-            p = p->next;
-            q->next = (p ? p->next : nullptr);
-            q = q->next;
-        }
-        return head2;
+        tail->next = nullptr;
+        return dummy.next;
     }
 };
-
 ```
 
 <br>
@@ -857,6 +848,7 @@ public:
 ```
 
 <br>
+
 
 -----------------------------------
 ##### 143.重排链表

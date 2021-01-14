@@ -70,20 +70,23 @@ public:
 class Solution {
 public:
     string reverseWords(string s) {
-        string res;
-        int i = 0, j = 0;
-        while (j < s.size())
+        string ans;
+        int i = 0;
+        while (i < s.size())
         {
-            while (j<s.size() && isspace(s[j]))
-                j++;
-            i = j;
-            while (j<s.size() && !isspace(s[j]))
-                j++;
-            if (i < s.size())
-                res = s.substr(i, j-i) + " " + res;
+            if (isspace(s[i]))
+                ++i;
+            else
+            {
+                int j = i+1;
+                while (j < s.size() && !isspace(s[j]))
+                    ++j;
+                ans = s.substr(i, j-i) + " " + ans;
+                i = j;
+            }            
         }
-        res.pop_back();
-        return res;
+        ans.pop_back();
+        return ans;
     }
 };
 
@@ -91,8 +94,6 @@ public:
 
 
 <br>
-
-
 
 
 ---------------------------

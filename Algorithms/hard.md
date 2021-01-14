@@ -8,6 +8,7 @@
         - [42.接雨水](#42接雨水)
         - [135.分发糖果](#135分发糖果)
         - [41.缺失的第一个正数](#41缺失的第一个正数)
+        - [25.K个一组翻转链表](#25k个一组翻转链表)
         - [](#)
         - [](#-1)
 
@@ -687,6 +688,77 @@ public:
 
 <br>
 
+
+
+-----------------------------------
+##### 25.K个一组翻转链表
+>题目描述：给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+k 是一个正整数，它的值小于或等于链表的长度。
+如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+示例：
+给你这个链表：1->2->3->4->5
+当 k = 2 时，应当返回: 2->1->4->3->5
+当 k = 3 时，应当返回: 3->2->1->4->5
+你的算法只能使用常数的额外空间。
+你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/reverse-nodes-in-k-group
+
+解题思路：对链表进行k个k个的遍历，先专门写一个函数用于转置链表的k个元素（需要返回新的首尾节点），该题相当于是 翻转链表 题的难度加大题。该题的关键点在于设置好指针，指向 上一个链表的尾结点 和 下一个链表的头结点。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    pair<ListNode*, ListNode*> reverseList(ListNode* head, ListNode* tail)
+    {
+        ListNode dummy(-1);
+        dummy.next = head;
+        ListNode* cur = head, *end = tail->next;
+        while (cur != end)
+        {
+            auto t = cur->next;
+            cur->next = dummy.next;
+            dummy.next = cur;
+            cur = t;
+        }
+        return make_pair(tail, head);
+    }
+
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        if (k<=1 || !head || !head->next)
+            return head;
+        ListNode dummy(-1);
+        dummy.next = head;
+        ListNode* pre = &dummy;
+        while (1)
+        {
+            ListNode* cur = pre;
+            for (int i = 0; i < k; i++)
+            {
+                cur = cur->next;    
+                if (!cur)
+                    return dummy.next;
+            }
+            ListNode* rightHead = cur->next;
+            pair<ListNode*,ListNode*> newPair = reverseList(pre->next, cur);
+            ListNode* newHead = newPair.first, *newTail = newPair.second;
+            pre->next = newHead;
+            pre = newTail;
+            newTail->next = rightHead;
+        }
+        return dummy.next;
+    }
+};
+
+```
+
+<br>
 
 
 
