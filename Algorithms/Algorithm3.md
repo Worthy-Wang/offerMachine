@@ -5,16 +5,13 @@
         - [125.验证回文串](#125验证回文串)
         - [28.实现strStr()](#28实现strstr)
         - [剑指 Offer 20. 表示数值的字符串](#剑指-offer-20-表示数值的字符串)
+        - [65.有效数字](#65有效数字)
         - [8.字符串转换整数](#8字符串转换整数)
         - [67.二进制求和](#67二进制求和)
         - [415.字符串相加](#415字符串相加)
         - [43.字符串相乘](#43字符串相乘)
-        - [10.正则表达式匹配](#10正则表达式匹配)
-        - [44.通配符匹配](#44通配符匹配)
-        - [65.有效数字](#65有效数字)
         - [12.整形转罗马数字](#12整形转罗马数字)
         - [13.罗马数字转整形](#13罗马数字转整形)
-        - [38.外观数列](#38外观数列)
         - [49.字母异位词分组](#49字母异位词分组)
         - [71.简化路径](#71简化路径)
         - [58.最后一个单词的长度](#58最后一个单词的长度)
@@ -301,46 +298,40 @@ next数组其实也很好理解，需要用到动态规划的思想。它根据 
 ```cpp
 class Solution {
 public:
-void getNext(string &needle, vector<int> &next)
-{
-    int n = needle.size();
-    next[0] = -1;
-    int i = 0, j = -1; //i在后，j在前
-    while (i < n)
+    void getNext(string& needle, vector<int>& next)
     {
-        if (-1 == j || needle[i] == needle[j])
+        int i = 0, j = -1;
+        next[0] = -1;
+        while (i < needle.size())
         {
-            i++, j++;
-            next[i] = j;
+            if (-1==j || needle[i]==needle[j])
+            {
+                ++i, ++j;
+                next[i] = j;
+            }else
+                j = next[j];
         }
-        else
-            j = next[j];
     }
-}
 
-int strStr(string haystack, string needle)
-{
-    int n1 = haystack.size(), n2 = needle.size();
-    if (0==n2)
-        return 0;
-    if (0==n1) 
-        return -1;
-    vector<int> next(n2+1);//+1是因为构建next数组的过程中会多构建一个无用的下标
-    getNext(needle, next);
-    int i = 0, j = 0; //i作为主串的下标，j作为子串的下标
-    while (i < n1 && j<n2)
-    {
-        if (-1 == j || haystack[i] == needle[j])
+    int strStr(string haystack, string needle) {
+        int n1 = haystack.size(), n2 = needle.size();
+        if (0 == n2)
+            return 0;
+        vector<int> next(n2 + 1);
+        getNext(needle, next);
+        int i = 0, j = 0;
+        while (i < n1)
         {
-            i++, j++;
-            if (j == n2)
-                return i - n2;
+            if (-1==j || haystack[i]==needle[j])
+            {
+                ++i, ++j;
+                if (j == n2)
+                    return i-n2;
+            }else
+                j = next[j];
         }
-        else
-            j = next[j];
+        return -1;
     }
-    return -1;
-}
 };
 
 ```
@@ -412,6 +403,78 @@ public:
 ```
 
 <br>
+
+
+
+
+-----------------------------
+##### 65.有效数字
+>题目描述：验证给定的字符串是否可以解释为十进制数字。
+说明: 我们有意将问题陈述地比较模糊。在实现代码之前，你应当事先思考所有可能的情况。这里给出一份可能存在于有效十进制数字中的字符列表。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/valid-number
+
+解题思路：先写一个最难的   -3.12e-3    .前后有数字即可，e可存在可不存在，若e存在后面就必须接上数字。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    bool isNumber(string s) {
+        int i = 0;
+        while (isspace(s[i])) i++; //跳过空格
+        if ('+'==s[i] || '-'==s[i]) i++; //跳过+-号
+        bool ans1 = false, ans2 = false;
+        while(isdigit(s[i]))
+        {
+            i++;
+            ans1 = true;
+        }
+        if ('.' == s[i]) i++; //跳过.
+        while(isdigit(s[i]))
+        {
+            i++;
+            ans2 = true;
+        }
+        if (!ans1 && !ans2) //如果小数点前后都没有数字，返回false
+            return false;
+
+        if ('e'==s[i] || 'E'==s[i])//如果数字后面有e的情况
+        {
+            i++;
+            if ('+'==s[i] || '-'==s[i])
+                i++;
+            bool ans3 = false;
+            while(isdigit(s[i]))
+            {
+                i++;
+                ans3 = true;
+            }
+            if (!ans3)
+                return false;
+        }        
+
+        //有效数字遍历完成，往后遍历空格
+        while (i != s.size())
+        {
+            if (!isspace(s[i]))
+                return false;
+            i++;
+        }
+
+        return true;
+    }
+};
+
+```
+
+<br>
+
+
 
 -----------------------------
 ##### 8.字符串转换整数
@@ -612,118 +675,9 @@ public:
 <br>
 
 
-
-
-
-
------------------------------
-##### 10.正则表达式匹配
->题目描述：
-
-解题思路：
-
-时间复杂度：
-
-空间复杂度：
-
-```cpp
-
-```
-
-<br>
-
-
------------------------------
-##### 44.通配符匹配
->题目描述：
-
-解题思路：
-
-时间复杂度：
-
-空间复杂度：
-
-```cpp
-
-```
-
-<br>
-
-
-
-
-
------------------------------
-##### 65.有效数字
->题目描述：验证给定的字符串是否可以解释为十进制数字。
-说明: 我们有意将问题陈述地比较模糊。在实现代码之前，你应当事先思考所有可能的情况。这里给出一份可能存在于有效十进制数字中的字符列表。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/valid-number
-
-解题思路：首先考虑一种最复杂的情况 "  -3.1415e13 "  ，我们将 . 作为一个区分处，只要 . 的前后有合法的数字那么该数字即是合法的；另外如果后面有 e(E) 的话，后面必须接上数字才行，最后再判断是否有其他的非法字母。
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    bool isNumber(string s) {
-        int i = 0;
-        while (isspace(s[i])) i++; //忽略空格
-        if ('+'==s[i] || '-'==s[i])
-            i++;
-        bool flag1=  false;
-        while (isdigit(s[i]))
-        {
-            flag1 = true;
-            i++;    
-        }
-        if ('.' == s[i])
-            i++;
-        bool flag2 = false;
-        while (isdigit(s[i]))
-        {
-            flag2 = true;
-            i++;
-        }
-        if (!flag1 && !flag2)
-            return false;
-        
-        // 如果有e(E)的话
-        if ('e'==s[i] || 'E'==s[i])
-        {
-            i++;
-            if ('+'==s[i] || '-'==s[i])
-                i++;
-            bool flag3 = false;
-            while (isdigit(s[i]))
-            {
-                flag3 = true;
-                i++;
-            }
-            if (!flag3)
-                return false;
-        }
-
-        for (; i < s.size(); i++)
-            if (!isspace(s[i]))
-                return false;
-        return true;        
-    }
-};
-
-
-```
-
-<br>
-
-
 -----------------------------
 ##### 12.整形转罗马数字
->题目描述：罗马数字包含以下七种字符： I， V， X， L，C，D 和 M。
+>题目描述：罗马数字包含以下七种字符： I， V， X， L，C，D 和 M。 
 字符          数值
 I             1
 V             5
@@ -803,27 +757,24 @@ C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
 class Solution {
 public:
     int romanToInt(string s) {
-        unordered_map<string, int> hashmap{{"I",1}, {"IV", 4}, {"V", 5}, {"IX", 9}, {"X", 10}, {"XL", 40}, {"L", 50}, {"XC", 90}, {"C",100}, {"CD",400}, {"D", 500}, {"CM",900}, {"M", 1000}};
-        int sum = 0;
-        for (int i = 0; i < s.size(); i++)
+        unordered_map<string, int> hashmap{{"I", 1}, {"IV", 4}, {"V",5}, {"IX", 9}, {"X", 10},  {"XL", 40}, {"L", 50}, {"XC", 90}, {"C", 100}, {"CD", 400}, {"D", 500}, {"CM", 900}, {"M", 1000}};
+        int i = 0;
+        int ans = 0;
+        while (i < s.size())
         {
-            if (i==s.size()-1)
+            if (hashmap.count(s.substr(i, 2)))
             {
-                sum += hashmap[s.substr(i,1)];
-            }
-            else if (hashmap.count(s.substr(i, 2)))
+                ans += hashmap[s.substr(i, 2)];
+                i += 2;
+            }else
             {
-                sum += hashmap[s.substr(i,2)];
-                i++;
-            }else   
-            {
-                sum += hashmap[s.substr(i,1)];
+                ans += hashmap[s.substr(i, 1)];
+                i += 1;
             }
         }
-        return sum;
+        return ans;
     }
 };
-```
 
 <br>
 
@@ -859,28 +810,24 @@ countAndSay(n) 是对 countAndSay(n-1) 的描述，然后转换成另一个数�
 ```cpp
 class Solution {
 public:
-    string countAndSay(int n)
-    {
-        string ans("1");
-        for (int k = 0; k < n - 1; k++)
+    string countAndSay(int n) {
+        string ans = "1";
+        for (int k = 1; k < n; ++k)
         {
-            stringstream ss(ans);
-            auto l = ans.begin();
-            while (l != ans.end())
+            int i = 0, j = 0;
+            string temp;
+            while (i < ans.size())
             {
-                auto r = std::find_if(l, ans.end(), [&](char ch) {
-                    return ch != (*l);
-                });
-                int cnt = distance(l, r);
-                ss <<  cnt << *l;
-                l = r;
+                while (j<ans.size() && ans[i]==ans[j])
+                    ++j;
+                temp += to_string(j-i) + to_string(ans[i]-'0');
+                i = j;
             }
-            ans = ss.str();
+            ans = temp;
         }
         return ans;
     }
 };
-
 ```
 
 <br>

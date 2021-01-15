@@ -8,6 +8,8 @@
         - [53.最大子序和](#53最大子序和)
         - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
         - [85.最大矩阵](#85最大矩阵)
+        - [44.通配符匹配](#44通配符匹配)
+        - [10.正则表达式匹配](#10正则表达式匹配)
         - [97.交错字符串](#97交错字符串)
         - [87.扰乱字符串](#87扰乱字符串)
         - [64.最小路径和](#64最小路径和)
@@ -462,6 +464,122 @@ public:
 
 ```
 
+
+<br>
+
+
+
+
+
+-----------------------------
+##### 44.通配符匹配
+>题目描述：给定一个字符串 (s) 和一个字符模式 (p) ，实现一个支持 '?' 和 '*' 的通配符匹配。
+'?' 可以匹配任何单个字符。
+'*' 可以匹配任意字符串（包括空字符串）。
+两个字符串完全匹配才算匹配成功。
+说明:
+s 可能为空，且只包含从 a-z 的小写字母。
+p 可能为空，且只包含从 a-z 的小写字母，以及字符 ? 和 *。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/wildcard-matching
+
+解题思路：动态规划，dp[i][j]代表s[i]长度的字符串能否被p[j]长度的字符串进行通配符匹配
+s[i]==p[j] dp[i][j] = dp[i-1][j-1]
+'?'==p[j] dp[i][j] = dp[i-1][j-1]
+'*'==p[j] dp[i][j] = dp[i-1][j] || dp[i][j-1]
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(M*N)
+
+```cpp
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        int m = s.size(), n = p.size();
+        vector<vector<int>> dp(m+1, vector<int>(n+1, 0));
+        dp[0][0] = 1;
+        for (int i = 1; i <= m; ++i)
+            dp[i][0] = 0;
+        for (int j = 1; j <= n; ++j)
+            if ('*'==p[j-1])
+                dp[0][j] = 1;
+            else
+                break;
+        for (int i = 1; i <= m; ++i)
+            for (int j = 1; j <= n; ++j)
+            {
+                if (p[j-1] == s[i-1])
+                    dp[i][j] = dp[i-1][j-1];
+                else if ('?' == p[j-1])
+                    dp[i][j] = dp[i-1][j-1];
+                else if ('*' == p[j-1])
+                    dp[i][j] = dp[i-1][j] || dp[i][j-1];
+            }
+        return dp[m][n];
+    }
+};
+
+```
+
+<br>
+
+
+-----------------------------
+##### 10.正则表达式匹配
+>题目描述：给你一个字符串 s 和一个字符规律 p，请你来实现一个支持 '.' 和 '*' 的正则表达式匹配。
+'.' 匹配任意单个字符
+'*' 匹配零个或多个前面的那一个元素
+所谓匹配，是要涵盖 整个 字符串 s的，而不是部分字符串。
+
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/regular-expression-matching
+
+解题思路：动态规划，dp[i][j]代表s[i]为止的串能够被p[j]为止的串用正则表达式匹配。首先对二维动态规划的数组多扩充一行一列用来存储空字符串，完善初始状态；然后开始遍历数组，先看s[i] 与 p[j]是否相同（p[j]是'.'也可以），在根据 p[j]是 '*'的情况进行判断，*可以代表0个或者多个，就比较复杂了。
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(M*N)
+
+```cpp
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        
+        int m = s.size(), n = p.size();
+        vector<vector<int>> dp(m+1, vector<int>(n+1, false));
+        dp[0][0] = true;
+        for (int i = 1; i <= m; ++i)
+            dp[i][0] = false;
+        for (int j = 1; j <= n; ++j)
+            if ('*' == p[j-1])
+                dp[0][j] = dp[0][j-2];
+            else
+                dp[0][j] = false;
+        for (int i = 1; i <= m; ++i)
+            for (int j = 1; j <= n; ++j)
+            {
+                if (s[i-1]==p[j-1] || '.'==p[j-1])
+                {
+                    dp[i][j] = dp[i-1][j-1];
+                }else if ('*' == p[j-1])
+                {
+                    if (dp[i][j-2])
+                        dp[i][j] = true;
+                    else
+                    {
+                        if (p[j-2]==s[i-1] || '.'==p[j-2])
+                            dp[i][j] = dp[i-1][j];
+                    }
+                }
+            }
+        return dp[m][n];
+    }
+};
+
+```
 
 <br>
 
