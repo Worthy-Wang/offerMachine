@@ -13,6 +13,9 @@
         - [28.实现strStr()](#28实现strstr)
         - [44.通配符匹配](#44通配符匹配)
         - [10.正则表达式匹配](#10正则表达式匹配)
+        - [32.最长的有效括号](#32最长的有效括号)
+        - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
+        - [239. 滑动窗口最大值](#239-滑动窗口最大值)
         - [](#)
         - [](#-1)
 
@@ -1070,6 +1073,180 @@ public:
 
 <br>
 
+---------------------------
+##### 32.最长的有效括号
+>题目描述:给定一个只包含 '(' 和 ')' 的字符串，找出最长的包含有效括号的子串的长度。
+示例 1:
+输入: "((()))"
+输出: 3
+解释: 最长有效括号子串为 "((()))"
+示例 2:
+输入: ")()())"
+输出: 4
+解释: 最长有效括号子串为 "()()"
+示例 3:
+输入: "()(())"
+输出: 6
+解释: 最长有效括号子串为 "()(())"
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-valid-parentheses
+
+解题思路：先通过模拟栈的方法，记录不能够进行匹配消除的所有 '(' 的下标置位为1，然后该问题就进行了转换，也就是在只有0 和 1 的数组中求 连续0 的最大长度，可以以 1 作为界限，计算中间区域的长度。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int longestValidParentheses(string s) {
+        
+        stack<int> stk;
+        int n = s.size();
+        for (int i = 0; i < n; ++i)
+        {
+            if (!stk.empty() && '('==s[stk.top()] && ')'==s[i])
+                stk.pop();
+            else
+                stk.push(i);
+        }
+
+        int r = n;
+        int ans = 0;
+        while (!stk.empty())
+        {
+            int l = stk.top();
+            stk.pop();
+            ans = std::max(r-l-1, ans);
+            r = l;
+        }
+        ans = std::max(ans, r-0);
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+
+
+---------------------------
+##### 84.柱状图中最大的矩形
+>题目描述:给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+求在该柱状图中，能够勾勒出来的矩形的最大面积。
+示例:
+输入: [2,1,5,6,2,3]
+输出: 10
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/largest-rectangle-in-histogram
+
+* **解法一**
+
+解题思路：暴力法，两层for循环，采用中心扩散法，第一次遍历中的柱子作为最低的高度向两边扩散。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(1)
+
+
+* **解法二**
+
+解题思路：单调栈法，在暴力法的基础上进行改进。在暴力法中是以当前柱体为最低高度向左右两边展开，需要分别找到 左边第一个小于当前柱体高度的 和 右边第一个小于当前柱体高度的。而单调栈可以帮助我们完成该任务，当 当前柱体的高 小于 栈顶的高时，栈顶出栈，这样就同时找到了左右两边的更小值。注意此处操作的节点是 弹出栈的那一个。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        if (heights.empty())
+            return 0;
+        int ans = 0;
+        heights.push_back(0);//在数组尾部加入一个最小的数，保证单调栈中的所有数都可以进行计算
+        std::stack<int> stk;//单调栈存储的是下标
+        for (int i = 0; i < heights.size(); i++)
+        {
+            while (!stk.empty() && heights[i]<heights[stk.top()])
+            {
+                int mid = stk.top();
+                stk.pop();
+                int l = stk.empty() ? -1 : stk.top();
+                int r = i;
+                ans = std::max(ans, heights[mid]*(r-l-1));
+            }
+            stk.push(i);
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+
+---------------------------
+##### 239. 滑动窗口最大值
+>题目描述:给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+返回滑动窗口中的最大值。
+滑动窗口的位置                最大值
+---------------               -----
+[1  3  -1] -3  5  3  6  7       3
+ 1 [3  -1  -3] 5  3  6  7       3
+ 1  3 [-1  -3  5] 3  6  7       5
+ 1  3  -1 [-3  5  3] 6  7       5
+ 1  3  -1  -3 [5  3  6] 7       6
+ 1  3  -1  -3  5 [3  6  7]      7
+
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/sliding-window-maximum
+
+解题思路：用一个单调deque作为辅助，存放的是单调递减的元素下标，当新的元素更大不满足单调减的特性时需要从队尾出队，当deque长度超长时需要从队头出队。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        if (nums.empty() || nums.size()<k )
+            return {};
+        std::deque<int> deque;//存储下标
+        for (int i = 0; i < k; ++i)
+        {
+            while (!deque.empty() && nums[i]>=nums[deque.back()])
+                deque.pop_back();
+            deque.push_back(i);
+        }
+        vector<int> ans{nums[deque.front()]};
+        for (int i = k; i < nums.size(); i++)
+        {
+            if (i - deque.front() >= k)
+                deque.pop_front();
+            while (!deque.empty() && nums[i]>=nums[deque.back()])
+                deque.pop_back();
+            deque.push_back(i);
+            ans.push_back(nums[deque.front()]);
+        }
+        return ans;
+    }
+};
+
+
+```
+
+<br>
 
 
 

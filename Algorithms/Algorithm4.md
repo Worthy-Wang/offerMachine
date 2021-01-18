@@ -5,9 +5,9 @@
         - [剑指 Offer 31. 栈的压入、弹出序列](#剑指-offer-31-栈的压入弹出序列)
         - [20.有效的括号](#20有效的括号)
         - [32.最长的有效括号](#32最长的有效括号)
+        - [150.逆波兰表达式求值](#150逆波兰表达式求值)
         - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
         - [239. 滑动窗口最大值](#239-滑动窗口最大值)
-        - [150.逆波兰表达式求值](#150逆波兰表达式求值)
 
 # 四.栈和队列专题
 
@@ -273,37 +273,100 @@ public:
 class Solution {
 public:
     int longestValidParentheses(string s) {
-        std::stack<int> stk;
-        for (int i = 0; i < s.size(); i++)
+        
+        stack<int> stk;
+        int n = s.size();
+        for (int i = 0; i < n; ++i)
         {
-            if (stk.empty())
-                stk.push(i);
-            else if ('('==s[stk.top()] && ')'==s[i])
+            if (!stk.empty() && '('==s[stk.top()] && ')'==s[i])
                 stk.pop();
             else
                 stk.push(i);
         }
 
-        //计算stk中的最大间隔
-        int maxLen = 0;
-        int r = s.size(), l;
-        while(!stk.empty())
+        int r = n;
+        int ans = 0;
+        while (!stk.empty())
         {
-            l = stk.top();
+            int l = stk.top();
             stk.pop();
-            maxLen = std::max(maxLen, r-l-1);
+            ans = std::max(r-l-1, ans);
             r = l;
         }
-        l = -1;
-        maxLen = std::max(maxLen, r-l-1);
-        return maxLen;
+        ans = std::max(ans, r-0);
+        return ans;
     }
 };
-
 
 ```
 
 <br>
+
+
+
+
+
+---------------------------
+##### 150.逆波兰表达式求值
+>题目描述:
+根据 逆波兰表示法，求表达式的值。
+有效的运算符包括 +, -, *, / 。每个运算对象可以是整数，也可以是另一个逆波兰表达式。
+说明：
+整数除法只保留整数部分。
+给定逆波兰表达式总是有效的。换句话说，表达式总会得出有效数值且不存在除数为 0 的情况。
+逆波兰表达式：
+逆波兰表达式是一种后缀表达式，所谓后缀就是指算符写在后面。
+平常使用的算式则是一种中缀表达式，如 ( 1 + 2 ) * ( 3 + 4 ) 。
+该算式的逆波兰表达式写法为 ( ( 1 2 + ) ( 3 4 + ) * ) 。
+逆波兰表达式主要有以下两个优点：
+去掉括号后表达式无歧义，上式即便写成 1 2 + 3 4 + * 也可以依据次序计算出正确结果。
+适合用栈操作运算：遇到数字则入栈；遇到算符则取出栈顶两个数字进行计算，并将结果压入栈中。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/evaluate-reverse-polish-notation
+
+解题思路：逆波兰表达式的核心在于遇到数字时进行入栈，遇到运算符号时出栈两个元素，并将其计算的结果入栈，最后弹出栈中剩下的最后一个元素即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int evalRPN(vector<string>& tokens) {
+        if (tokens.empty())
+            return 0;
+        std::stack<int> stk;
+        for(auto& e: tokens)
+        {
+            if (e.size()==1 && !isdigit(e[0]))
+            {
+                int b = stk.top();
+                stk.pop();
+                int a = stk.top();
+                stk.pop();
+                switch(e[0])
+                {
+                    case '+': stk.push(a+b); break;
+                    case '-': stk.push(a-b); break;
+                    case '*': stk.push(a*b); break;
+                    case '/': stk.push(a/b); break;
+                    default: break;
+                }
+            }
+            else 
+                stk.push(stoi(e));
+        }
+        int sum = stk.top();
+        return sum;
+    }
+};
+
+```
+
+<br>
+
 
 
 ---------------------------
@@ -420,68 +483,4 @@ public:
 ```
 
 <br>
-
-
-
----------------------------
-##### 150.逆波兰表达式求值
->题目描述:
-根据 逆波兰表示法，求表达式的值。
-有效的运算符包括 +, -, *, / 。每个运算对象可以是整数，也可以是另一个逆波兰表达式。
-说明：
-整数除法只保留整数部分。
-给定逆波兰表达式总是有效的。换句话说，表达式总会得出有效数值且不存在除数为 0 的情况。
-逆波兰表达式：
-逆波兰表达式是一种后缀表达式，所谓后缀就是指算符写在后面。
-平常使用的算式则是一种中缀表达式，如 ( 1 + 2 ) * ( 3 + 4 ) 。
-该算式的逆波兰表达式写法为 ( ( 1 2 + ) ( 3 4 + ) * ) 。
-逆波兰表达式主要有以下两个优点：
-去掉括号后表达式无歧义，上式即便写成 1 2 + 3 4 + * 也可以依据次序计算出正确结果。
-适合用栈操作运算：遇到数字则入栈；遇到算符则取出栈顶两个数字进行计算，并将结果压入栈中。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/evaluate-reverse-polish-notation
-
-解题思路：逆波兰表达式的核心在于遇到数字时进行入栈，遇到运算符号时出栈两个元素，并将其计算的结果入栈，最后弹出栈中剩下的最后一个元素即可。
-
-时间复杂度：O(N)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-public:
-    int evalRPN(vector<string>& tokens) {
-        if (tokens.empty())
-            return 0;
-        std::stack<int> stk;
-        for(auto& e: tokens)
-        {
-            if (e.size()==1 && !isdigit(e[0]))
-            {
-                int b = stk.top();
-                stk.pop();
-                int a = stk.top();
-                stk.pop();
-                switch(e[0])
-                {
-                    case '+': stk.push(a+b); break;
-                    case '-': stk.push(a-b); break;
-                    case '*': stk.push(a*b); break;
-                    case '/': stk.push(a/b); break;
-                    default: break;
-                }
-            }
-            else 
-                stk.push(stoi(e));
-        }
-        int sum = stk.top();
-        return sum;
-    }
-};
-
-```
-
-<br>
-
 

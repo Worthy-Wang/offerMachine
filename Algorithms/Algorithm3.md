@@ -12,7 +12,7 @@
         - [43.字符串相乘](#43字符串相乘)
         - [12.整形转罗马数字](#12整形转罗马数字)
         - [13.罗马数字转整形](#13罗马数字转整形)
-        - [49.字母异位词分组](#49字母异位词分组)
+        - [38.外观数列](#38外观数列)
         - [71.简化路径](#71简化路径)
         - [58.最后一个单词的长度](#58最后一个单词的长度)
 
@@ -780,6 +780,56 @@ public:
 
 
 -----------------------------
+##### 49.字母异位词分组
+>题目描述：给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
+示例:
+输入: ["eat", "tea", "tan", "ate", "nat", "bat"]
+输出:
+[
+  ["ate","eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+说明：
+所有输入均为小写字母。
+不考虑答案输出的顺序。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/group-anagrams
+
+解题思路：设置一个哈希表 key 为 每个字符串排序后的串，value 为 符合该key值的 字符串集合，进行一次遍历即可。
+
+时间复杂度：O(N*K*logK) k为字符串的长度，N为字符串数组的长度
+
+空间复杂度：O(N) 
+
+```cpp
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        unordered_map<string, vector<string>> hashmap;
+        string key;
+        for(auto& s: strs)
+        {
+            key = s;
+            sort(key.begin(), key.end(), std::less<char>());
+            hashmap[key].push_back(s);
+        }
+        vector<vector<string>> ans;
+        for(auto& e: hashmap)
+            ans.push_back(e.second);
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+
+
+-----------------------------
 ##### 38.外观数列
 >题目描述：给定一个正整数 n ，输出外观数列的第 n 项。
 「外观数列」是一个整数序列，从数字 1 开始，序列中的每一项都是对前一项的描述。
@@ -830,49 +880,31 @@ public:
 };
 ```
 
-<br>
-
-
------------------------------
-##### 49.字母异位词分组
->题目描述：给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
-示例:
-输入: ["eat", "tea", "tan", "ate", "nat", "bat"]
-输出:
-[
-  ["ate","eat","tea"],
-  ["nat","tan"],
-  ["bat"]
-]
-说明：
-所有输入均为小写字母。
-不考虑答案输出的顺序。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/group-anagrams
-
-解题思路：设置一个哈希表 key 为 每个字符串排序后的串，value 为 符合该key值的 字符串集合，进行一次遍历即可。
-
-时间复杂度：O(N*K*logK) k为字符串的长度，N为字符串数组的长度
-
-空间复杂度：O(N) 
+也可以使用STL库中的find_if 和 find_if_not进行查找。
 
 ```cpp
 class Solution {
 public:
-    vector<vector<string>> groupAnagrams(vector<string>& strs) {
-        unordered_map<string, vector<string>> hashmap;
-        string key;
-        for(auto& s: strs)
+    string countAndSay(int n) {
+        if (0 == n)
+            return string();
+        string s0 = "1";
+        for (int i = 1; i < n; ++i)
         {
-            key = s;
-            sort(key.begin(), key.end(), std::less<char>());
-            hashmap[key].push_back(s);
+            auto beg = s0.begin();
+            string s1;
+            while (beg != s0.end())
+            {
+                auto it = std::find_if_not(beg, s0.end(), [&](char ch){
+                    return *beg == ch;
+                });
+                int num = *beg - '0', cnt = std::distance(beg, it);
+                s1 += to_string(cnt) + to_string(num);
+                beg = it;
+            }
+            s0 = s1;
         }
-        vector<vector<string>> ans;
-        for(auto& e: hashmap)
-            ans.push_back(e.second);
-        return ans;
+        return s0;
     }
 };
 
@@ -884,7 +916,7 @@ public:
 -----------------------------
 ##### 71.简化路径
 >题目描述：以 Unix 风格给出一个文件的绝对路径，你需要简化它。或者换句话说，将其转换为规范路径。
-在 Unix 风格的文件系统中，一个点（.）表示当前目录本身；此外，两个点 （..） 表示将目录切换到上一级（指向父目录）；两者都可以是复杂相对路径的组成部分。
+在 Unix 风格的文件系统中，一个点（.）表示当前目录本身；此外，两个点 （..） 表示将目录切换到上一级（指向父目录）；两者都可以是复杂相对路径的组成部分。    
 请注意，返回的规范路径必须始终以斜杠 / 开头，并且两个目录名之间必须只有一个斜杠 /。最后一个目录名（如果存在）不能以 / 结尾。此外，规范路径必须是表示绝对路径的最短字符串。
 
 来源：力扣（LeetCode）
@@ -992,6 +1024,33 @@ public:
     }
 };
 ```
+
+* **解法三**
+
+解题思路：使用find_if 和  find_if_not
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    int lengthOfLastWord(string s) {
+        reverse(s.begin(), s.end());
+        auto beg = find_if_not(s.begin(), s.end(), [&](char ch){
+            return ' ' == ch;
+        });
+        auto end = find_if(beg, s.end(), [&](char ch){
+            return ' ' == ch;
+        });
+        return distance(beg, end);
+    }
+};
+
+```
+
 
 <br>
 
