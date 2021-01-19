@@ -16,6 +16,8 @@
         - [32.最长的有效括号](#32最长的有效括号)
         - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
         - [239. 滑动窗口最大值](#239-滑动窗口最大值)
+        - [99.恢复二叉搜索树](#99恢复二叉搜索树)
+        - [124.二叉树中的最大路径和](#124二叉树中的最大路径和)
         - [](#)
         - [](#-1)
 
@@ -1250,12 +1252,104 @@ public:
 
 
 
+--------------------------- 
+##### 99.恢复二叉搜索树
+>题目描述:给你二叉搜索树的根节点 root ，该树中的两个节点被错误地交换。请在不改变其结构的情况下，恢复这棵树。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/recover-binary-search-tree
+
+
+解题思路：在中序遍历的过程中直接用两个指针进行指向即可。遍历过程中仍然是可能会出现一个逆序对或者两个逆序对的情况。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    TreeNode* pre = nullptr;
+    TreeNode* node1 = nullptr;
+    TreeNode* node2 = nullptr;
+public:
+    void DFS(TreeNode* root)
+    {
+        if (!root)
+            return;
+        DFS(root->left);
+        if (!pre)
+            pre = root;
+        else
+        {
+            if (pre->val > root->val)
+            {
+                if (!node1 && !node2) //交换的节点相邻
+                {
+                    node1 = pre;
+                    node2 = root;
+                }else //交换的节点不相邻，此时node1保留
+                {
+                    node2 = root;
+                }
+            }
+            pre = root;
+        }
+        DFS(root->right);
+    }
+
+    void recoverTree(TreeNode* root) {
+        DFS(root);
+        swap(node1->val, node2->val);
+    }
+};
+
+```
+
+
+<br>
 
 
 
+---------------------------
+##### 124.二叉树中的最大路径和
+>题目描述:给定一个非空二叉树，返回其最大路径和。
+本题中，路径被定义为一条从树中任意节点出发，沿父节点-子节点连接，达到任意节点的序列。该路径至少包含一个节点，且不一定经过根节点。
+注意：左子树->根->右子树 也算是路径。
 
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/binary-tree-maximum-path-sum
 
+解题思路：后序遍历的方法，不断将计算出来的结果与保留的最大值进行比较
 
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    int ans = INT32_MIN;
+public:
+    int DFS(TreeNode* root)
+    {
+        if (!root)
+            return 0;
+        int l = DFS(root->left);
+        int r = DFS(root->right);
+        ans = std::max(ans, root->val);
+        ans = std::max(ans, root->val + max(0,l) + max(0,r));
+        return root->val + std::max(0, std::max(l, r));
+    }
+
+    int maxPathSum(TreeNode* root) {
+        if (!root)
+            return 0;
+        DFS(root);
+        return ans;
+    }
+};
+```
+
+<br>
 
 
 

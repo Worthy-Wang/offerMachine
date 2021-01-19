@@ -577,6 +577,8 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list
 
+* **解法一**
+
 解题思路：1.将右子树连接到左子树的右边最后一个节点右边； 2.左子树转移到右子树 3.向右子树移动。 循环该过程
 
 时间复杂度：O(N)
@@ -587,26 +589,57 @@ public:
 class Solution {
 public:
     void flatten(TreeNode* root) {
-        TreeNode* pre = nullptr, *next = nullptr, *cur = root;
-        while (cur)
+        while(root)
         {
-            if (cur->left)
+            if (root->left)
             {
-                pre = cur->left;
-                while (pre->right)
-                    pre = pre->right;
-                pre->right = cur->right;
-                next = cur->left;
-                cur->left = nullptr;
-                cur->right = next;
-            }   
-            cur = cur->right;    
-        }
-        
+                TreeNode* lchild = root->left;
+                while (lchild->right)
+                    lchild = lchild->right;
+                lchild->right = root->right;
+                root->right = nullptr;
+                swap(root->left, root->right);
+            }
+            root = root->right;
+        }        
     }
 };
 
 ```
+
+* **解法二**
+
+解题思路：将上面的方法改为递归
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+public:
+    void flatten(TreeNode* root) {
+        if (!root)
+            return;
+        if (root->left)
+        {
+            TreeNode* lchild = root->left;
+            while(lchild->right)
+                lchild = lchild->right;
+            lchild->right = root->right;
+            root->right = nullptr;
+            swap(root->left, root->right);
+        }
+        flatten(root->right);     
+    }
+};
+
+```
+
+<br>
+
+
 
 <br>
 
@@ -638,22 +671,42 @@ struct Node {
 class Solution {
 public:
     Node* connect(Node* root) {
-        if (!root)
-            return nullptr;
-        Node* cur = root;
+        
+        Node* cur = root, *nextCur = nullptr, *pre = nullptr;
         while (cur)
         {
-            Node* nextLevel = cur->left;
-            if (!nextLevel)
-                break;
-            while (cur)
+            if (cur->left)
             {
-                cur->left->next = cur->right;
-                if (cur->next)
-                    cur->right->next = cur->next->left;
-                cur = cur->next;
+                if (!nextCur)
+                    nextCur = cur->left;
+                if (!pre)
+                    pre = cur->left;
+                else
+                {
+                    pre->next = cur->left;
+                    pre = cur->left;
+                }
             }
-            cur = nextLevel;
+            if (cur->right)
+            {
+                if (!nextCur)
+                    nextCur = cur->right;
+                if (!pre)
+                    pre = cur->right;
+                else
+                {
+                    pre->next = cur->right;
+                    pre = cur->right;
+                }
+            }
+
+            if (cur->next)
+                cur = cur->next;
+            else
+            {
+                cur = nextCur;
+                nextCur = nullptr, pre = nullptr;
+            }
         }
         return root;
     }
@@ -693,37 +746,42 @@ public:
     Node* connect(Node* root) {
         if (!root)
             return nullptr;
-        Node* cur = root;
+        Node* cur = root, *nextCur = nullptr, *pre = nullptr;
         while (cur)
         {
-            Node* nextLevel = nullptr, *pre = nullptr;
-            while (cur)
+            if (cur->left)
             {
-                if (cur->left)
+                if (!nextCur)
+                    nextCur = cur->left;
+                if (!pre)
+                    pre = cur->left;
+                else
                 {
-                    if (!nextLevel) nextLevel = cur->left;
-                    if (!pre)
-                        pre = cur->left;
-                    else
-                    {
-                        pre->next = cur->left;
-                        pre = cur->left;
-                    }
-                }
-                if (cur->right)
-                {
-                    if (!nextLevel) nextLevel = cur->right;
-                    if (!pre)
-                        pre = cur->right;
-                    else
-                    {
-                        pre->next = cur->right;
-                        pre = cur->right;
-                    }
-                }
-                cur = cur->next;
+                    pre->next = cur->left;
+                    pre = cur->left;
+                }    
             }
-            cur = nextLevel;
+            if (cur->right)//与上面的格式相同
+            {
+                if (!nextCur)
+                    nextCur = cur->right;
+                if (!pre)
+                    pre = cur->right;
+                else    
+                {
+                    pre->next = cur->right;
+                    pre = cur->right;
+                }
+            }
+
+            //向右
+            if (cur->next)
+                cur = cur->next;
+            else//向下一层
+            {
+                cur = nextCur;
+                nextCur = nullptr, pre = nullptr;
+            }
         }
         return root;
     }
@@ -1123,8 +1181,7 @@ public:
 <br>
 
 
-
----------------------------
+--------------------------- 
 ##### 99.恢复二叉搜索树
 >题目描述:给你二叉搜索树的根节点 root ，该树中的两个节点被错误地交换。请在不改变其结构的情况下，恢复这棵树。
 
@@ -1140,9 +1197,9 @@ public:
 
 ```cpp
 class Solution {
-    TreeNode* x= nullptr;
-    TreeNode* y = nullptr;
     TreeNode* pre = nullptr;
+    TreeNode* node1 = nullptr;
+    TreeNode* node2 = nullptr;
 public:
     void DFS(TreeNode* root)
     {
@@ -1155,9 +1212,14 @@ public:
         {
             if (pre->val > root->val)
             {
-                y = root;
-                if (!x)
-                    x = pre;
+                if (!node1 && !node2) //交换的节点相邻
+                {
+                    node1 = pre;
+                    node2 = root;
+                }else //交换的节点不相邻，此时node1保留
+                {
+                    node2 = root;
+                }
             }
             pre = root;
         }
@@ -1165,10 +1227,8 @@ public:
     }
 
     void recoverTree(TreeNode* root) {
-        if (!root)
-            return;
         DFS(root);
-        swap(x->val, y->val);
+        swap(node1->val, node2->val);
     }
 };
 
@@ -1204,15 +1264,15 @@ public:
 class Solution {
 public:
     int numTrees(int n) {
-        if (0 == n)
-            return 0;
-        if (1 == n)
-            return 1;
         vector<int> dp(n+1, 0);
         dp[0] = 1, dp[1] = 1;
-        for (int i = 2; i <= n; i++)
-            for (int j = 1; j <= i; j++)
-                dp[i] += dp[j-1] * dp[i-j];
+        for (int num = 2; num <= n; ++num)
+        {
+            int cnt = 0;
+            for (int i = 1; i <= num; ++i)
+                cnt += dp[i-1] * dp[num-i];
+            dp[num] = cnt;
+        }
         return dp[n];
     }
 };
@@ -1558,26 +1618,21 @@ public:
 
 ```cpp
 class Solution {
-    int cnt = 0;
 public:
-    void count(TreeNode* root, int sum)
+    int DFS(TreeNode* root, int sum)
     {
         if (!root)
-            return;
+            return 0;
         if (root->val == sum)
-            cnt++;
-        
-        count(root->left, sum-root->val);
-        count(root->right, sum-root->val);
+            return 1 + DFS(root->left, 0) + DFS(root->right, 0);
+        else 
+            return DFS(root->left, sum-root->val) + DFS(root->right, sum-root->val);
     }
 
     int pathSum(TreeNode* root, int sum) {
         if (!root)
             return 0;
-        count(root, sum);
-        pathSum(root->left, sum);
-        pathSum(root->right, sum);
-        return cnt;
+        return DFS(root, sum) + pathSum(root->left, sum) + pathSum(root->right, sum);
     }
 };
 
@@ -1602,7 +1657,7 @@ public:
 
 ```cpp
 class Solution {
-    int Max = INT32_MIN;
+    int ans = INT32_MIN;
 public:
     int DFS(TreeNode* root)
     {
@@ -1610,20 +1665,18 @@ public:
             return 0;
         int l = DFS(root->left);
         int r = DFS(root->right);
-        int subTreeSum = root->val + std::max(l, r);//该节点作为子树的最大贡献值
-        int sum = root->val + l + r; //该节点作为根节点的最大贡献值
-        Max = std::max(Max, sum);
-        return std::max(subTreeSum, 0);
+        ans = std::max(ans, root->val);
+        ans = std::max(ans, root->val + max(0,l) + max(0,r));
+        return root->val + std::max(0, std::max(l, r));
     }
 
     int maxPathSum(TreeNode* root) {
         if (!root)
             return 0;
         DFS(root);
-        return Max;
+        return ans;
     }
 };
-
 ```
 
 <br>
