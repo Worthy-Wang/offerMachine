@@ -119,11 +119,51 @@ public:
 空间复杂度：O(1)
 
 
+```cpp
+class Solution {
+public:
+    ListNode* merge(ListNode* l1, ListNode* l2)
+    {
+        ListNode dummy(-1);
+        ListNode* tail = &dummy;
+        while (l1 && l2)
+        {
+            if (l1->val <= l2->val)
+            {
+                tail->next = l1;
+                tail = l1;
+                l1 = l1->next;
+            }
+            else 
+            {
+                tail->next = l2;
+                tail = l2;
+                l2 = l2->next;
+            }
+        }
+        if (l1)
+            tail->next = l1;
+        if (l2)
+            tail->next = l2;
+        return dummy.next;
+    }
+
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        ListNode* ans = nullptr;
+        for (int i = 0; i < lists.size(); ++i)
+            ans = merge(lists[i], ans);
+        return ans;
+    }
+};
+
+```
+
+
 * **解法二**
 
 解题思路：在解法一中进行优化，不断的两两归并链表直到只剩下最后一个链表。实质上也就是归并排序的链表处理法。
 
-时间复杂度：O(K*N*logK) N为链表的平均长度， K为链表的个数
+时间复杂度：O((k/2*2N + k/4*4N + ... ) * logK) ~= O(KN*logK) N为链表的平均长度， K为链表的个数
 
 空间复杂度：O(logK) 
 
@@ -192,6 +232,9 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/insertion-sort-list
 
+
+* **解法一**
+
 解题思路：插入排序的链表版
 
 时间复杂度：O(N^2)
@@ -225,6 +268,46 @@ public:
 };
 
 ```
+
+
+
+* **解法二**
+
+解题思路：冒泡排序，不过这里的排序只交换了数值，没有交换节点。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        if (!head || !head->next)
+            return head;
+        ListNode* end = nullptr;
+        while (head->next != end)
+        {
+            ListNode* cur = head;
+            while (cur->next != end)
+            {
+                if (cur->val > cur->next->val)
+                    swap(cur->val, cur->next->val);
+                cur = cur->next;
+            }
+            end = cur;
+        }
+        return head;
+    }
+};
+
+```
+
+
+<br>
+
+
+
 
 <br>
 
@@ -356,42 +439,6 @@ public:
 
 ```
 
-* **解法三**
-
-解题思路：冒泡排序，不过这里的排序只交换了数值，没有交换节点。
-
-时间复杂度：O(N^2)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    ListNode* sortList(ListNode* head) {
-        if (!head || !head->next)
-            return head;
-        ListNode* end = nullptr;
-        while (head->next != end)
-        {
-            ListNode* cur = head;
-            while (cur->next != end)
-            {
-                if (cur->val > cur->next->val)
-                    swap(cur->val, cur->next->val);
-                cur = cur->next;
-            }
-            end = cur;
-        }
-        return head;
-    }
-};
-
-```
-
-
-<br>
-
-
 ---------------------------
 ##### 75.颜色分类
 >题目描述:给定一个包含红色、白色和蓝色，一共 n 个元素的数组，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
@@ -403,6 +450,7 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/sort-colors
 
+* **解法一**
 
 解题思路：双指针法，设置快慢指针执行两次，每一次分别在慢指针出处安置好 0, 1 这三个数。
 
@@ -425,6 +473,33 @@ public:
 };
 
 
+```
+
+*  **解法二**
+
+解题思路：设置三个指针，p0指针代表0的范围，p2指针代表2的范围，用for循环开始遍历i即可 ，注意i不可能比p0走的慢，交换2时i是不会增加的。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    void sortColors(vector<int>& nums) {
+        int p0 = -1, p2 = nums.size(), i = 0;
+        while (i < p2)
+        {
+            if  (1 == nums[i])
+                ++i;
+            else if (0 == nums[i])
+                swap(nums[++p0], nums[i++]);
+            else //2
+                swap(nums[--p2], nums[i]);
+        }
+    }
+};
 
 ```
 

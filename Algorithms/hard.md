@@ -18,6 +18,9 @@
         - [239. 滑动窗口最大值](#239-滑动窗口最大值)
         - [99.恢复二叉搜索树](#99恢复二叉搜索树)
         - [124.二叉树中的最大路径和](#124二叉树中的最大路径和)
+        - [23.合并K个升序链表](#23合并k个升序链表)
+        - [剑指 Offer 51. 数组中的逆序对](#剑指-offer-51-数组中的逆序对)
+        - [剑指 Offer 41. 数据流中的中位数](#剑指-offer-41-数据流中的中位数)
         - [](#)
         - [](#-1)
 
@@ -1353,6 +1356,246 @@ public:
 
 
 
+
+---------------------------
+##### 23.合并K个升序链表
+>题目描述:给你一个链表数组，每个链表都已经按升序排列。
+请你将所有链表合并到一个升序链表中，返回合并后的链表。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/merge-k-sorted-lists
+
+* **解法一**
+
+解题思路：用一个for循环，将链表数组中的所有链表都依次按照 两个升序链表合并 的方法进行合并。
+
+时间复杂度：O(N + 2N + 3N +  .. + KN) ~= O(K^2 * N) N为链表的平均长度，K为链表的个数
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    ListNode* merge(ListNode* l1, ListNode* l2)
+    {
+        ListNode dummy(-1);
+        ListNode* tail = &dummy;
+        while (l1 && l2)
+        {
+            if (l1->val <= l2->val)
+            {
+                tail->next = l1;
+                tail = l1;
+                l1 = l1->next;
+            }
+            else 
+            {
+                tail->next = l2;
+                tail = l2;
+                l2 = l2->next;
+            }
+        }
+        if (l1)
+            tail->next = l1;
+        if (l2)
+            tail->next = l2;
+        return dummy.next;
+    }
+
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        ListNode* ans = nullptr;
+        for (int i = 0; i < lists.size(); ++i)
+            ans = merge(lists[i], ans);
+        return ans;
+    }
+};
+
+```
+
+
+* **解法二**
+
+解题思路：在解法一中进行优化，不断的两两归并链表直到只剩下最后一个链表。实质上也就是归并排序的链表处理法。
+
+时间复杂度：O((k/2*2N + k/4*4N + ... ) * logK) ~= O(KN*logK) N为链表的平均长度， K为链表的个数
+
+空间复杂度：O(logK) 
+
+```cpp
+ class Solution {
+public:
+    ListNode* merge(ListNode* l1, ListNode* l2)
+    {
+        ListNode dummy(-1);
+        ListNode* tail = &dummy;
+        while (l1 && l2)
+        {
+            if (l1->val <= l2->val)
+            {
+                tail->next = l1;
+                tail = l1;
+                l1 = l1->next;
+            }
+            else 
+            {
+                tail->next = l2;
+                tail = l2;
+                l2 = l2->next;
+            }
+        }
+        if (l1)
+            tail->next = l1;
+        if (l2)
+            tail->next = l2;
+        return dummy.next;
+    }
+
+    ListNode* mergeSort(vector<ListNode*>& lists, int l, int r)
+    {
+        if (l == r)
+            return lists[l];
+        else if (l > r)
+            return nullptr;
+        else
+        {
+            int mid = (l + r) >> 1;
+            ListNode* left = mergeSort(lists, l, mid);
+            ListNode* right = mergeSort(lists, mid+1, r);
+            return merge(left, right);
+        }
+    }
+
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        if (lists.empty())
+            return nullptr;
+        int l = 0, r = lists.size()-1;
+        return mergeSort(lists, l, r);
+    }
+};
+
+```
+
+
+<br>
+
+
+
+---------------------------
+##### 剑指 Offer 51. 数组中的逆序对
+>题目描述:在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组，求出这个数组中的逆序对的总数。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/shu-zu-zhong-de-ni-xu-dui-lcof
+
+解题思路：归并排序，在进行归并的过程中顺势可以计算逆序对的数量。
+
+时间复杂度：O(NlogN)
+
+空间复杂度：O(logN)
+
+```cpp
+class Solution {
+    int ans = 0;
+public:
+    void merge(vector<int>& nums, int l, int mid, int r, vector<int>& temp)
+    {
+        int i = l, j = mid+1, k = l;
+        while (i<=mid && j<=r)
+        {
+            if (nums[i] <= nums[j])
+                temp[k++] = nums[i++];
+            else
+            {
+                //逆序对出现
+                ans += mid - i + 1;
+                temp[k++] = nums[j++];
+            }
+        }
+        while (i <= mid)
+            temp[k++] = nums[i++];
+        while (j <= r)
+            temp[k++] = nums[j++];
+        for (int k = l; k <= r; ++k)
+            nums[k] = temp[k];
+    }
+
+    void mergeSort(vector<int>& nums, int l, int r, vector<int>& temp)
+    {
+        if (l < r)
+        {
+            int mid = (l + r) >> 1;
+            mergeSort(nums, l, mid, temp);
+            mergeSort(nums, mid+1, r, temp);
+            merge(nums, l, mid, r, temp);
+        }
+    }
+
+    int reversePairs(vector<int>& nums) {
+        if (nums.empty())
+            return 0;
+        vector<int> temp(nums.size());
+        mergeSort(nums, 0, nums.size()-1, temp);
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 剑指 Offer 41. 数据流中的中位数
+>题目描述:如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。
+例如，
+[2,3,4] 的中位数是 3
+[2,3] 的中位数是 (2 + 3) / 2 = 2.5
+设计一个支持以下两种操作的数据结构：
+void addNum(int num) - 从数据流中添加一个整数到数据结构中。
+double findMedian() - 返回目前所有元素的中位数。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof
+
+解题思路：设置两个堆，左边为最大堆，右边为最小堆，且保证右边的堆始终比左边的堆大；这也就是说，如果要加入一个数，得先进左边堆，再进右边的堆。
+
+时间复杂度：addNum:O(logN) findMedian:O(1)
+
+空间复杂度：O(N)
+
+```cpp
+class MedianFinder {
+    std::priority_queue<int, vector<int>, std::less<int>> lheap;//左边的大顶堆
+    std::priority_queue<int, vector<int>, std::greater<int>> rheap;//右边的小顶堆
+public:
+    /** initialize your data structure here. */
+    MedianFinder() {
+    }
+    
+    void addNum(int num) {
+        lheap.push(num);
+        rheap.push(lheap.top());
+        lheap.pop();
+        if (lheap.size() < rheap.size())
+        {
+            lheap.push(rheap.top());
+            rheap.pop();
+        }
+    }
+    
+    double findMedian() {
+        int n = lheap.size() + rheap.size();
+        if (n & 0x1)
+            return lheap.top();
+        else
+            return (double)(lheap.top()+rheap.top())/2;
+    }
+};
+
+```
+
+<br>
 
 
 
