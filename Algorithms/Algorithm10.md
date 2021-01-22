@@ -1,4 +1,5 @@
 - [十.DFS专题](#十dfs专题)
+        - [130.被围绕的区域](#130被围绕的区域)
         - [131.分割回文串](#131分割回文串)
         - [132.分割回文串2](#132分割回文串2)
         - [剑指 Offer 13. 机器人的运动范围](#剑指-offer-13-机器人的运动范围)
@@ -15,6 +16,70 @@
 
 
 # 十.DFS专题
+
+
+
+---------------------------
+##### 130.被围绕的区域
+>题目描述:给定一个二维的矩阵，包含 'X' 和 'O'（字母 O）。
+找到所有被 'X' 围绕的区域，并将这些区域里所有的 'O' 用 'X' 填充。
+被围绕的区间不会存在于边界上，换句话说，任何边界上的 'O' 都不会被填充为 'X'。 任何不在边界上，或不与边界上的 'O' 相连的 'O' 最终都会被填充为 'X'。如果两个元素在水平或垂直方向相邻，则称它们是“相连”的。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/surrounded-regions
+
+解题思路：DFS法，并通过设置visited数组判断是否已经走过该点，visited数组最后可以作为置X的标准。
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(N*M)
+
+```cpp
+class Solution {
+public:
+    void DFS(vector<vector<char>>& board, int i, int j, int M, int N, vector<vector<int>>& visited)
+    {
+        if (i<0 || i>=M || j<0 || j>=N)
+            return;
+        if (visited[i][j] || 'X'==board[i][j])
+            return;
+        
+        visited[i][j] = 1;
+        DFS(board, i+1, j, M, N, visited);
+        DFS(board, i-1, j, M, N, visited);
+        DFS(board, i, j+1, M, N, visited);
+        DFS(board, i, j-1, M, N, visited);
+    }
+
+    void solve(vector<vector<char>>& board) {
+        if (board.empty())
+            return;
+        int M = board.size(), N = board[0].size();
+        vector<vector<int>> visited(M, vector<int>(N, 0));
+        for (int i = 0; i < M; i++)
+        {
+            DFS(board, i, 0, M, N, visited);
+            DFS(board, i, N-1, M, N, visited);
+        }
+        for (int j = 0; j < N; j++)
+        {
+            DFS(board, 0, j, M, N, visited);
+            DFS(board, M-1, j, M, N, visited);
+        }
+        
+        for (int i = 1; i < M-1; i++)
+            for (int j = 1; j < N-1; j++)
+                if ('O'==board[i][j] && !visited[i][j])
+                    board[i][j] = 'X';
+    }
+};
+
+```
+
+<br>
+
+
+
 
 ---------------------------
 ##### 131.分割回文串
@@ -82,7 +147,15 @@ public:
 
 ---------------------------
 ##### 132.分割回文串2
->题目描述:
+>题目描述:给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
+返回符合要求的最少分割次数。
+示例:
+输入: "aab"
+输出: 1
+解释: 进行一次分割就可将 s 分割成 ["aa","b"] 这样两个回文子串。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/palindrome-partitioning-ii
 
 解题思路：
 

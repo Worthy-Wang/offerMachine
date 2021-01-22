@@ -21,6 +21,8 @@
         - [23.合并K个升序链表](#23合并k个升序链表)
         - [剑指 Offer 51. 数组中的逆序对](#剑指-offer-51-数组中的逆序对)
         - [剑指 Offer 41. 数据流中的中位数](#剑指-offer-41-数据流中的中位数)
+        - [60.排列序列](#60排列序列-1)
+        - [127.单词接龙](#127单词接龙)
         - [](#)
         - [](#-1)
 
@@ -1597,6 +1599,271 @@ public:
 
 <br>
 
+
+
+
+---------------------
+##### 60.排列序列
+
+>题目描述：给出集合 [1,2,3,...,n]，其所有元素共有 n! 种排列。
+按大小顺序列出所有排列情况，并一一标记，当 n = 3 时, 所有排列如下：
+"123"
+"132"
+"213"
+"231"
+"312"
+"321"
+给定 n 和 k，返回第 k 个排列。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/permutation-sequence
+
+
+* **解法一**
+
+解题思路：按照求全排列的思路进行计算，该方法超时
+
+时间复杂度：O(N*N!)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+    int cnt = 0;
+    string ans;
+public:
+    void DFS(string& s, int k, string& path, vector<int>& visited)
+    {
+        if (path.size() == s.size())
+        {
+            cnt++;
+            if (cnt == k)
+                ans = path;
+            return;
+        }
+
+        for (int i = 0; i < s.size(); i++)
+        {
+            if (visited[i])
+                continue;
+            visited[i] = 1;
+            path.push_back(s[i]);
+            DFS(s, k, path, visited);
+            path.pop_back();
+            visited[i] = 0;
+        }
+    }
+
+    string getPermutation(int n, int k) {
+        if (n<=0 || k<=0)
+            return string();
+        string s, path;
+        for (int i = 1; i <= n; i++)
+            s.push_back(i+'0');
+        vector<int> visited(n, 0);
+        DFS(s, k, path, visited);
+        return ans;
+    }
+};
+
+```
+
+* **解法二**
+
+
+解题思路：在上一方法的基础上进行优化，用DFS递归的方法来进行无回溯的一次遍历，由于中间需要计算阶乘，所以时间复杂度为O(N^2)。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N)
+
+
+```cpp
+
+class Solution {
+    string ans;
+public:
+    int getFactorial(int num)
+    {
+        int ans = 1;
+        for (int i = 1; i <= num; ++i)
+            ans *= i;
+        return ans;
+    }
+
+    void DFS(string& s, vector<int>& visited, string& path, int& k)
+    {
+        if (0 == k)
+            return;
+        if (path.size()==visited.size() && 1==k)
+        {
+            ans = path;
+            k = 0;
+            return;
+        }
+        int num = getFactorial(s.size() - path.size());
+        if (k > num)
+        {
+            k -= num;
+            return;
+        }
+        
+        for (int i = 0; i < s.size(); ++i)
+        {
+            if (visited[i])
+                continue;
+            visited[i] = 1;
+            path.push_back(s[i]);
+            DFS(s, visited, path, k);
+            path.pop_back();
+            visited[i] = 0;
+        }
+    }
+
+    string getPermutation(int n, int k) {
+        string s;
+        for (int i = 1; i <= n; ++i)
+            s.push_back(i + '0');
+        vector<int> visited(n, 0);
+        string path;
+        DFS(s, visited, path, k);
+        return ans;
+    }
+};
+```
+
+<br>
+
+
+
+
+---------------------------
+##### 127.单词接龙
+>题目描述:给定两个单词（beginWord 和 endWord）和一个字典，找到从 beginWord 到 endWord 的最短转换序列的长度。转换需遵循如下规则：
+每次转换只能改变一个字母。
+转换过程中的中间单词必须是字典中的单词。
+说明:
+如果不存在这样的转换序列，返回 0。
+所有单词具有相同的长度。
+所有单词只由小写字母组成。
+字典中不存在重复的单词。
+你可以假设 beginWord 和 endWord 是非空的，且二者不相同。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/word-ladder
+
+
+* **解法一**
+
+
+解题思路：DFS遍历法，此方法需要遍历所有的情况，则会导致题目超时
+
+时间复杂度：O()
+
+空间复杂度：O()
+
+
+```cpp
+class Solution {
+    int ans = INT32_MAX;
+public:
+    bool check(string& word1, string& word2)
+    {
+        int diff = 0;
+        for (int i = 0; i < word1.size(); ++i)
+            if (word1[i] != word2[i])
+                ++diff;
+        return diff == 1;
+    }
+
+    void DFS(string& beginWord, string& endWord, vector<string>& wordList, int level, vector<int>& visited)
+    {
+        if (beginWord == endWord)
+        {
+            ans = std::min(ans, level);
+            return;
+        }
+
+        for (int i = 0; i < wordList.size(); ++i)
+        {
+            if (visited[i])
+                continue;
+            if (!check(beginWord, wordList[i]))
+                continue;
+            visited[i] = 1;
+            DFS(wordList[i], endWord, wordList, level+1, visited);
+            visited[i] = 0;
+        }
+    }
+
+    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+        vector<int> visited(wordList.size(), 0);
+        DFS(beginWord, endWord, wordList, 1, visited);
+        return ans==INT32_MAX ? 0 : ans;
+    }
+};
+
+```
+
+
+* **解法二**
+
+解题思路：BFS广度优先遍历，将问题转化为找广度优先遍历树的最小匹配的深度，需要设置visited记录已访问的单词，设置辅助队列执行BFS。
+
+时间复杂度：
+
+空间复杂度：
+
+```cpp
+class Solution {
+public:
+    bool compare(string& s1, string& s2)
+    {
+        int diff = 0;
+        for (int i = 0; i < s1.size(); i++)
+            if (s1[i] != s2[i])
+                diff++;
+        return diff==1;
+    }
+
+    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+        //BFS
+        int height = 1;
+        vector<int> visited(wordList.size(), 0);
+        std::queue<string> que;
+        que.push(beginWord);
+        while (!que.empty())
+        {
+            std::queue<string> tQue;
+            while (!que.empty())
+            {
+                string s = que.front();
+                que.pop();
+                for (int i = 0; i < wordList.size(); i++)
+                {
+                    if (visited[i])
+                        continue;
+                    if (compare(s, wordList[i]))
+                    {
+                        visited[i] = 1;
+                        tQue.push(wordList[i]);
+                        if (wordList[i] == endWord)
+                            return height+1;
+                    }
+                }
+            }
+            swap(tQue, que);
+            height++;
+        }
+        return 0;
+
+    }
+};
+
+```
+
+<br>
 
 
 

@@ -2,10 +2,10 @@
         - [78.子集](#78子集)
         - [90.子集2](#90子集2)
         - [77.组合](#77组合)
-        - [31.下一个排列](#31下一个排列)
         - [46.全排列](#46全排列)
         - [47.全排列2](#47全排列2)
         - [60.排列序列](#60排列序列)
+        - [31.下一个排列](#31下一个排列)
         - [17.电话号码的字母组合](#17电话号码的字母组合)
 
 
@@ -104,6 +104,8 @@ public:
 
 
 
+
+
 ---------------------------
 ##### 77.组合
 >题目描述:给定两个整数 n 和 k，返回 1 ... n 中所有可能的 k 个数的组合。
@@ -153,46 +155,6 @@ public:
 
 
 
-
-----------------------------
-##### 31.下一个排列
-
->题目描述：实现获取 下一个排列 的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
-如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
-必须 原地 修改，只允许使用额外常数空间。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/next-permutation
-
-解题思路：两次遍历再加上局部反转即可；第一次遍历从rbegin出发找到第一个降序的数nums[i]，第二次遍历从rbegin出发找到第一个大于nums[i]的数，交换后从i的位置往后进行反转。具体代码为两个for if 即可搞定。
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-
-```cpp
-class Solution {
-public:
-    void nextPermutation(vector<int>& nums) {
-        if (nums.size() < 2)
-            return;
-        for (int i = nums.size()-2; i >= 0; --i)
-            if (nums[i] < nums[i+1])
-                for (int j = nums.size()-1; j > i; j--)
-                    if (nums[j] > nums[i])
-                    {
-                        swap(nums[i], nums[j]);
-                        reverse(nums.begin()+i+1, nums.end());
-                        return;
-                    }
-        //已经是最大的排列
-        reverse(nums.begin(), nums.end());
-    }
-};
-```
-
-<br>
 
 
 ---------------------------
@@ -379,41 +341,52 @@ public:
 ```cpp
 
 class Solution {
+    string ans;
 public:
-    int getFactorial(int n)
+    int getFactorial(int num)
     {
         int ans = 1;
-        for (int i = 1; i <= n; i++)
+        for (int i = 1; i <= num; ++i)
             ans *= i;
         return ans;
     }
 
-    void DFS(string& s, int k, string& ans, unordered_set<int>& visited)
+    void DFS(string& s, vector<int>& visited, string& path, int& k)
     {
-        for (int i = 0; i < s.size(); i++)
-        {
-            if (visited.count(s[i]))
-                continue;
-            int factorial = getFactorial(s.size()-visited.size()-1);
-            if (factorial < k)
-            {
-                k -= factorial;
-                continue;
-            }
-            
-            ans.push_back(s[i]);
-            visited.insert(s[i]);
-            DFS(s, k, ans, visited);
+        if (0 == k)
             return;
+        if (path.size()==visited.size() && 1==k)
+        {
+            ans = path;
+            k = 0;
+            return;
+        }
+        int num = getFactorial(s.size() - path.size());
+        if (k > num)
+        {
+            k -= num;
+            return;
+        }
+        
+        for (int i = 0; i < s.size(); ++i)
+        {
+            if (visited[i])
+                continue;
+            visited[i] = 1;
+            path.push_back(s[i]);
+            DFS(s, visited, path, k);
+            path.pop_back();
+            visited[i] = 0;
         }
     }
 
     string getPermutation(int n, int k) {
-        string s, ans;
-        unordered_set<int> visited;
-        for (int i = 1; i <= n; i++)
+        string s;
+        for (int i = 1; i <= n; ++i)
             s.push_back(i + '0');
-        DFS(s, k, ans, visited);
+        vector<int> visited(n, 0);
+        string path;
+        DFS(s, visited, path, k);
         return ans;
     }
 };
@@ -421,6 +394,48 @@ public:
 
 <br>
 
+
+
+
+----------------------------
+##### 31.下一个排列
+
+>题目描述：实现获取 下一个排列 的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
+如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
+必须 原地 修改，只允许使用额外常数空间。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/next-permutation
+
+解题思路：两次遍历再加上局部反转即可；第一次遍历从rbegin出发找到第一个降序的数nums[i]，第二次遍历从rbegin出发找到第一个大于nums[i]的数，交换后从i的位置往后进行反转。具体代码为两个for if 即可搞定。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    void nextPermutation(vector<int>& nums) {
+        if (nums.size() < 2)
+            return;
+        for (int i = nums.size()-2; i >= 0; --i)
+            if (nums[i] < nums[i+1])
+                for (int j = nums.size()-1; j > i; j--)
+                    if (nums[j] > nums[i])
+                    {
+                        swap(nums[i], nums[j]);
+                        reverse(nums.begin()+i+1, nums.end());
+                        return;
+                    }
+        //已经是最大的排列
+        reverse(nums.begin(), nums.end());
+    }
+};
+```
+
+<br>
 
 
 ---------------------------
