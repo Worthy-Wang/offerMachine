@@ -6,14 +6,12 @@
         - [120.三角形最小路径和](#120三角形最小路径和)
         - [343. 整数拆分](#343-整数拆分)
         - [53.最大子序和](#53最大子序和)
-        - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
-        - [85.最大矩阵](#85最大矩阵)
+        - [5.最长回文子串](#5最长回文子串)
         - [44.通配符匹配](#44通配符匹配)
         - [10.正则表达式匹配](#10正则表达式匹配)
         - [97.交错字符串](#97交错字符串)
-        - [87.扰乱字符串](#87扰乱字符串)
-        - [64.最小路径和](#64最小路径和)
         - [72.编辑距离](#72编辑距离)
+        - [64.最小路径和](#64最小路径和)
         - [91.解码方法](#91解码方法)
         - [剑指 Offer 46. 把数字翻译成字符串](#剑指-offer-46-把数字翻译成字符串)
         - [115.不同的子序列](#115不同的子序列)
@@ -350,113 +348,103 @@ public:
 <br>
 
 
--------------------------------------
-##### 84.柱状图中最大的矩形
->题目描述:给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
-求在该柱状图中，能够勾勒出来的矩形的最大面积。
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/largest-rectangle-in-histogram
-
-解题思路：首先想到暴力法，也可以说是中心扩散法；再在暴力法的基础上进行演化，使用单调栈法，栈顶元素作为最大值，可以找到左右两边比它小的元素。
-
-时间复杂度：O(N)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-public:
-    int largestRectangleArea(vector<int>& heights) {
-        if (heights.empty())
-            return 0;
-        heights.push_back(0);
-        int ans = 0;
-        stack<int> stk;
-        for (int i = 0; i < heights.size(); i++)
-        {
-            while (!stk.empty() && heights[i]<heights[stk.top()])
-            {
-                int mid = stk.top();
-                stk.pop();
-                int l = stk.empty()? -1 : stk.top();
-                int r = i;
-                ans = std::max(ans, (r-l-1)*heights[mid]);
-            }
-            stk.push(i);
-        }
-        return ans;
-    }
-};
-
-```
-
-<br>
 
 
----------------------------
-##### 85.最大矩阵
->题目描述:给定一个仅包含 0 和 1 、大小为 rows x cols 的二维二进制矩阵，找出只包含 1 的最大矩形，并返回其面积。
+-----------------------------
+##### 5.最长回文子串
+>题目描述：给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/maximal-rectangle
+链接：https://leetcode-cn.com/problems/longest-palindromic-substring
 
 * **解法一**
 
-解题思路：调用上一题求最大矩阵的解法，一行一行的计算，求解出最大矩阵
+解题思路：暴力法，用两层for循环O(N^2)，再使用一层for循环判断是否为回文。
 
-时间复杂度：O(M*N)
+时间复杂度：O(N^3)
 
-空间复杂度：O(N)
+空间复杂度：O(1)
+
+* **解法二**
+
+解题思路：动态规划，dp[i][j],i代表起始位置，j代表结束位置。二维动态数组只需要填充右上部分，并且是从左往右一列一列的填充。
+状态转移方程：dp[i][j] = (s[i]==s[j] && dp[i+1][j-1])
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N^2)
 
 ```cpp
 class Solution {
 public:
-    int largestRectangleArea(vector<int>& heights) {
-        if (heights.empty())
-            return 0;
-        heights.push_back(0);
-        int ans = 0;
-        stack<int> stk;
-        for (int i = 0; i < heights.size(); i++)
+    string longestPalindrome(string s) {
+        int maxLen = 0;
+        pair<int,int> res;
+        int N = s.size();
+        vector<vector<int>> dp(N, vector<int>(N, 0));
+        for (int j = 0; j < N; j++)
         {
-            while (!stk.empty() && heights[i]<heights[stk.top()])
+            for (int i = 0; i <= j; i++)
             {
-                int mid = stk.top();
-                stk.pop();
-                int l = stk.empty()? -1 : stk.top();
-                int r = i;
-                ans = std::max(ans, (r-l-1)*heights[mid]);
-            }
-            stk.push(i);
-        }
-        heights.pop_back();
-        return ans;
-    }
-
-    int maximalRectangle(vector<vector<char>>& matrix) {
-        if (matrix.empty())
-            return 0;
-        int ans = 0;
-        int M = matrix.size(), N = matrix[0].size();
-        vector<vector<int>> nums(M, vector<int>(N));
-        for (int i = 0; i < M; i++)
-            for (int j = 0; j < N; j++)
-                if ('1' == matrix[i][j])
-                    nums[i][j] = 1;
-                else 
-                    nums[i][j] = 0;
-
-        for (int i = 1; i < M; i++)
-            for (int j = 0; j < N; j++)
-                if (0 == nums[i][j])
-                    continue;
+                if (i == j)
+                    dp[i][j] = 1;
+                else if(j-i==1 || j-i==2)
+                    dp[i][j] = (s[i]==s[j]);
                 else
-                    nums[i][j] += nums[i-1][j];
-                    
-        for (int i = 0; i < M; i++)
+                    dp[i][j] = (dp[i+1][j-1]&&s[i]==s[j]);
+                
+                if (dp[i][j] && maxLen<j-i+1)
+                {
+                    maxLen = j-i+1;
+                    res.first = i, res.second = j;
+                }
+            }
+        } 
+        int i = res.first, j = res.second;
+        return s.substr(i, j-i+1);
+    }
+};
+
+```
+
+
+* **解法三**
+
+解题思路：中心扩展法，以一个for循环遍历元素，该元素作为回文子串的中心左右两边扩散。注意需要区分最长回文的子串有奇数个还是偶数个。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        if (s.empty())
+            return string();
+        string ans;
+        int maxLen = 0;
+        for (int i = 0; i < s.size(); i++)
         {
-            int res = largestRectangleArea(nums[i]);
-            ans = std::max(ans, res);
+            //回文串字符数为奇数
+            int l = i, r = i;
+            while (0<=l&&r<s.size() && s[l]==s[r])
+                l--, r++;
+            if (r-l-1 > maxLen)
+            {
+                maxLen = r - l - 1;
+                ans = s.substr(l+1, maxLen);
+            }
+
+            //回文串字符数为偶数
+            l = i, r = i+1;
+            while (0<=l&&r<s.size() && s[l]==s[r])
+                l--, r++;
+            if (r-l-1 > maxLen)
+            {
+                maxLen = r - l - 1;
+                ans = s.substr(l+1, maxLen);
+            }
         }
         return ans;
     }
@@ -466,7 +454,6 @@ public:
 
 
 <br>
-
 
 
 
@@ -498,24 +485,31 @@ class Solution {
 public:
     bool isMatch(string s, string p) {
         int m = s.size(), n = p.size();
-        vector<vector<int>> dp(m+1, vector<int>(n+1, 0));
-        dp[0][0] = 1;
-        for (int i = 1; i <= m; ++i)
-            dp[i][0] = 0;
+        vector<vector<bool>> dp(m+1, vector<bool>(n+1, false));
+        dp[0][0] = true;
         for (int j = 1; j <= n; ++j)
-            if ('*'==p[j-1])
-                dp[0][j] = 1;
-            else
-                break;
-        for (int i = 1; i <= m; ++i)
+            if ('*' == p[j-1])
+                dp[0][j] = dp[0][j-1];
+
+        for (int i = 1; i <= m; ++i )
             for (int j = 1; j <= n; ++j)
             {
-                if (p[j-1] == s[i-1])
+                if ('*' == p[j-1])
+                {
+                    if (dp[i][j-1]) //匹配0个
+                        dp[i][j] = true;
+                    else //匹配1个或多个
+                        dp[i][j] = dp[i-1][j];
+                }else if ('?' == p[j-1])
+                {
                     dp[i][j] = dp[i-1][j-1];
-                else if ('?' == p[j-1])
-                    dp[i][j] = dp[i-1][j-1];
-                else if ('*' == p[j-1])
-                    dp[i][j] = dp[i-1][j] || dp[i][j-1];
+                }else
+                {
+                    if (s[i-1] == p[j-1])
+                        dp[i][j]  = dp[i-1][j-1];
+                    else
+                        dp[i][j] = false;
+                }
             }
         return dp[m][n];
     }
@@ -547,35 +541,34 @@ public:
 class Solution {
 public:
     bool isMatch(string s, string p) {
-        
         int m = s.size(), n = p.size();
-        vector<vector<int>> dp(m+1, vector<int>(n+1, false));
+        vector<vector<bool>> dp(m+1, vector<bool>(n+1, false));
         dp[0][0] = true;
-        for (int i = 1; i <= m; ++i)
-            dp[i][0] = false;
         for (int j = 1; j <= n; ++j)
-            if ('*' == p[j-1])
+            if  ('*' == p[j-1])
                 dp[0][j] = dp[0][j-2];
-            else
-                dp[0][j] = false;
+
         for (int i = 1; i <= m; ++i)
             for (int j = 1; j <= n; ++j)
             {
-                if (s[i-1]==p[j-1] || '.'==p[j-1])
+                if ('*' == p[j-1])
+                {
+                    if (dp[i][j-2]) //*匹配0个
+                        dp[i][j] = true;
+                    else if (s[i-1]==p[j-2] || '.'==p[j-2])//*匹配1个或多个
+                        dp[i][j] = dp[i-1][j];
+                }else if('.' == p[j-1])
                 {
                     dp[i][j] = dp[i-1][j-1];
-                }else if ('*' == p[j-1])
+                }else
                 {
-                    if (dp[i][j-2])
-                        dp[i][j] = true;
+                    if (s[i-1] == p[j-1])
+                        dp[i][j] = dp[i-1][j-1];
                     else
-                    {
-                        if (p[j-2]==s[i-1] || '.'==p[j-2])
-                            dp[i][j] = dp[i-1][j];
-                    }
+                        dp[i][j] = false;
                 }
             }
-        return dp[m][n];
+        return dp[m][n];  
     }
 };
 
@@ -599,15 +592,7 @@ s1、s2、和 s3 都由小写英文字母组成
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/interleaving-string
 
-解题思路：动态规划法，类似于机器人走路径的那一题，判断是否能够走到最后一个格子即可。
-dp[i][j] = (dp[i-1][j]&&s3[i+j-1]==s1[i-1]) || (dp[i][j-1]&&s3[i+j-1]==s2[j-1]);
-  0 a a b   s2 j
-0 T F F F
-a T 
-b T
-c T
-s1
-i
+解题思路：dp[i][j]代表s1[i]的子串和s2[j]的子串能否形成交错的字符串。
 
 时间复杂度：O(M*N)
 
@@ -617,124 +602,38 @@ i
 class Solution {
 public:
     bool isInterleave(string s1, string s2, string s3) {
-        if (s1.size() + s2.size() != s3.size())
+        int m = s1.size(), n = s2.size();
+        if (m + n != s3.size())
             return false;
-        int M = s1.size(), N = s2.size();
-        vector<vector<bool>> dp(M+1, vector<bool>(N+1, false));
+        
+        vector<vector<bool>> dp(m+1, vector<bool>(n+1, false));
         dp[0][0] = true;
-        for (int j = 1; j <= N; j++)
-        {
-            if (s3[j-1]==s2[j-1])
-                dp[0][j] = true;
-            else
-                break;
-        }
-        for (int i = 1; i <= M; i++)
-        {
-            if (s3[i-1]==s1[i-1])
+        for (int i = 1; i <= m; ++i)
+            if (s1[i-1] == s3[i-1])
                 dp[i][0] = true;
             else
                 break;
-        }
 
-        for (int i = 1; i <= M; i++)
-            for(int j = 1; j <= N; j++)
-                dp[i][j] = (dp[i-1][j]&&s3[i+j-1]==s1[i-1]) || (dp[i][j-1]&&s3[i+j-1]==s2[j-1]);
-        return dp[M][N];
-    }
-};
-```
-
-<br>
-
-
----------------------------
-##### 87.扰乱字符串
->题目描述:给定一个字符串 s1，我们可以把它递归地分割成两个非空子字符串，从而将其表示为二叉树。
-下图是字符串 s1 = "great" 的一种可能的表示形式。
-    great
-   /    \
-  gr    eat
- / \    /  \
-g   r  e   at
-           / \
-          a   t
-在扰乱这个字符串的过程中，我们可以挑选任何一个非叶节点，然后交换它的两个子节点。
-例如，如果我们挑选非叶节点 "gr" ，交换它的两个子节点，将会产生扰乱字符串 "rgeat" 。
-    rgeat
-   /    \
-  rg    eat
- / \    /  \
-r   g  e   at
-           / \
-          a   t
-我们将 "rgeat” 称作 "great" 的一个扰乱字符串。
-同样地，如果我们继续交换节点 "eat" 和 "at" 的子节点，将会产生另一个新的扰乱字符串 "rgtae" 。
-    rgtae
-   /    \
-  rg    tae
- / \    /  \
-r   g  ta  e
-       / \
-      t   a
-我们将 "rgtae” 称作 "great" 的一个扰乱字符串。
-给出两个长度相等的字符串 s1 和 s2，判断 s2 是否是 s1 的扰乱字符串。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/scramble-string
-
-解题思路：
-
-时间复杂度：
-
-空间复杂度：
-
-```cpp
-
-```
-
-<br>
-
-
----------------------------
-##### 64.最小路径和
->题目描述:给定一个包含非负整数的 m x n 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
-说明：每次只能向下或者向右移动一步。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/minimum-path-sum
-
-解题思路：动态规划，dp[i][j] = std::min(dp[i-1][j], dp[i][j-1]), 第一行，第一列的值分别不断累加。
-
-时间复杂度：O(M*N)
-
-空间复杂度：O(M*N)
-
-```cpp
-class Solution {
-public:
-    int minPathSum(vector<vector<int>>& grid) {
-        if (grid.empty())
-            return 0;
-        int M = grid.size(), N = grid[0].size();
-        vector<vector<int>> dp(M, vector<int>(N, 0));
-        dp[0][0] = grid[0][0];
-        for (int j = 1; j < N; j++)
-            dp[0][j] = grid[0][j] + dp[0][j-1];
-        for (int i = 1; i < M; i++)
-            dp[i][0] = grid[i][0] + dp[i-1][0];
+        for (int j = 1; j <= n; ++j)
+            if (s2[j-1] == s3[j-1])
+                dp[0][j] = true;
+            else
+                break;
         
-        for (int i = 1; i < M; i++)
-            for (int j = 1; j < N; j++)
-                dp[i][j] = std::min(dp[i-1][j], dp[i][j-1]) + grid[i][j];
-        return dp[M-1][N-1];
+        for (int i = 1; i <= m; ++i)
+            for (int j = 1; j <= n; ++j)
+            {
+                if ((dp[i-1][j]&&s1[i-1]==s3[i+j-1]) || (dp[i][j-1]&&s2[j-1]==s3[i+j-1]))
+                    dp[i][j] = true;
+                else
+                    dp[i][j] = false;
+            }
+        return dp[m][n];
     }
 };
-
 ```
 
 <br>
-
 
 
 
@@ -782,6 +681,50 @@ public:
                 else
                     dp[i][j] = std::min(dp[i-1][j-1], std::min(dp[i-1][j],dp[i][j-1])) + 1;
         return dp[M][N];
+    }
+};
+
+```
+
+<br>
+
+
+
+
+
+
+---------------------------
+##### 64.最小路径和
+>题目描述:给定一个包含非负整数的 m x n 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
+说明：每次只能向下或者向右移动一步。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/minimum-path-sum
+
+解题思路：动态规划，dp[i][j] = std::min(dp[i-1][j], dp[i][j-1]), 第一行，第一列的值分别不断累加。
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(M*N)
+
+```cpp
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        if (grid.empty())
+            return 0;
+        int M = grid.size(), N = grid[0].size();
+        vector<vector<int>> dp(M, vector<int>(N, 0));
+        dp[0][0] = grid[0][0];
+        for (int j = 1; j < N; j++)
+            dp[0][j] = grid[0][j] + dp[0][j-1];
+        for (int i = 1; i < M; i++)
+            dp[i][0] = grid[i][0] + dp[i-1][0];
+        
+        for (int i = 1; i < M; i++)
+            for (int j = 1; j < N; j++)
+                dp[i][j] = std::min(dp[i-1][j], dp[i][j-1]) + grid[i][j];
+        return dp[M-1][N-1];
     }
 };
 

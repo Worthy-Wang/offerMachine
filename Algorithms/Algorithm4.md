@@ -7,6 +7,7 @@
         - [32.最长的有效括号](#32最长的有效括号)
         - [150.逆波兰表达式求值](#150逆波兰表达式求值)
         - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
+        - [85.最大矩阵](#85最大矩阵)
         - [239. 滑动窗口最大值](#239-滑动窗口最大值)
 
 # 四.栈和队列专题
@@ -423,6 +424,82 @@ public:
 };
 
 ```
+
+<br>
+
+
+
+---------------------------
+##### 85.最大矩阵
+>题目描述:给定一个仅包含 0 和 1 、大小为 rows x cols 的二维二进制矩阵，找出只包含 1 的最大矩形，并返回其面积。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/maximal-rectangle
+
+* **解法一**
+
+解题思路：调用上一题求最大矩阵的解法，一行一行的计算，求解出最大矩阵
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        if (heights.empty())
+            return 0;
+        heights.push_back(0);
+        int ans = 0;
+        stack<int> stk;
+        for (int i = 0; i < heights.size(); i++)
+        {
+            while (!stk.empty() && heights[i]<heights[stk.top()])
+            {
+                int mid = stk.top();
+                stk.pop();
+                int l = stk.empty()? -1 : stk.top();
+                int r = i;
+                ans = std::max(ans, (r-l-1)*heights[mid]);
+            }
+            stk.push(i);
+        }
+        heights.pop_back();
+        return ans;
+    }
+
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if (matrix.empty())
+            return 0;
+        int ans = 0;
+        int M = matrix.size(), N = matrix[0].size();
+        vector<vector<int>> nums(M, vector<int>(N));
+        for (int i = 0; i < M; i++)
+            for (int j = 0; j < N; j++)
+                if ('1' == matrix[i][j])
+                    nums[i][j] = 1;
+                else 
+                    nums[i][j] = 0;
+
+        for (int i = 1; i < M; i++)
+            for (int j = 0; j < N; j++)
+                if (0 == nums[i][j])
+                    continue;
+                else
+                    nums[i][j] += nums[i-1][j];
+                    
+        for (int i = 0; i < M; i++)
+        {
+            int res = largestRectangleArea(nums[i]);
+            ans = std::max(ans, res);
+        }
+        return ans;
+    }
+};
+
+```
+
 
 <br>
 

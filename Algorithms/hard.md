@@ -11,10 +11,14 @@
         - [25.K个一组翻转链表](#25k个一组翻转链表)
         - [65.有效数字](#65有效数字)
         - [28.实现strStr()](#28实现strstr)
+        - [132.分割回文串2](#132分割回文串2)
         - [44.通配符匹配](#44通配符匹配)
         - [10.正则表达式匹配](#10正则表达式匹配)
+        - [97.交错字符串](#97交错字符串)
+        - [72.编辑距离](#72编辑距离)
         - [32.最长的有效括号](#32最长的有效括号)
         - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
+        - [85.最大矩阵](#85最大矩阵)
         - [239. 滑动窗口最大值](#239-滑动窗口最大值)
         - [99.恢复二叉搜索树](#99恢复二叉搜索树)
         - [124.二叉树中的最大路径和](#124二叉树中的最大路径和)
@@ -23,6 +27,7 @@
         - [剑指 Offer 41. 数据流中的中位数](#剑指-offer-41-数据流中的中位数)
         - [60.排列序列](#60排列序列-1)
         - [127.单词接龙](#127单词接龙)
+        - [87.扰乱字符串](#87扰乱字符串)
         - [](#)
         - [](#-1)
 
@@ -967,6 +972,113 @@ public:
 
 
 
+---------------------------
+##### 132.分割回文串2
+>题目描述:给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
+返回符合要求的最少分割次数。
+示例:
+输入: "aab"
+输出: 1
+解释: 进行一次分割就可将 s 分割成 ["aa","b"] 这样两个回文子串。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/palindrome-partitioning-ii
+
+* **解法一**
+
+解题思路：经典的动态规划题目，进行一次遍历string，先检测该子串是否会回文串，是则分割次数为0；否则在右边部分满足是回文串的情况下，查看左边部分的最小分割次数。
+
+时间复杂度：O(N^3)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+public:
+    bool isPalin(string& s, int l, int r)
+    {
+        int i = l, j = r;
+        while (i < j)
+            if (s[i++] != s[j--])
+                return false;
+        return true;
+    }
+
+    int minCut(string s) {
+        int n = s.size();
+        //dp[i]代表s[0]到s[i]的最少分割次数
+        vector<int> dp(n);
+        for (int i = 0; i < n; ++i)
+            dp[i] = i; //1个字符最少分割0次，2个字符最少分割1次
+        
+        for (int i = 0; i < n; ++i)
+        {
+            if (isPalin(s, 0, i))
+                dp[i] = 0;
+            else
+            {
+                for (int mid = 0; mid < i;  ++mid)
+                    if (isPalin(s, mid+1, i))
+                        dp[i] = std::min(dp[i], dp[mid] + 1);
+            }
+        }
+
+        return dp[n-1];
+    }
+};
+
+```
+
+<br>
+
+
+
+* **解法二**
+
+解题思路：在上一个解法的基础上对isPalin函数进行优化，将其优化为二维的动态规划数组，相当于空间换时间
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N^2)
+
+```cpp
+class Solution {
+public:
+    int minCut(string s) {
+        int n = s.size();
+        //isPalin[i][j]代表s[i]到s[j]的子串是否为回文串
+        vector<vector<bool>> isPalin(n, vector<bool>(n, false));
+        for (int j = 0; j < n; ++j)
+            for (int i = 0; i <= j; ++i)
+                if (s[i]==s[j] && (j-i<=2 || isPalin[i+1][j-1]))
+                    isPalin[i][j] = true;
+        //dp[i]代表s[0]到s[i]的最少分割次数
+        vector<int> dp(n);
+        for (int i = 0; i < n; ++i)
+            dp[i] = i; //1个字符最少分割0次，2个字符最少分割1次
+        
+        for (int i = 0; i < n; ++i)
+        {
+            if (isPalin[0][i])
+                dp[i] = 0;
+            else
+            {
+                for (int mid = 0; mid < i;  ++mid)
+                    if (isPalin[mid+1][i])
+                        dp[i] = std::min(dp[i], dp[mid] + 1);
+            }
+        }
+
+        return dp[n-1];
+    }
+};
+
+```
+
+<br>
+
+
 
 -----------------------------
 ##### 44.通配符匹配
@@ -995,24 +1107,31 @@ class Solution {
 public:
     bool isMatch(string s, string p) {
         int m = s.size(), n = p.size();
-        vector<vector<int>> dp(m+1, vector<int>(n+1, 0));
-        dp[0][0] = 1;
-        for (int i = 1; i <= m; ++i)
-            dp[i][0] = 0;
+        vector<vector<bool>> dp(m+1, vector<bool>(n+1, false));
+        dp[0][0] = true;
         for (int j = 1; j <= n; ++j)
-            if ('*'==p[j-1])
-                dp[0][j] = 1;
-            else
-                break;
-        for (int i = 1; i <= m; ++i)
+            if ('*' == p[j-1])
+                dp[0][j] = dp[0][j-1];
+
+        for (int i = 1; i <= m; ++i )
             for (int j = 1; j <= n; ++j)
             {
-                if (p[j-1] == s[i-1])
+                if ('*' == p[j-1])
+                {
+                    if (dp[i][j-1]) //匹配0个
+                        dp[i][j] = true;
+                    else //匹配1个或多个
+                        dp[i][j] = dp[i-1][j];
+                }else if ('?' == p[j-1])
+                {
                     dp[i][j] = dp[i-1][j-1];
-                else if ('?' == p[j-1])
-                    dp[i][j] = dp[i-1][j-1];
-                else if ('*' == p[j-1])
-                    dp[i][j] = dp[i-1][j] || dp[i][j-1];
+                }else
+                {
+                    if (s[i-1] == p[j-1])
+                        dp[i][j]  = dp[i-1][j-1];
+                    else
+                        dp[i][j] = false;
+                }
             }
         return dp[m][n];
     }
@@ -1044,41 +1163,160 @@ public:
 class Solution {
 public:
     bool isMatch(string s, string p) {
-        
         int m = s.size(), n = p.size();
-        vector<vector<int>> dp(m+1, vector<int>(n+1, false));
+        vector<vector<bool>> dp(m+1, vector<bool>(n+1, false));
         dp[0][0] = true;
-        for (int i = 1; i <= m; ++i)
-            dp[i][0] = false;
         for (int j = 1; j <= n; ++j)
-            if ('*' == p[j-1])
+            if  ('*' == p[j-1])
                 dp[0][j] = dp[0][j-2];
-            else
-                dp[0][j] = false;
+
         for (int i = 1; i <= m; ++i)
             for (int j = 1; j <= n; ++j)
             {
-                if (s[i-1]==p[j-1] || '.'==p[j-1])
+                if ('*' == p[j-1])
+                {
+                    if (dp[i][j-2]) //*匹配0个
+                        dp[i][j] = true;
+                    else if (s[i-1]==p[j-2] || '.'==p[j-2])//*匹配1个或多个
+                        dp[i][j] = dp[i-1][j];
+                }else if('.' == p[j-1])
                 {
                     dp[i][j] = dp[i-1][j-1];
-                }else if ('*' == p[j-1])
+                }else
                 {
-                    if (dp[i][j-2])
-                        dp[i][j] = true;
+                    if (s[i-1] == p[j-1])
+                        dp[i][j] = dp[i-1][j-1];
                     else
-                    {
-                        if (p[j-2]==s[i-1] || '.'==p[j-2])
-                            dp[i][j] = dp[i-1][j];
-                    }
+                        dp[i][j] = false;
                 }
             }
-        return dp[m][n];
+        return dp[m][n];  
     }
 };
 
 ```
 
 <br>
+
+
+---------------------------
+##### 97.交错字符串
+>题目描述:给定三个字符串 s1、s2、s3，请你帮忙验证 s3 是否是由 s1 和 s2 交错 组成的。
+两个字符串 s 和 t 交错 的定义与过程如下，其中每个字符串都会被分割成若干 非空 子字符串：
+s = s1 + s2 + ... + sn
+t = t1 + t2 + ... + tm
+|n - m| <= 1
+交错 是 s1 + t1 + s2 + t2 + s3 + t3 + ... 或者 t1 + s1 + t2 + s2 + t3 + s3 + ...
+提示：a + b 意味着字符串 a 和 b 连接。
+s1、s2、和 s3 都由小写英文字母组成
+
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/interleaving-string
+
+解题思路：dp[i][j]代表s1[i]的子串和s2[j]的子串能否形成交错的字符串。
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(M*N)
+
+```cpp
+class Solution {
+public:
+    bool isInterleave(string s1, string s2, string s3) {
+        int m = s1.size(), n = s2.size();
+        if (m + n != s3.size())
+            return false;
+        
+        vector<vector<bool>> dp(m+1, vector<bool>(n+1, false));
+        dp[0][0] = true;
+        for (int i = 1; i <= m; ++i)
+            if (s1[i-1] == s3[i-1])
+                dp[i][0] = true;
+            else
+                break;
+
+        for (int j = 1; j <= n; ++j)
+            if (s2[j-1] == s3[j-1])
+                dp[0][j] = true;
+            else
+                break;
+        
+        for (int i = 1; i <= m; ++i)
+            for (int j = 1; j <= n; ++j)
+            {
+                if ((dp[i-1][j]&&s1[i-1]==s3[i+j-1]) || (dp[i][j-1]&&s2[j-1]==s3[i+j-1]))
+                    dp[i][j] = true;
+                else
+                    dp[i][j] = false;
+            }
+        return dp[m][n];
+    }
+};
+```
+
+<br>
+
+
+
+---------------------------
+##### 72.编辑距离
+>题目描述:给你两个单词 word1 和 word2，请你计算出将 word1 转换成 word2 所使用的最少操作数 。word1 和 word2 由小写英文字母组成
+你可以对一个单词进行如下三种操作：
+插入一个字符
+删除一个字符
+替换一个字符
+ 
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/edit-distance
+
+解题思路：dp[i][j]存放的是转换到达该位置需要的步骤，i向下代表 删除， j向右代表 增加，ij同时增加代表修改；整个动态规划数组执行到右下角的时候，已经将word1全部删除，将Word2全部加入，达到最后的修改结果，求解出最少的编辑距离。
+word[i]!=word[i] 时 dp[i][j] = std::min(dp[i-1][j-1], std::min(dp[i-1][j],dp[i][j-1])) + 1; 
+当word[i]==word[j]时 dp[i][j] = dp[i-1][j-1];
+    r o s s
+  0 1 2 3 4
+r 1
+i 2
+c 3
+e 4
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(M*N)
+
+```cpp
+class Solution {
+public:
+    int minDistance(string word1, string word2) {
+        int M  = word1.size(), N = word2.size();
+        vector<vector<int>> dp(M+1, vector<int>(N+1, 0));
+        dp[0][0] = 0;
+        for (int i = 1; i <= M; i++)
+            dp[i][0] = i;
+        for (int j = 1; j <= N; j++)
+            dp[0][j] = j;
+        
+        for (int i = 1; i <= M; i++)
+            for (int j = 1; j <= N;j ++)
+                if (word1[i-1]==word2[j-1])
+                    dp[i][j] = dp[i-1][j-1];
+                else
+                    dp[i][j] = std::min(dp[i-1][j-1], std::min(dp[i-1][j],dp[i][j-1])) + 1;
+        return dp[M][N];
+    }
+};
+
+```
+
+<br>
+
+
+
+
+
+
+
+
 
 ---------------------------
 ##### 32.最长的有效括号
@@ -1197,6 +1435,85 @@ public:
 ```
 
 <br>
+
+
+
+
+---------------------------
+##### 85.最大矩阵
+>题目描述:给定一个仅包含 0 和 1 、大小为 rows x cols 的二维二进制矩阵，找出只包含 1 的最大矩形，并返回其面积。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/maximal-rectangle
+
+* **解法一**
+
+解题思路：调用上一题求最大矩阵的解法，一行一行的计算，求解出最大矩阵
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        if (heights.empty())
+            return 0;
+        heights.push_back(0);
+        int ans = 0;
+        stack<int> stk;
+        for (int i = 0; i < heights.size(); i++)
+        {
+            while (!stk.empty() && heights[i]<heights[stk.top()])
+            {
+                int mid = stk.top();
+                stk.pop();
+                int l = stk.empty()? -1 : stk.top();
+                int r = i;
+                ans = std::max(ans, (r-l-1)*heights[mid]);
+            }
+            stk.push(i);
+        }
+        heights.pop_back();
+        return ans;
+    }
+
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if (matrix.empty())
+            return 0;
+        int ans = 0;
+        int M = matrix.size(), N = matrix[0].size();
+        vector<vector<int>> nums(M, vector<int>(N));
+        for (int i = 0; i < M; i++)
+            for (int j = 0; j < N; j++)
+                if ('1' == matrix[i][j])
+                    nums[i][j] = 1;
+                else 
+                    nums[i][j] = 0;
+
+        for (int i = 1; i < M; i++)
+            for (int j = 0; j < N; j++)
+                if (0 == nums[i][j])
+                    continue;
+                else
+                    nums[i][j] += nums[i-1][j];
+                    
+        for (int i = 0; i < M; i++)
+        {
+            int res = largestRectangleArea(nums[i]);
+            ans = std::max(ans, res);
+        }
+        return ans;
+    }
+};
+
+```
+
+
+<br>
+
+
 
 
 
@@ -1604,7 +1921,6 @@ public:
 
 ---------------------
 ##### 60.排列序列
-
 >题目描述：给出集合 [1,2,3,...,n]，其所有元素共有 n! 种排列。
 按大小顺序列出所有排列情况，并一一标记，当 n = 3 时, 所有排列如下：
 "123"
@@ -1864,6 +2180,86 @@ public:
 ```
 
 <br>
+
+
+
+
+---------------------------
+##### 87.扰乱字符串
+>题目描述:给定一个字符串 s1，我们可以把它递归地分割成两个非空子字符串，从而将其表示为二叉树。
+下图是字符串 s1 = "great" 的一种可能的表示形式。
+    great
+   /    \
+  gr    eat
+ / \    /  \
+g   r  e   at
+           / \
+          a   t
+在扰乱这个字符串的过程中，我们可以挑选任何一个非叶节点，然后交换它的两个子节点。
+例如，如果我们挑选非叶节点 "gr" ，交换它的两个子节点，将会产生扰乱字符串 "rgeat" 。
+    rgeat
+   /    \
+  rg    eat
+ / \    /  \
+r   g  e   at
+           / \
+          a   t
+我们将 "rgeat” 称作 "great" 的一个扰乱字符串。
+同样地，如果我们继续交换节点 "eat" 和 "at" 的子节点，将会产生另一个新的扰乱字符串 "rgtae" 。
+    rgtae
+   /    \
+  rg    tae
+ / \    /  \
+r   g  ta  e
+       / \
+      t   a
+我们将 "rgtae” 称作 "great" 的一个扰乱字符串。
+给出两个长度相等的字符串 s1 和 s2，判断 s2 是否是 s1 的扰乱字符串。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/scramble-string
+
+解题思路：该题使用递归解决。
+
+时间复杂度：
+
+空间复杂度：
+
+```cpp
+class Solution {
+public:
+    bool isScramble(string s1, string s2) {
+        if (s1 == s2)
+            return true;
+        string t1 = s1, t2 = s2;
+        sort(t1.begin(), t1.end());
+        sort(t2.begin(), t2.end());
+        if (t1 != t2)
+            return false;
+
+        int n = s1.size();
+        for (int i = 1; i < n; ++i)
+        {
+            bool ans1 = isScramble(s1.substr(0,i), s2.substr(0,i)) && isScramble(s1.substr(i,n-i), s2.substr(i,n-i));
+            bool ans2 = isScramble(s1.substr(0,i), s2.substr(n-i,i)) && isScramble(s1.substr(i,n-i), s2.substr(0, n-i));
+            if (ans1 || ans2)
+                return true;
+        }
+        return false;
+    }
+};
+```
+
+<br>
+
+
+
+
+
+
+
+
+
 
 
 

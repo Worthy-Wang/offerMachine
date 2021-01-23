@@ -2,6 +2,7 @@
         - [130.被围绕的区域](#130被围绕的区域)
         - [131.分割回文串](#131分割回文串)
         - [132.分割回文串2](#132分割回文串2)
+        - [87.扰乱字符串](#87扰乱字符串)
         - [剑指 Offer 13. 机器人的运动范围](#剑指-offer-13-机器人的运动范围)
         - [36.有效的数独](#36有效的数独)
         - [37.解数独](#37解数独)
@@ -16,8 +17,6 @@
 
 
 # 十.DFS专题
-
-
 
 ---------------------------
 ##### 130.被围绕的区域
@@ -143,8 +142,6 @@ public:
 
 <br>
 
-
-
 ---------------------------
 ##### 132.分割回文串2
 >题目描述:给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
@@ -157,15 +154,168 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/palindrome-partitioning-ii
 
-解题思路：
+* **解法一**
+
+解题思路：经典的动态规划题目，进行一次遍历string，先检测该子串是否会回文串，是则分割次数为0；否则在右边部分满足是回文串的情况下，查看左边部分的最小分割次数。
+
+时间复杂度：O(N^3)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+public:
+    bool isPalin(string& s, int l, int r)
+    {
+        int i = l, j = r;
+        while (i < j)
+            if (s[i++] != s[j--])
+                return false;
+        return true;
+    }
+
+    int minCut(string s) {
+        int n = s.size();
+        //dp[i]代表s[0]到s[i]的最少分割次数
+        vector<int> dp(n);
+        for (int i = 0; i < n; ++i)
+            dp[i] = i; //1个字符最少分割0次，2个字符最少分割1次
+        
+        for (int i = 0; i < n; ++i)
+        {
+            if (isPalin(s, 0, i))
+                dp[i] = 0;
+            else
+            {
+                for (int mid = 0; mid < i;  ++mid)
+                    if (isPalin(s, mid+1, i))
+                        dp[i] = std::min(dp[i], dp[mid] + 1);
+            }
+        }
+
+        return dp[n-1];
+    }
+};
+
+```
+
+<br>
+
+
+
+* **解法二**
+
+解题思路：在上一个解法的基础上对isPalin函数进行优化，将其优化为二维的动态规划数组，相当于空间换时间
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N^2)
+
+```cpp
+class Solution {
+public:
+    int minCut(string s) {
+        int n = s.size();
+        //isPalin[i][j]代表s[i]到s[j]的子串是否为回文串
+        vector<vector<bool>> isPalin(n, vector<bool>(n, false));
+        for (int j = 0; j < n; ++j)
+            for (int i = 0; i <= j; ++i)
+                if (s[i]==s[j] && (j-i<=2 || isPalin[i+1][j-1]))
+                    isPalin[i][j] = true;
+        //dp[i]代表s[0]到s[i]的最少分割次数
+        vector<int> dp(n);
+        for (int i = 0; i < n; ++i)
+            dp[i] = i; //1个字符最少分割0次，2个字符最少分割1次
+        
+        for (int i = 0; i < n; ++i)
+        {
+            if (isPalin[0][i])
+                dp[i] = 0;
+            else
+            {
+                for (int mid = 0; mid < i;  ++mid)
+                    if (isPalin[mid+1][i])
+                        dp[i] = std::min(dp[i], dp[mid] + 1);
+            }
+        }
+
+        return dp[n-1];
+    }
+};
+
+```
+
+<br>
+
+
+
+
+
+---------------------------
+##### 87.扰乱字符串
+>题目描述:给定一个字符串 s1，我们可以把它递归地分割成两个非空子字符串，从而将其表示为二叉树。
+下图是字符串 s1 = "great" 的一种可能的表示形式。
+    great
+   /    \
+  gr    eat
+ / \    /  \
+g   r  e   at
+           / \
+          a   t
+在扰乱这个字符串的过程中，我们可以挑选任何一个非叶节点，然后交换它的两个子节点。
+例如，如果我们挑选非叶节点 "gr" ，交换它的两个子节点，将会产生扰乱字符串 "rgeat" 。
+    rgeat
+   /    \
+  rg    eat
+ / \    /  \
+r   g  e   at
+           / \
+          a   t
+我们将 "rgeat” 称作 "great" 的一个扰乱字符串。
+同样地，如果我们继续交换节点 "eat" 和 "at" 的子节点，将会产生另一个新的扰乱字符串 "rgtae" 。
+    rgtae
+   /    \
+  rg    tae
+ / \    /  \
+r   g  ta  e
+       / \
+      t   a
+我们将 "rgtae” 称作 "great" 的一个扰乱字符串。
+给出两个长度相等的字符串 s1 和 s2，判断 s2 是否是 s1 的扰乱字符串。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/scramble-string
+
+解题思路：该题使用递归解决。
 
 时间复杂度：
 
 空间复杂度：
 
 ```cpp
+class Solution {
+public:
+    bool isScramble(string s1, string s2) {
+        if (s1 == s2)
+            return true;
+        string t1 = s1, t2 = s2;
+        sort(t1.begin(), t1.end());
+        sort(t2.begin(), t2.end());
+        if (t1 != t2)
+            return false;
 
-
+        int n = s1.size();
+        for (int i = 1; i < n; ++i)
+        {
+            bool ans1 = isScramble(s1.substr(0,i), s2.substr(0,i)) && isScramble(s1.substr(i,n-i), s2.substr(i,n-i));
+            bool ans2 = isScramble(s1.substr(0,i), s2.substr(n-i,i)) && isScramble(s1.substr(i,n-i), s2.substr(0, n-i));
+            if (ans1 || ans2)
+                return true;
+        }
+        return false;
+    }
+};
 ```
 
 <br>
@@ -351,8 +501,6 @@ public:
 ```
 
 <br>
-
-
 
 
 ---------------------------
