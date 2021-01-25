@@ -65,17 +65,18 @@ public:
     int jump(vector<int>& nums) {
         if (nums.size() <= 1)
             return 0;
-        int maxPos = 0, end = nums[0], ans = 0;
+        int end = nums[0], nextEnd = end;
+        int cnt = 0;
         for (int i = 0; i < nums.size()-1; ++i)
         {
-            maxPos = std::max(maxPos, i+nums[i]);
+            nextEnd = std::max(nextEnd, i + nums[i]);
             if (i == end)
             {
-                ++ans;
-                end = maxPos;
+                end = nextEnd;
+                ++cnt;
             }
         }
-        return ans + 1;
+        return cnt + 1;
     }
 };
 
@@ -202,9 +203,6 @@ public:
 
 
 
-
-
-
 ---------------------------
 ##### 11.盛最多水的容器
 >题目描述:给你 n 个非负整数 a1，a2，...，an，每个数代表坐标中的一个点 (i, ai) 。在坐标内画 n 条垂直线，垂直线 i 的两个端点分别为 (i, ai) 和 (i, 0) 。找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
@@ -227,24 +225,20 @@ public:
         int ans = 0;
         while (l < r)
         {
-            ans = std::max(ans, (r-l)*std::min(height[l], height[r]));
-            if (height[l] < height[r])
+            if (height[l] <= height[r])
             {
-                int target = height[l];
-                while (l < r && height[l]<=target)
-                    l++;
+                ans = std::max(ans, (r-l) * height[l]);
+                ++l;
             }
-            else
+            else 
             {
-                int target = height[r];
-                while (l < r && height[r]<=target)
-                    r--;
+                ans = std::max(ans, (r-l) * height[r]);
+                --r;
             }
         }
         return ans;
     }
 };
-
 ```
 
 <br>
