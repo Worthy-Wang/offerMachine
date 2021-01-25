@@ -439,49 +439,48 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/max-points-on-a-line
 
-解题思路：
+解题思路：依次遍历各个点，与后面的点进行计算斜率，找出同一个斜率中拥有的最多点数即可。需要注意两点：1.斜率可能出现与x轴或者y轴相平行，所以斜率的形式要用string表示；2.可能会出现重复的点的情况，所以用dup记录重复的点的个数。
 
-时间复杂度：
+时间复杂度：O(N^2)
 
-空间复杂度：
+空间复杂度：O(N)
 
 ```cpp
 class Solution {
 public:
-    int gcd(int a, int b)
+    int GCD(int a, int b)
     {
-            while (b != 0) {
-            int temp = a % b;
+        while (b)
+        {
+            int t = a % b;
             a = b;
-            b = temp;
+            b = t;
         }
         return a;
     }
 
     int maxPoints(vector<vector<int>>& points) {
-        if (points.size() < 3)
-            return points.size();
         int ans = 0;
         for (int i = 0; i < points.size(); ++i)
         {
-            int dup = 0;
+            unordered_map<string, int> hashmap;//<斜率,点个数>
             int curMax = 0;
-            unordered_map<string, int> hashmap;
-            for (int j = i + 1; j < points.size(); ++j)
+            int dup = 0;
+            for (int j = i+1; j < points.size(); ++j)
             {
-                int diffX = points[j][0] - points[i][0];
-                int diffY = points[j][1] - points[i][1];
+                int x1 = points[i][0], y1 = points[i][1];
+                int x2 = points[j][0], y2 = points[j][1];
+                int diffX = x2 - x1, diffY = y2 - y1, gcd = GCD(diffX, diffY);
                 if (0==diffX && 0==diffY)
                 {
-                    ++dup;
+                    dup++;
                     continue;
                 }
-                int GCD = gcd(diffX, diffY);
-                string key = to_string(diffX/GCD) + " " + to_string(diffY/GCD);
+                string key = to_string(diffX/gcd) + "/" + to_string(diffY/gcd);
                 hashmap[key]++;
                 curMax = std::max(curMax, hashmap[key]);
             }
-            ans = std::max(ans, curMax+1+dup);
+            ans = std::max(curMax + 1 + dup, ans); //curMax+1是因为要加上i指向的这一个点, 加上dup是因为要加上重复的点
         }
         return ans;
     }

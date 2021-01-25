@@ -638,49 +638,48 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/max-points-on-a-line
 
-解题思路：
+解题思路：依次遍历各个点，与后面的点进行计算斜率，找出同一个斜率中拥有的最多点数即可。需要注意两点：1.斜率可能出现与x轴或者y轴相平行，所以斜率的形式要用string表示；2.可能会出现重复的点的情况，所以用dup记录重复的点的个数。
 
-时间复杂度：
+时间复杂度：O(N^2)
 
-空间复杂度：
+空间复杂度：O(N)
 
 ```cpp
 class Solution {
 public:
-    int gcd(int a, int b)
+    int GCD(int a, int b)
     {
-            while (b != 0) {
-            int temp = a % b;
+        while (b)
+        {
+            int t = a % b;
             a = b;
-            b = temp;
+            b = t;
         }
         return a;
     }
 
     int maxPoints(vector<vector<int>>& points) {
-        if (points.size() < 3)
-            return points.size();
         int ans = 0;
         for (int i = 0; i < points.size(); ++i)
         {
-            int dup = 0;
+            unordered_map<string, int> hashmap;//<斜率,点个数>
             int curMax = 0;
-            unordered_map<string, int> hashmap;
-            for (int j = i + 1; j < points.size(); ++j)
+            int dup = 0;
+            for (int j = i+1; j < points.size(); ++j)
             {
-                int diffX = points[j][0] - points[i][0];
-                int diffY = points[j][1] - points[i][1];
+                int x1 = points[i][0], y1 = points[i][1];
+                int x2 = points[j][0], y2 = points[j][1];
+                int diffX = x2 - x1, diffY = y2 - y1, gcd = GCD(diffX, diffY);
                 if (0==diffX && 0==diffY)
                 {
-                    ++dup;
+                    dup++;
                     continue;
                 }
-                int GCD = gcd(diffX, diffY);
-                string key = to_string(diffX/GCD) + " " + to_string(diffY/GCD);
+                string key = to_string(diffX/gcd) + "/" + to_string(diffY/gcd);
                 hashmap[key]++;
                 curMax = std::max(curMax, hashmap[key]);
             }
-            ans = std::max(ans, curMax+1+dup);
+            ans = std::max(curMax + 1 + dup, ans); //curMax+1是因为要加上i指向的这一个点, 加上dup是因为要加上重复的点
         }
         return ans;
     }
@@ -691,15 +690,11 @@ public:
 <br>
 
 
-
-
-
-
 ---------------------------
 ##### 93.复原IP地址
 >题目描述:给定一个只包含数字的字符串，复原它并返回所有可能的 IP 地址格式。
 有效的 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 '.' 分隔。
-例如："0.1.2.201" 和 "192.168.1.1" 是 有效的 IP 地址，但是 "0.011.255.245"、"192.168.1.312" 和 "192.168@1.1" 是 无效的 IP 地址。
+例如："0.1.2.201" 和 "192.168.1.1" 是 有效的 IP 地址，但是 "0.011.255.245"、"192.168.1.312" j是 无效的 IP 地址。
 
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/restore-ip-addresses
@@ -716,33 +711,36 @@ class Solution {
 public:
     void DFS(string& s, int start, vector<string>& path)
     {
-        if (4==path.size() && start==s.size())
+        if (start == s.size() && 4 == path.size())
         {
-            ans.push_back(string(path[0]+"."+path[1]+"."+path[2]+"."+path[3]));
+            string res = path[0] + "." + path[1] + "." + path[2] + "." + path[3];
+            ans.push_back(std::move(res));
             return;
         }
+        if (path.size() > 4)
+            return;
 
-        for (int j = start; j < s.size(); j++)
+        for (int i = start; i < s.size(); ++i)
         {
-            string str = s.substr(start, j-start+1);
-            if (stoi(str)>255)
+            string str = s.substr(start, i-start + 1);
+            if (stoi(str) > 255)
                 break;
             path.push_back(str);
-            DFS(s, j+1, path);  
-            path.pop_back();  
+            DFS(s, i+1, path);
+            path.pop_back();
             if ("0" == str)
                 break;
         }
     }
 
     vector<string> restoreIpAddresses(string s) {
-        if (s.size() > 12)
-            return {};
         vector<string> path;
         DFS(s, 0, path);
         return ans;
     }
 };
+
+
 
 ```
 
@@ -756,7 +754,6 @@ candidates 中的数字可以无限制重复被选取。
 说明：
 所有数字（包括 target）都是正整数。
 解集不能包含重复的组合。 
-candidate 中的每个元素都是独一无二的。
 
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/combination-sum
@@ -771,27 +768,27 @@ candidate 中的每个元素都是独一无二的。
 class Solution {
     vector<vector<int>> ans;
 public:
-    void DFS(vector<int>& candidates, int start, int target, vector<int>& path)
+    
+    void DFS(vector<int>& nums, int start, int target, vector<int>& path)
     {
-        if (target < 0)
-            return;
-        if (target==0)
+        if (0 == target)
         {
             ans.push_back(path);
             return;
         }
 
-        for (int i = start; i < candidates.size(); i++)
+        for (int i = start; i < nums.size(); ++i)
         {
-            path.push_back(candidates[i]);
-            DFS(candidates, i, target-candidates[i], path);
+            if (target < nums[i])
+                return;
+            path.push_back(nums[i]);
+            DFS(nums, i, target - nums[i], path);
             path.pop_back();
         }
     }
 
     vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
-        if (candidates.empty())
-            return {};
+        sort(candidates.begin(), candidates.end(), std::less<int>());
         vector<int> path;
         DFS(candidates, 0, target, path);
         return ans;
@@ -824,37 +821,35 @@ candidates 中的每个数字在每个组合中只能使用一次。
 class Solution {
     vector<vector<int>> ans;
 public:
-    void DFS(vector<int>& candidates, int target, int start,  vector<int>& path)
+    
+    void DFS(vector<int>& nums, int start, int target, vector<int>& path)
     {
-        if (target < 0)
-            return;
         if (0 == target)
         {
             ans.push_back(path);
             return;
         }
 
-        for (int i = start; i < candidates.size(); i++)
+        for (int i = start; i < nums.size(); ++i)
         {
-            if (i>start && candidates[i]==candidates[i-1])
-                continue;
-            if (candidates[i] > target)
+            if (target < nums[i])
                 return;
-            path.push_back(candidates[i]);
-            DFS(candidates, target-candidates[i], i+1, path);
+            if (i>start && nums[i]==nums[i-1])
+                continue;
+            path.push_back(nums[i]);
+            DFS(nums, i + 1, target - nums[i], path);
             path.pop_back();
         }
     }
 
     vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
-        if (candidates.empty())
-            return {};
+        sort(candidates.begin(), candidates.end(), std::less<int>());
         vector<int> path;
-        sort(candidates.begin(), candidates.end());
-        DFS(candidates, target, 0, path);
+        DFS(candidates, 0, target, path);
         return ans;
     }
 };
+
 
 
 ```

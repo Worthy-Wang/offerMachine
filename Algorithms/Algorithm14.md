@@ -1,31 +1,224 @@
-- [十四.图专题](#十四图专题)
-        - [133.克隆图](#133克隆图)
+- [十四.位操作专题](#十四位操作专题)
+        - [50.Pow(x,n)](#50powxn)
+        - [136.只出现一次的数字](#136只出现一次的数字)
+        - [137.只出现一次的数字2](#137只出现一次的数字2)
+        - [260.只出现一次的数字3](#260只出现一次的数字3)
+        - [89.格雷编码](#89格雷编码)
+        - [剑指 Offer 64. 求1+2+…+n](#剑指-offer-64-求12n)
+        - [剑指 Offer 65. 不用加减乘除做加法](#剑指-offer-65-不用加减乘除做加法)
 
 
-# 十四.图专题
+
+# 十四.位操作专题
 
 ---------------------------
-##### 133.克隆图
->题目描述:给你无向 连通 图中一个节点的引用，请你返回该图的 深拷贝（克隆）。
-图中的每个节点都包含它的值 val（int） 和其邻居的列表（list[Node]）。
-class Node {
-    public int val;
-    public List<Node> neighbors;
-}
-测试用例格式：
-简单起见，每个节点的值都和它的索引相同。例如，第一个节点值为 1（val = 1），第二个节点值为 2（val = 2），以此类推。该图在测试用例中使用邻接列表表示。
-邻接列表 是用于表示有限图的无序列表的集合。每个列表都描述了图中节点的邻居集。
-给定节点将始终是图中的第一个节点（值为 1）。你必须将 给定节点的拷贝 作为对克隆图的引用返回。
-节点数不超过 100 。
-每个节点值 Node.val 都是唯一的，1 <= Node.val <= 100。
-无向图是一个简单图，这意味着图中没有重复的边，也没有自环。
-由于图是无向的，如果节点 p 是节点 q 的邻居，那么节点 q 也必须是节点 p 的邻居。
-图是连通图，你可以从给定节点访问到所有节点。
+##### 50.Pow(x,n)
+>题目描述:实现 pow(x, n) ，即计算 x 的 n 次幂函数。
+-100.0 < x < 100.0
+n 是 32 位有符号整数，其数值范围是 [−2^31, 2^31 − 1] 。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/clone-graph
+链接：https://leetcode-cn.com/problems/powx-n
 
-解题思路：设置哈希表<旧节点，新节点>，若该节点已经创建，那么不需要再创建邻接表，直接返回；如果没有创建该节点的话那么就要递归创建新节点。
+
+解题思路：基于二进制的快速幂运算，x^n 求解，将 n 转化为二进制数，不断在二进制数的n末尾判断是1还是0，是1的话说明可以进行累乘，然后不断右移1位即可。注意x也是不断进行乘积的。
+
+时间复杂度：O(logN)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    double Pow(double x, long long n)
+    {
+        double res = 1;
+        while (n)
+        {
+            if (n & 0x1)
+                res *= x;
+            x *= x;
+            n >>= 1;
+        }
+        return res;
+    }
+
+    double myPow(double x, int n) {
+        if (0 == n)
+            return 1;
+        if (1 == x)
+            return 1;
+        long long N = n;
+        if (n < 0)
+            return 1.0 / Pow(x, -N);
+        else
+            return Pow(x, N);
+    }
+};
+
+```
+
+<br>
+
+
+
+-------------------------------------------
+##### 136.只出现一次的数字
+>题目描述：给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/single-number
+
+解题思路：对整个数组中的元素进行异或操作，最后剩下的值就是只出现一次的元素。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        int ans = 0;
+        for (auto& i : nums)
+            ans ^= i;
+        return ans;
+    }
+};
+```
+
+<br>
+
+-------------------------------------------
+##### 137.只出现一次的数字2
+>题目描述：给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现了三次。找出那个只出现了一次的元素。
+你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/single-number-ii
+
+解题思路：位运算，每个数都有32位，从最低位0位开始，遍历数组累积该位上的数在%3，也就求得了该位上有用的数，按照此方法遍历32位再累加即可求得只出现了一次的元素。该方法同样可以求解类似问题：有一个元素出现了一次，其余元素出现了k（k为奇数且不为1）次。
+
+时间复杂度：O(32*N) ≈ O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        int ans = 0;
+        for (int i = 0; i < 32; i++)
+        {
+            int cnt = 0;
+            for (auto& e: nums)
+                if (e & (1<<i))
+                    cnt++;
+            cnt %= 3;
+            if (cnt)
+                ans += (1<<i);
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+----------------------------
+##### 260.只出现一次的数字3
+>题目描述：给定一个整数数组 nums，其中恰好有两个元素只出现一次，其余所有元素均出现两次。 找出只出现一次的那两个元素。
+结果输出的顺序并不重要。
+你的算法应该具有线性时间复杂度。你能否仅使用常数空间复杂度来实现？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/single-number-iii
+
+解题思路：先对整个数组进行异或操作，最后剩下的元素是求解的两个元素异或的结果，找到该结果中为1的某一位，通过该位将整个数组分为两个部分，每个部分各自进行异或操作也就可以得到求解的两个元素了。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    vector<int> singleNumber(vector<int>& nums) {
+        int target = 0;
+        for (auto& e: nums)
+            target ^= e;
+        int i = 1;
+        while (!(i&target))
+            i <<= 1;
+        int res1 = 0, res2 = 0;
+        for (auto& e: nums)
+        {
+            if (i & e)
+                res1 ^= e;
+            else
+                res2 ^= e;
+        }
+        return vector<int>{res1, res2};
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------------
+##### 89.格雷编码
+>题目描述：格雷编码是一个二进制数字系统，在该系统中，两个连续的数值仅有一个位数的差异。
+给定一个代表编码总位数的非负整数 n，打印其格雷编码序列。即使有多个不同答案，你也只需要返回其中一种。
+格雷编码序列必须以 0 开头。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/gray-code
+
+解题思路：设置一个标志位pos（pos初始值为 1），pos在每一次遍历中都需要左移一位，然后再加到返回值的vector数组里，每一次的遍历都通过pos相加创建新的数，然后再将这些数加到返回值数组里面。
+
+时间复杂度：O(2^n)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    vector<int> grayCode(int n) {
+        vector<int> ans{0};
+        int pos = 1;
+        for (int i = 1; i <= n; i++)
+        {
+            vector<int> temp = ans;
+            for (auto it = temp.rbegin(); it != temp.rend(); it++)
+            {
+                *it += pos;
+                ans.push_back(*it);
+            }
+            pos <<= 1;
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+
+---------------------------
+##### 剑指 Offer 64. 求1+2+…+n
+>题目描述:求 1+2+...+n ，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/qiu-12n-lcof
+
+解题思路：不能使用if，那么就用 &&（逻辑与）操作的截断效应来模拟if即可。
 
 时间复杂度：O(N)
 
@@ -33,19 +226,45 @@ class Node {
 
 ```cpp
 class Solution {
-    unordered_map<Node*,Node*> hashmap;//<旧，新>
 public:
-    Node* cloneGraph(Node* node) {
-        if (!node)
-            return nullptr;
-        if (hashmap.count(node))
-            return hashmap[node];
-        Node* newNode = new Node(node->val);
-        hashmap[node] = newNode;
-        for (auto& e: node->neighbors)
-            newNode->neighbors.push_back(cloneGraph(e));
-        return newNode;
+    int sumNums(int n) {
+        int sum = 0;
+        n && (sum=n+sumNums(n-1));
+        return sum;
+    }
+};
+```
+
+<br>
+
+
+---------------------------
+##### 剑指 Offer 65. 不用加减乘除做加法
+>题目描述:写一个函数，求两个整数之和，要求在函数体内不得使用 “+”、“-”、“*”、“/” 四则运算符号。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/bu-yong-jia-jian-cheng-chu-zuo-jia-fa-lcof
+
+解题思路：通过位操作实现，异或操作 可以保留 相加后的余数位，与操作 左移一位后 也就是 进位。 
+
+时间复杂度：O(1)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int add(int a, int b) {
+        while (a)
+        {
+            int carry = ((unsigned)(a&b)<<1), sum = (a^b);
+            a = carry, b = sum;
+        }
+        return b;
     }
 };
 
 ```
+
+<br>
+
