@@ -30,6 +30,7 @@
         - [87.扰乱字符串](#87扰乱字符串)
         - [45.跳跃游戏2](#45跳跃游戏2)
         - [123.买卖股票的最佳时机3](#123买卖股票的最佳时机3)
+        - [115.不同的子序列](#115不同的子序列)
         - [](#)
         - [](#-1)
 
@@ -2347,6 +2348,58 @@ public:
 <br>
 
 
+
+
+---------------------------
+##### 115.不同的子序列
+>题目描述:给定一个字符串 s 和一个字符串 t ，计算在 s 的子序列中 t 出现的个数。
+字符串的一个 子序列 是指，通过删除一些（也可以不删除）字符且不干扰剩余字符相对位置所组成的新字符串。（例如，"ACE" 是 "ABCDE" 的一个子序列，而 "AEC" 不是）
+题目数据保证答案符合 32 位带符号整数范围。
+s 和 t 由英文字母组成
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/distinct-subsequences
+
+解题思路：创建动态规划数组，将字符串t的子串不断在s串中进行匹配，最后生成动态规划数组。
+    a  b
+  1 0  0
+a 1 1  0
+a 1 
+b 1
+b 1
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(M*N)
+
+```cpp
+class Solution {
+public:
+    int numDistinct(string s, string t) {
+        int m = s.size(), n = t.size();
+        vector<vector<long>> dp(m+1, vector<long>(n+1, 0));
+        dp[0][0] = 1;
+        for (int i = 1; i <= m; ++i)
+            dp[i][0] = 1;
+        for (int j = 1; j <= n; ++j)
+            dp[0][j] = 0;
+
+        for (int i = 1; i <= m; ++i)
+            for (int j = 1; j <= n; ++j)
+            {
+                if (s[i-1] == t[j-1])
+                    dp[i][j] = dp[i-1][j] + dp[i-1][j-1];
+                else
+                    dp[i][j] = dp[i-1][j];
+            }
+        return dp[m][n];
+    }
+};
+
+
+```
+
+<br>
 
 
 

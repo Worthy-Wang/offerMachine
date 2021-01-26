@@ -3,7 +3,10 @@
         - [63.不同路径2](#63不同路径2)
         - [剑指 Offer 13. 机器人的运动范围](#剑指-offer-13-机器人的运动范围)
         - [剑指 Offer 47. 礼物的最大价值](#剑指-offer-47-礼物的最大价值)
+        - [64.最小路径和](#64最小路径和)
         - [120.三角形最小路径和](#120三角形最小路径和)
+        - [118.杨辉三角](#118杨辉三角)
+        - [119.杨辉三角2](#119杨辉三角2)
         - [343. 整数拆分](#343-整数拆分)
         - [53.最大子序和](#53最大子序和)
         - [5.最长回文子串](#5最长回文子串)
@@ -11,9 +14,8 @@
         - [10.正则表达式匹配](#10正则表达式匹配)
         - [97.交错字符串](#97交错字符串)
         - [72.编辑距离](#72编辑距离)
-        - [64.最小路径和](#64最小路径和)
-        - [91.解码方法](#91解码方法)
         - [剑指 Offer 46. 把数字翻译成字符串](#剑指-offer-46-把数字翻译成字符串)
+        - [91.解码方法](#91解码方法)
         - [115.不同的子序列](#115不同的子序列)
         - [139.单词拆分](#139单词拆分)
         - [140.单词拆分2](#140单词拆分2)
@@ -29,7 +31,7 @@
 ---------------------------
 ##### 62.不同路径
 >题目描述:一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为 “Start” ）。
-机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。 
 问总共有多少条不同的路径？
 
 来源：力扣（LeetCode）
@@ -207,6 +209,50 @@ public:
 <br>
 
 
+
+
+---------------------------
+##### 64.最小路径和
+>题目描述:给定一个包含非负整数的 m x n 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
+说明：每次只能向下或者向右移动一步。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/minimum-path-sum
+
+解题思路：动态规划，dp[i][j] = std::min(dp[i-1][j], dp[i][j-1]), 第一行，第一列的值分别不断累加。
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(M*N)
+
+```cpp
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        if (grid.empty())
+            return 0;
+        int M = grid.size(), N = grid[0].size();
+        vector<vector<int>> dp(M, vector<int>(N, 0));
+        dp[0][0] = grid[0][0];
+        for (int j = 1; j < N; j++)
+            dp[0][j] = grid[0][j] + dp[0][j-1];
+        for (int i = 1; i < M; i++)
+            dp[i][0] = grid[i][0] + dp[i-1][0];
+        
+        for (int i = 1; i < M; i++)
+            for (int j = 1; j < N; j++)
+                dp[i][j] = std::min(dp[i-1][j], dp[i][j-1]) + grid[i][j];
+        return dp[M-1][N-1];
+    }
+};
+
+```
+
+<br>
+
+
+
+
 ---------------------------
 ##### 120.三角形最小路径和
 >题目描述:给定一个三角形，找出自顶向下的最小路径和。每一步只能移动到下一行中相邻的结点上。
@@ -226,19 +272,24 @@ public:
 class Solution {
 public:
     int minimumTotal(vector<vector<int>>& triangle) {
-        int N = triangle.size();
-        vector<vector<int>> dp(N, vector<int>(N, 0));
+        int n = triangle.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
         dp[0][0] = triangle[0][0];
-        for (int i = 1; i < N; i++)
+        for (int i = 1; i < n; ++i)
         {
-            dp[i][0] = triangle[i][0]+dp[i-1][0];//每行的第一个数单独处理
-            for (int j = 1; j < i; j++)
-                dp[i][j] = triangle[i][j] + std::min(dp[i-1][j-1], dp[i-1][j]);
-            dp[i][i] = triangle[i][i] + dp[i-1][i-1];//每行的最后一个数单独处理
+            for (int j = 0; j <= i; ++j)
+            {
+                if (0 == j)
+                    dp[i][j] = triangle[i][j] + dp[i-1][j];
+                else if (i == j)
+                    dp[i][j] = triangle[i][j] + dp[i-1][j-1];
+                else
+                    dp[i][j] = triangle[i][j] + std::min(dp[i-1][j-1], dp[i-1][j]);
+            }
         }
         int ans = INT32_MAX;
-        for (int j = 0; j < N; j++)
-            ans = std::min(ans, dp[N-1][j]);
+        for (int j = 0; j <= n-1; ++j)
+            ans = std::min(ans, dp[n-1][j]);
         return ans;
     }
 };
@@ -251,29 +302,107 @@ public:
 class Solution {
 public:
     int minimumTotal(vector<vector<int>>& triangle) {
-        int N = triangle.size();
-        vector<vector<int>> dp(2, vector<int>(N, 0));
+        int n = triangle.size();
+        vector<vector<int>> dp(2, vector<int>(n, 0));
         dp[0][0] = triangle[0][0];
-        for (int i = 1; i < N; i++)
+        for (int i = 1; i < n; ++i)
         {
-            dp[1][0] = triangle[i][0]+dp[0][0];//每行的第一个数单独处理
-            for (int j = 1; j < i; j++)
-                dp[1][j] = triangle[i][j] + std::min(dp[0][j-1], dp[0][j]);
-            dp[1][i] = triangle[i][i] + dp[0][i-1];//每行的最后一个数单独处理
-            swap(dp[0], dp[1]);
+            for (int j = 0; j <= i; ++j)
+            {
+                if (0 == j)
+                    dp[1][j] = triangle[i][j] + dp[0][j];
+                else if (i == j)
+                    dp[1][j] = triangle[i][j] + dp[0][j-1];
+                else
+                    dp[1][j] = triangle[i][j] + std::min(dp[0][j], dp[0][j-1]);
+            }
+            dp[0] = dp[1];
         }
-
         int ans = INT32_MAX;
-        for (int j = 0; j < N; j++)
+        for (int j = 0; j < n; ++j)
             ans = std::min(ans, dp[0][j]);
         return ans;
+    }
+};
+```
+
+<br>
+
+
+
+---------------------------
+##### 118.杨辉三角
+>题目描述:给定一个非负整数 numRows，生成杨辉三角的前 numRows 行。
+在杨辉三角中，每个数是它左上方和右上方的数的和。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/pascals-triangle
+
+解题思路：杨辉三角的本质是动态规划，直接在for循环中创建数组再加入即可。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> generate(int numRows) {
+        vector<vector<int>> ans;
+        for (int i = 0; i < numRows; i++)
+        {
+            vector<int> vec(i+1,  1);
+            for (int j = 1; j < i; j++)
+                vec[j] = ans[i-1][j] + ans[i-1][j-1];
+            ans.push_back(std::move(vec));
+        }
+        return ans;
+    }
+};
+```
+
+<br>
+
+
+
+
+---------------------------
+##### 119.杨辉三角2
+>题目描述:给定一个非负索引 k，其中 k ≤ 33，返回杨辉三角的第 k 行。
+在杨辉三角中，每个数是它左上方和右上方的数的和。
+进阶：
+你可以优化你的算法到 O(k) 空间复杂度吗？
+注意此题有一个坑，那就是k是从0开始取的，在程序中我们先将k+1即可。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/pascals-triangle-ii
+
+解题思路：动态规划优化法，用两个交替的数组即可。
+
+时间复杂度：O(K^2)
+
+空间复杂度：O(K)
+
+```cpp
+class Solution {
+public:
+    vector<int> getRow(int rowIndex) {
+        rowIndex++;
+        vector<int> dp0(rowIndex, 1);
+        for (int i = 0; i < rowIndex; i++)
+        {
+            vector<int> dp1(rowIndex, 1);
+            for (int j = 1; j < i; j ++)
+                dp1[j] = dp0[j-1] + dp0[j];
+            dp0 = dp1;
+        }
+        return dp0;
     }
 };
 
 ```
 
 <br>
-
 
 
 
@@ -296,14 +425,15 @@ class Solution {
 public:
     int integerBreak(int n) {
         vector<int> dp(n+1, 0);
-        dp[0] = 0, dp[1] = 1;
-        for (int i = 2; i <= n; i++)
-            for (int j = 1; j < i; j++)
-                dp[i] = std::max(dp[i], std::max(j*(i-j), dp[j]*(i-j)));
+        dp[0] = 0, dp[1] = 1, dp[2] = 1;
+        for (int i = 3; i <= n; ++i)
+        {
+            for (int j = 1; j < i; ++j)
+                dp[i] = std::max(dp[i], max(j,dp[j]) * max(dp[i-j], i-j));
+        } 
         return dp[n];
     }
 };
-
 ```
 
 <br>
@@ -328,18 +458,15 @@ public:
 class Solution {
 public:
     int maxSubArray(vector<int>& nums) {
-        if (nums.empty())
-            return 0;
-        vector<int> dp(2);
-        dp[0] = nums[0];
-        int maxLen = nums[0];
-        for (int i =1; i < nums.size(); i++)
+        int dp0 = 0, dp1;
+        int ans = INT32_MIN;
+        for (int i = 0; i < nums.size(); ++i)
         {
-            dp[1] = std::max(dp[0]+nums[i], nums[i]);
-            maxLen  = std::max(dp[1], maxLen);
-            swap(dp[0], dp[1]);
+            dp1 = std::max(nums[i], nums[i] + dp0);
+            dp0 = dp1;
+            ans = std::max(dp0, ans);
         }
-        return maxLen;
+        return ans;
     }
 };
 
@@ -689,50 +816,42 @@ public:
 <br>
 
 
-
-
-
-
 ---------------------------
-##### 64.最小路径和
->题目描述:给定一个包含非负整数的 m x n 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
-说明：每次只能向下或者向右移动一步。
+##### 剑指 Offer 46. 把数字翻译成字符串
+>题目描述:给定一个数字，我们按照如下规则把它翻译为字符串：0 翻译成 “a” ，1 翻译成 “b”，……，11 翻译成 “l”，……，25 翻译成 “z”。一个数字可能有多个翻译。请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/minimum-path-sum
+链接：https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof
 
-解题思路：动态规划，dp[i][j] = std::min(dp[i-1][j], dp[i][j-1]), 第一行，第一列的值分别不断累加。
+解题思路：动态规划，该题 相较于上一题更为简单，因为0可以直接翻译。
 
-时间复杂度：O(M*N)
+时间复杂度：O(N)
 
-空间复杂度：O(M*N)
+空间复杂度：O(1)
 
 ```cpp
 class Solution {
 public:
-    int minPathSum(vector<vector<int>>& grid) {
-        if (grid.empty())
-            return 0;
-        int M = grid.size(), N = grid[0].size();
-        vector<vector<int>> dp(M, vector<int>(N, 0));
-        dp[0][0] = grid[0][0];
-        for (int j = 1; j < N; j++)
-            dp[0][j] = grid[0][j] + dp[0][j-1];
-        for (int i = 1; i < M; i++)
-            dp[i][0] = grid[i][0] + dp[i-1][0];
-        
-        for (int i = 1; i < M; i++)
-            for (int j = 1; j < N; j++)
-                dp[i][j] = std::min(dp[i-1][j], dp[i][j-1]) + grid[i][j];
-        return dp[M-1][N-1];
+    int translateNum(int num) {
+        int dp0 = 1, dp1 = 1, dp2 = 1;
+        string s(to_string(num));
+        for (int i = 1; i < s.size(); i++)
+        {
+            int x = stoi(s.substr(i-1, 2));
+            if (10<=x && x<=25)
+                dp2 = dp1 + dp0;
+            else
+                dp2 = dp1;
+            dp0 = dp1;
+            dp1 = dp2;
+        }        
+        return dp2;
     }
 };
 
 ```
 
 <br>
-
-
 
 
 ---------------------------
@@ -791,45 +910,6 @@ public:
 
 
 ---------------------------
-##### 剑指 Offer 46. 把数字翻译成字符串
->题目描述:给定一个数字，我们按照如下规则把它翻译为字符串：0 翻译成 “a” ，1 翻译成 “b”，……，11 翻译成 “l”，……，25 翻译成 “z”。一个数字可能有多个翻译。请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof
-
-解题思路：动态规划，该题 相较于上一题更为简单，因为0可以直接翻译。
-
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    int translateNum(int num) {
-        int dp0 = 1, dp1 = 1, dp2 = 1;
-        string s(to_string(num));
-        for (int i = 1; i < s.size(); i++)
-        {
-            int x = stoi(s.substr(i-1, 2));
-            if (10<=x && x<=25)
-                dp2 = dp1 + dp0;
-            else
-                dp2 = dp1;
-            dp0 = dp1;
-            dp1 = dp2;
-        }        
-        return dp2;
-    }
-};
-
-```
-
-<br>
-
-
----------------------------
 ##### 115.不同的子序列
 >题目描述:给定一个字符串 s 和一个字符串 t ，计算在 s 的子序列中 t 出现的个数。
 字符串的一个 子序列 是指，通过删除一些（也可以不删除）字符且不干扰剩余字符相对位置所组成的新字符串。（例如，"ACE" 是 "ABCDE" 的一个子序列，而 "AEC" 不是）
@@ -840,16 +920,12 @@ s 和 t 由英文字母组成
 链接：https://leetcode-cn.com/problems/distinct-subsequences
 
 解题思路：创建动态规划数组，将字符串t的子串不断在s串中进行匹配，最后生成动态规划数组。
-if (s[j] == t[i]) dp[i][j] = dp[i][j-1] + dp[i-1][j-1] 
-if (s[j] != t[i]) dp[i][j] = dp[i][j-1];
-
-  "" a b c b c  s j
-""1  1 1 1 1 1 
-b 0  0 1 1 2 2
-c 0  0 0 1 1 3
-
-t 
-i
+    a  b
+  1 0  0
+a 1 1  0
+a 1 
+b 1
+b 1
 
 时间复杂度：O(M*N)
 
@@ -859,25 +935,23 @@ i
 class Solution {
 public:
     int numDistinct(string s, string t) {
-        int N = s.size(), M = t.size();
-        vector<vector<long>> dp(M+1, vector<long>(N+1, 0));
+        int m = s.size(), n = t.size();
+        vector<vector<long>> dp(m+1, vector<long>(n+1, 0));
         dp[0][0] = 1;
-        for (int j = 1; j <= N; j++)
-            dp[0][j] = 1;
-        for (int i = 1; i <= M; i++)
-            dp[i][0] = 0;
-        
-        for (int i = 1; i <= M; i++)
-        {
-            for (int j = 1; j <= N; j++)
+        for (int i = 1; i <= m; ++i)
+            dp[i][0] = 1;
+        for (int j = 1; j <= n; ++j)
+            dp[0][j] = 0;
+
+        for (int i = 1; i <= m; ++i)
+            for (int j = 1; j <= n; ++j)
             {
-                if (s[j-1] == t[i-1]) 
-                    dp[i][j] = dp[i][j-1] + dp[i-1][j-1];
+                if (s[i-1] == t[j-1])
+                    dp[i][j] = dp[i-1][j] + dp[i-1][j-1];
                 else
-                    dp[i][j] = dp[i][j-1];
+                    dp[i][j] = dp[i-1][j];
             }
-        }
-        return dp[M][N];
+        return dp[m][n];
     }
 };
 
@@ -885,7 +959,6 @@ public:
 ```
 
 <br>
-
 
 
 
@@ -910,23 +983,24 @@ class Solution {
 public:
     bool wordBreak(string s, vector<string>& wordDict) {
         unordered_set<string> hashset(wordDict.begin(), wordDict.end());
-        vector<bool> dp(s.size()+1);
+        int n = s.size();
+        vector<bool> dp(n+1, false);
+        s.insert(s.begin(), '0');
         dp[0] = true;
-        for (int j = 1; j <= s.size(); j++)
+        for (int j = 1; j <= n; ++j)
         {
-            for (int i = 0; i < j; i++)
+            for (int i = 0; i < j; ++i)
             {
-                if (dp[i] && hashset.count(s.substr(i, j-i)))
+                if (dp[i] && hashset.count(s.substr(i+1, j-i)))
                 {
                     dp[j] = true;
                     break;
                 }
             }
-        }        
-        return dp[s.size()];
+        }
+        return dp[n];
     }
 };
-
 ```
 
 <br>
