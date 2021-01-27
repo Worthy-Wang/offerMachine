@@ -6,15 +6,12 @@
         - [14.最长公共前缀](#14最长公共前缀)
         - [5.最长回文子串](#5最长回文子串)
         - [3.无重复字符的最长子串](#3无重复字符的最长子串)
-        - [128.最长连续序列](#128最长连续序列)
         - [76.最小覆盖子串](#76最小覆盖子串)
         - [30.串联所有单词的子串](#30串联所有单词的子串)
+        - [128.最长连续序列](#128最长连续序列)
         - [54.螺旋矩阵](#54螺旋矩阵)
         - [59.螺旋矩阵2](#59螺旋矩阵2)
         - [6.Z字形变换](#6z字形变换)
-        - [29.两数相除](#29两数相除)
-        - [191. 位1的个数](#191-位1的个数)
-        - [50.Pow(x,n)](#50powxn)
         - [68.文本左右对齐](#68文本左右对齐)
         - [剑指 Offer 61. 扑克牌中的顺子](#剑指-offer-61-扑克牌中的顺子)
 
@@ -114,14 +111,14 @@ public:
         sort(intervals.begin(), intervals.end());
         vector<vector<int>> ans;
         ans.push_back(intervals[0]);
-        for (int i = 1; i < intervals.size(); i++)
+        for (int i = 1; i < intervals.size(); ++i)  
         {
-            if (ans.back()[1] >= intervals[i][0]) //连在一起
-            {
-                if (intervals[i][1] > ans.back()[1])
-                    ans.back()[1] = intervals[i][1];
-            }else //没有连在一起
+            if (intervals[i][0] > ans.back()[1])
                 ans.push_back(intervals[i]);
+            else if (intervals[i][1] <= ans.back()[1])
+                continue;
+            else
+                ans.back()[1] = intervals[i][1];
         }
         return ans;
     }
@@ -152,23 +149,22 @@ class Solution {
 public:
     vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
         int i = 0;
-        for (; i < intervals.size(); i++)
-            if (intervals[i][0] >= newInterval[0])
+        for (; i < intervals.size(); ++i)
+            if (newInterval[0] <= intervals[i][0])
                 break;
         intervals.insert(intervals.begin()+i, newInterval);
-
         vector<vector<int>> ans;
         ans.push_back(intervals[0]);
-        for (int i = 1; i < intervals.size(); i++)
+        for (int i = 1; i < intervals.size(); ++i)  
         {
-            if (ans.back()[1] >= intervals[i][0]) //连在一起
-            {
-                if (intervals[i][1] > ans.back()[1])
-                    ans.back()[1] = intervals[i][1];
-            }else //没有连在一起
+            if (intervals[i][0] > ans.back()[1])
                 ans.push_back(intervals[i]);
+            else if (intervals[i][1] <= ans.back()[1])
+                continue;
+            else
+                ans.back()[1] = intervals[i][1];
         }
-        return ans;        
+        return ans;
     }
 };
 
@@ -199,10 +195,9 @@ public:
     string longestCommonPrefix(vector<string>& strs) {
         if (strs.empty())
             return string();
-        int j = 0;
-        for (; j < strs[0].size(); j++)
-            for (int i = 0; i < strs.size(); i++)
-                if (strs[i][j] != strs[0][j])
+        for (int j = 0; j < strs[0].size(); ++j)
+            for (int i = 0; i < strs.size(); ++i)
+                if (strs[0][j]!=strs[i][j] || j>=strs[i].size())
                     return strs[0].substr(0, j);
         return strs[0];
     }
@@ -317,7 +312,6 @@ public:
 <br>
 
 
-
 ---------------------------
 ##### 3.无重复字符的最长子串
 >题目描述:给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
@@ -366,57 +360,6 @@ public:
 
 
 
---------------------------
-##### 128.最长连续序列
->题目描述：给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
-要求：你可以设计并实现时间复杂度为 O(n) 的解决方案吗？
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/longest-consecutive-sequence
-
-
-解题思路：并查集，下标代表该数字，元素代表从该数字出发能够到达的位置；
-
-时间复杂度：O(N)
-
-空间复杂度：O(N)
-
-
-```cpp
-class Solution {
-    unordered_map<int,int> union_find; //并查集
-public:
-    int find(int x)
-    {
-        if (union_find.count(x))
-        {
-            union_find[x] = find(union_find[x]);
-            return union_find[x];
-        }
-        else
-            return x;
-    }
-
-    int longestConsecutive(vector<int>& nums) {
-        for (auto& e: nums)
-            union_find[e-1] = e;
-        int ans = 0;
-        for (auto& e: nums)
-        {
-            union_find[e-1] = find(e);
-            ans = std::max(ans, union_find[e-1]-(e-1));
-        }
-        return ans;
-    }
-};
-
-```
-
-
-<br>
-
-
-
 ---------------------------
 ##### 76.最小覆盖子串
 >题目描述:给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
@@ -437,57 +380,53 @@ s 和 t 由英文字母组成
 ```cpp
 class Solution {
 public:
- 
-bool check(unordered_map<char, int> &Smap, unordered_map<char, int> &Tmap)
-{
-    for (auto &e : Tmap)
+    bool check(unordered_map<char,int>& sMap, unordered_map<char,int>& tMap)
     {
-        if (Smap[e.first] < e.second)
-            return false;
+        for (auto& e: tMap)
+            if (e.second > sMap[e.first])
+                return false;
+        return true;
     }
-    return true;
-}
 
-string minWindow(string s, string t)
-{
-    unordered_map<char, int> Smap, Tmap;
-    for (auto &e : t)
-        Tmap[e]++;
-    int i = 0, j = -1, n = s.size(), minI = 0, minJ = -1, minLen = INT32_MAX;
-    while (j < n)
+    string minWindow(string s, string t)
     {
-        if (check(Smap, Tmap)) //滑动窗口已经覆盖子串t , i++
+        unordered_map<char, int> sMap, tMap; //由于s和t中都可能有重复的字符，所以需要用哈希表表示
+        for (auto &ch : t)
+            tMap[ch]++;
+        int i = 0, j = 0;
+        int minLen = INT32_MAX, beg = 0, end = -1;
+        while (j < s.size())
         {
-            while (!Tmap.count(s[i]))
-                i++;
-            if (j - i + 1 < minLen)
+            sMap[s[j]]++;
+            if (check(sMap, tMap)) //滑动窗口已经覆盖t
             {
-                minLen = j - i + 1;
-                minI=  i;
-                minJ = j;
+                while (check(sMap, tMap))
+                {
+                    if (minLen > (j - i + 1))
+                    {
+                        minLen = j - i + 1;
+                        beg = i;
+                        end = j;
+                    }
+                    sMap[s[i]]--;
+                    ++i;
+                }
             }
-            Smap[s[i]]--;
-            i++;
+            //滑动窗口未覆盖t
+            ++j;
         }
-        else //滑动窗口未覆盖子串t, j++
-        {
-            j++;
-            if (Tmap.count(s[j]))
-                Smap[s[j]]++;
-        }
+        return s.substr(beg, end - beg + 1);
     }
-    return s.substr(minI, minJ - minI + 1);
-}
-
 };
-
 ```
 
 <br>
 
+
+
 ---------------------------
 ##### 30.串联所有单词的子串
->题目描述:给定一个字符串 s 和一些长度相同的单词 words。找出 s 中恰好可以由 words 中所有单词串联形成的子串的起始位置。
+>题目描述:给定一个字符串 s 和一些**长度相同**的单词 words。找出 s 中恰好可以由 words 中所有单词串联形成的子串的起始位置。
 注意子串要与 words 中的单词完全匹配，中间不能有其他字符，但不需要考虑 words 中单词串联的顺序。
 
 来源：力扣（LeetCode）
@@ -531,6 +470,57 @@ public:
 
 <br>
 
+
+
+
+
+--------------------------
+##### 128.最长连续序列
+>题目描述：给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+要求：你可以设计并实现时间复杂度为 O(n) 的解决方案吗？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-consecutive-sequence
+
+
+解题思路：并查集，下标代表该数字，存放的元素代表能够到达的下一个数字之前
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+    unordered_map<int,int> union_find;//<数字，数字能够到达的下一个开区间>
+public:
+    int find(int i)
+    {
+        if (union_find.count(i))
+        {
+            union_find[i] = find(union_find[i]);
+            return union_find[i];
+        }else
+            return i;
+    }
+
+    int longestConsecutive(vector<int>& nums) {
+        for (auto& i: nums)
+            union_find[i] = i+1;
+        int ans = 0;
+        for (auto& i: nums)
+        {
+            union_find[i] = find(union_find[i]);
+            ans = std::max(ans, union_find[i] - i);
+        }
+        return ans;
+    }
+};
+
+```
+
+
+<br>
 
 
 ---------------------------
@@ -671,142 +661,6 @@ public:
         for (auto& e: vec)
             ans += e;
         return ans;
-    }
-};
-
-```
-
-<br>
-
----------------------------
-##### 29.两数相除
->题目描述:给定两个整数，被除数 dividend 和除数 divisor。将两数相除，要求不使用乘法、除法和 mod 运算符。
-返回被除数 dividend 除以除数 divisor 得到的商。
-整数除法的结果应当截去（truncate）其小数部分，例如：truncate(8.345) = 8 以及 truncate(-2.7335) = -2
-被除数和除数均为 32 位有符号整数。
-除数不为 0。
-假设我们的环境只能存储 32 位有符号整数，其数值范围是 [−2^31,  2^31 − 1]。本题中，如果除法结果溢出，则返回 2^31 − 1。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/divide-two-integers
-
-解题思路：既然不能够使用乘除法和mod法，那么就使用不断相减的策略，计算减了多少次即可，需要用快速幂运算进行优化，其中需要注意dividend , divisor的正负号。
-
-时间复杂度：O(logx)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    int divide(int dividend, int divisor) {
-        long a = dividend>=0 ? dividend : -(long)dividend;
-        long b = divisor>=0 ? divisor : -(long)divisor;
-        long ans = 0;
-        while (a >= b)
-        {
-            int i = 0;
-            while (a >= (b<<i))
-            {
-                a -= (b<<i);
-                ans += (1<<i);
-                i++;
-            }
-        } 
-        ans =  ((dividend>>31)^(divisor>>31)) ? -ans : ans;
-        return ans>INT32_MAX ? INT32_MAX : ans;
-    }
-};
-
-```
-
-<br>
-
-
-
----------------------------
-##### 191. 位1的个数
->题目描述:编写一个函数，输入是一个无符号整数（以二进制串的形式），返回其二进制表达式中数字位数为 '1' 的个数（也被称为汉明重量）。
-提示：
-请注意，在某些语言（如 Java）中，没有无符号整数类型。在这种情况下，输入和输出都将被指定为有符号整数类型，并且不应影响您的实现，因为无论整数是有符号的还是无符号的，其内部的二进制表示形式都是相同的。
-在 Java 中，编译器使用二进制补码记法来表示有符号整数。因此，在上面的 示例 3 中，输入表示有符号整数 -3。
-输入必须是长度为 32 的 二进制串 。
-进阶：
-如果多次调用这个函数，你将如何优化你的算法？
- 
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/number-of-1-bits
-
-解题思路：可以用二进制右移不断记录二进制末尾的1即可，这样的时间复杂度为O(logX)；还可以进行优化，我们知道 n-1 可以将 n最右边的 1 变为 0111.. 这样的格式，也就是令其减少一个二进制位1，那么再 n&(n-1) 即可得到消去一个 1 之后的数，假设该数在二进制位中有k个1，那么时间复杂度为 O(k)
-
-时间复杂度：O(k)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    int hammingWeight(uint32_t n) {
-        int ans = 0;
-        while (n)
-        {
-            n = n&(n-1);
-            ans ++;
-        }
-        return ans;
-    }
-};
-```
-
-<br>
-
-
----------------------------
-##### 50.Pow(x,n)
->题目描述:实现 pow(x, n) ，即计算 x 的 n 次幂函数。
--100.0 < x < 100.0
-n 是 32 位有符号整数，其数值范围是 [−2^31, 2^31 − 1] 。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/powx-n
-
-解题思路：将n看做二进制进行不断往右移位操作，当二进制n最右边为1时，说明此时可以进行累乘。
-
-时间复杂度：O(logN)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    double Pow(double x, long n)
-    {
-        double ans = 1;
-        while (n)
-        {
-            if (n & 0x1)
-                ans *= x;
-            n >>= 1;
-            x *= x;
-        }
-        return ans;
-    }
-
-    double myPow(double x, int n) {
-        if (0 == n)
-            return 1;
-        if (1 == n)
-            return x;
-        if (0 == x)
-            return 0;
-        if (1 == x)
-            return 1;
-
-        if (n < 0)
-            return 1.0 / Pow(x, -(long)n);
-        else
-            return Pow(x, n);
     }
 };
 

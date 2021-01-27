@@ -31,6 +31,9 @@
         - [45.跳跃游戏2](#45跳跃游戏2)
         - [123.买卖股票的最佳时机3](#123买卖股票的最佳时机3)
         - [115.不同的子序列](#115不同的子序列)
+        - [128.最长连续序列](#128最长连续序列)
+        - [76.最小覆盖子串](#76最小覆盖子串)
+        - [30.串联所有单词的子串](#30串联所有单词的子串)
         - [](#)
         - [](#-1)
 
@@ -2402,11 +2405,169 @@ public:
 <br>
 
 
+--------------------------
+##### 128.最长连续序列
+>题目描述：给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+要求：你可以设计并实现时间复杂度为 O(n) 的解决方案吗？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-consecutive-sequence
+
+
+解题思路：并查集，下标代表该数字，存放的元素代表能够到达的下一个数字之前
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+    unordered_map<int,int> union_find;//<数字，数字能够到达的下一个开区间>
+public:
+    int find(int i)
+    {
+        if (union_find.count(i))
+        {
+            union_find[i] = find(union_find[i]);
+            return union_find[i];
+        }else
+            return i;
+    }
+
+    int longestConsecutive(vector<int>& nums) {
+        for (auto& i: nums)
+            union_find[i] = i+1;
+        int ans = 0;
+        for (auto& i: nums)
+        {
+            union_find[i] = find(union_find[i]);
+            ans = std::max(ans, union_find[i] - i);
+        }
+        return ans;
+    }
+};
+
+```
+
+
+<br>
 
 
 
 
 
+---------------------------
+##### 76.最小覆盖子串
+>题目描述:给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+注意：如果 s 中存在这样的子串，我们保证它是唯一的答案。
+s 和 t 由英文字母组成
+进阶：你能设计一个在 o(n) 时间内解决此问题的算法吗？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/minimum-window-substring
+
+解题思路： 先想到暴力法，两次 for循环，比较后找到最小的子串，需要用hashmap来存储t串中的元素。
+再想到用滑动窗口的优化法，设置双指针i j ，当滑动窗口中包含t串中的所有元素时，i++； 没有包含t串中的所有元素时，j++。
+
+时间复杂度：O(N) N为s串的长度
+
+空间复杂度：O(M) M为t串的长度
+
+```cpp
+class Solution {
+public:
+    bool check(unordered_map<char,int>& sMap, unordered_map<char,int>& tMap)
+    {
+        for (auto& e: tMap)
+            if (e.second > sMap[e.first])
+                return false;
+        return true;
+    }
+
+    string minWindow(string s, string t)
+    {
+        unordered_map<char, int> sMap, tMap; //由于s和t中都可能有重复的字符，所以需要用哈希表表示
+        for (auto &ch : t)
+            tMap[ch]++;
+        int i = 0, j = 0;
+        int minLen = INT32_MAX, beg = 0, end = -1;
+        while (j < s.size())
+        {
+            sMap[s[j]]++;
+            if (check(sMap, tMap)) //滑动窗口已经覆盖t
+            {
+                while (check(sMap, tMap))
+                {
+                    if (minLen > (j - i + 1))
+                    {
+                        minLen = j - i + 1;
+                        beg = i;
+                        end = j;
+                    }
+                    sMap[s[i]]--;
+                    ++i;
+                }
+            }
+            //滑动窗口未覆盖t
+            ++j;
+        }
+        return s.substr(beg, end - beg + 1);
+    }
+};
+
+```
+
+<br>
+
+
+
+
+---------------------------
+##### 30.串联所有单词的子串
+>题目描述:给定一个字符串 s 和一些**长度相同**的单词 words。找出 s 中恰好可以由 words 中所有单词串联形成的子串的起始位置。
+注意子串要与 words 中的单词完全匹配，中间不能有其他字符，但不需要考虑 words 中单词串联的顺序。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/substring-with-concatenation-of-all-words
+
+解题思路：暴力法，将words看做一个字符串进行比较即可
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    bool check(string s, unordered_map<string,int>& wordMap, int n, int m)
+    {
+        unordered_map<string,int> hashmap;
+        for (int i = 0; i < s.size(); i+=m)
+            hashmap[s.substr(i, m)]++;
+        return hashmap==wordMap;
+    }
+
+    vector<int> findSubstring(string s, vector<string>& words) {
+        unordered_map<string, int> wordMap;
+        for (auto& e: words)
+            wordMap[e]++;
+        int n = words.size(), m = words[0].size(), wordsLen = m*n;
+        vector<int> ans;
+
+        for (int i = 0; i < s.size()-wordsLen +1; i++)
+        {
+            string s2 = s.substr(i, wordsLen);
+            if (check(s2, wordMap, n, m))
+                ans.push_back(i);
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
 
 
 
