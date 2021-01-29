@@ -646,20 +646,24 @@ string convert(string s, int numRows);
 class Solution {
 public:
     string convert(string s, int numRows) {
-        if (numRows == 1)
+        if (1 == numRows)
             return s;
-        vector<string> vec(numRows);
-        int i = 0, add = 1;
-        for (auto& e: s)
+        int idx = 0, i = 0, add = 1;
+        vector<string> nums(numRows);
+        while (idx < s.size())
         {
-            vec[i].push_back(e);
+            nums[i].push_back(s[idx]);
+            if (0 == i)
+                add = 1;
+            else if (numRows-1 == i)
+                add = -1;
             i += add;
-            if (i == numRows-1 || i==0)
-                add = -add;
+            ++idx;
         }
+        
         string ans;
-        for (auto& e: vec)
-            ans += e;
+        for (auto& s: nums)
+            ans += s;
         return ans;
     }
 };

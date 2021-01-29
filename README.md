@@ -1,8 +1,8 @@
 <div align="center">
 
-| C/C++ | 操作系统与Linux | 计算机网络|网络编程| 信息安全| 
-| :---: | :---: |:---: |:---: |:---: |
-|⭐️| 💻 |☁️ | 🎨| 💡|
+| 算法 | C/C++ | 操作系统与Linux | 计算机网络|网络编程| 信息安全| 
+| :---: | :---: | :---: |:---: |:---: |:---: |
+|⚡️|⭐️| 💻 |☁️ | 🎨| 💡|
 
 
 </div>
@@ -18,6 +18,11 @@
 
 -------------
 ## 📚目录
+
+* [ ⚡️算法](https://github.com/Worthy-Wang/offerMachine/blob/main/algorithm.md)
+
+经典剑指offer，leetcode高频面试必考题，将200+高频题目划分为数组、链表、树、动态规划、二分、DFS、BFS等十六个专题进行算法特训。
+
 * [ ⭐️C/C++](https://github.com/Worthy-Wang/offerMachine/blob/main/Cpp.md)
 
 C/C++语法基础，STL，面向对象原理，C++11新特性等方面的面试必考题。
