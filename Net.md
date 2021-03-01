@@ -157,14 +157,23 @@ https://www.runoob.com/http/http-status-codes.html
 <br>
 
 * **请求报文与响应报文样例**
+
 1. **请求报文GET**
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201028092958816.png#pic_center)
+
 2. **请求报文 POST**
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201028093004438.png#pic_center)
+
 3. **响应报文 返回json字符串**
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201028093015348.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
+
 4. **响应报文 HTML**
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201028093021341.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
+
 <br>
 
 -----------
