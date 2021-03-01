@@ -82,44 +82,67 @@ HTTP有**请求报文**和**响应报文**两种形式。
 1.	 **请求行**
 
 **1.1 请求方法**
+
 GET：重点在于从服务器上获取资源。
+
 POST: 重点在于向服务器发送数据（例如提交表单或上传文件）
+
 HEAD: 类似于GET请求，不过返回的响应报文中没有响应体承载数据，只用于获取响应报头。
 
 **1.2 URL：统一资源定位符**
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201028091718380.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
 
 **1.3	协议版本**
+
 有HTTP1.0 ， HTTP1.1， HTTPS 等协议
 
 2.	**请求头**
->通过键值对的方式存储。常见的如Content-Type（请求体/响应体的类型），Content-Length（请求体/响应体的长度），Content-Encoding（请求体/响应体的编码格式）
+
+通过键值对的方式存储。常见的如Content-Type（请求体/响应体的类型），Content-Length（请求体/响应体的长度），Content-Encoding（请求体/响应体的编码格式）
 
 3.	**空行**
->用于区分请求体
+
+用于区分请求体
 
 4.	**请求体**
->用于存放实际的数据
+
+用于存放实际的数据
 
 <br>
 
 * **响应报文**
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201028092542784.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
 响应报文同样分为四个部分：
->**状态行 + 响应头 + 空行 + 响应体**
+
+**状态行 + 响应头 + 空行 + 响应体**
+
 1.	**状态行**
->1.1	**协议版本**
+
+1.1	**协议版本**
+
 一般跟请求报文对应的协议版本相同，有HTTP1.0，HTTP1.1，HTTPS。
+
 1.2	**状态码**
+
 HTTP状态码有五种类型，如下：
+
 1**：信息，服务器收到请求，要求请求者继续操作；
+
 2**：成功，操作成功接收并处理；200 OK：客户端请求成功；
+
 3**：重定向，需要进一步的操作以完成请求；301：网页被永久转移到其他URL；302：网页临时跳转。
+
 4**：客户端错误，请求包含语法错误或无法完成请求；400 Bad Request：客户端请求有语法错误，不能被服务器所理解；401 Unauthorized：请求未经授权；404：请求资源不存在，可能输入了错误的URL。
+
 5**：服务器错误，服务器在处理请求的过程中发生了错误。500：服务器内部发生了不可预期的错误；503 Server Unavailable：服务器当前不能处理客户端的请求。
+
 更多状态码可见：
 https://www.runoob.com/http/http-status-codes.html
+
 1.3	**状态码信息**
+
 如 200 OK，404 NOT FOUND。
 
 2.	**响应头**
