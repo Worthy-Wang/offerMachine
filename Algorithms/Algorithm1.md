@@ -45,20 +45,17 @@
 class Solution {
 public:
     int removeDuplicates(vector<int>& nums) {
-        if (nums.size() <= 0 )
-            return 0;
-        if (nums.size() == 1)
-            return 1;
-
-        int s = 0, f = 1;
-        for(; f < nums.size(); f++)
+        if (nums.size() < 2)
+            return nums.size();
+        int i = 0, j = 1;
+        while (j < nums.size())
         {
-            if (nums[s] == nums[f])
-                continue;
+            if (nums[i] == nums[j])
+                ++j;
             else
-                nums[++s] = nums[f];
+                nums[++i] = nums[j++];
         }
-        return s + 1;
+        return i + 1;
     }
 };
 ```
@@ -84,6 +81,54 @@ public:
 ```
 
 
+延伸：如果是元素只要重复了，那么就将该重复的元素全部删除，这样的话又该怎么做呢？
+
+* **解法**
+
+解题思路：双指针法，慢指针用于存储不重复的元素，快指针用于跳过重复的元素（快指针主要是跟指向的下一个元素比较）
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int removeDuplicates(vector<int>& nums) 
+{
+    if (nums.size() < 2)
+        return nums.size();
+    int i = 0, j = 0;
+    while (j < nums.size())
+    {
+        if (j == nums.size()-1)
+        {
+            nums[i++] = nums[j++];
+        }
+        else if (nums[j] == nums[j+1])
+        {
+            int val = nums[j];
+            while (j < nums.size() && nums[j] == val)
+                ++j;
+        }else
+            nums[i++] = nums[j++];
+    }
+    return i;
+}
+
+int main()
+{
+    vector<int> nums{0,0,1,1,2,2,5};
+    int n = removeDuplicates(nums);
+    for (int i = 0; i < n; ++i)
+        cout << nums[i] << " ";
+    cout << endl;
+    return 0;
+}
+```
+
 <br>
 
 
@@ -94,7 +139,7 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array-ii
 
-解题思路：该题用双指针法解决，分为这三种情况：快指针和慢指针值不同，快慢指针值相同并且慢指针前后值相同，快慢指针值不同且慢指针前后值不同。
+解题思路：该题用双指针法解决，需要判断慢指针前面的情况，分为这三种情况：快指针和慢指针值不同，快慢指针值相同并且慢指针前后值相同，快慢指针值不同且慢指针前后值不同。
 
 时间复杂度：O(N)
 
@@ -104,22 +149,21 @@ public:
 class Solution {
 public:
     int removeDuplicates(vector<int>& nums) {
-        if (nums.size() < 3)
+        if (nums.size() <= 2)
             return nums.size();
-        int s = 1, f = 2;
-        for(; f < nums.size(); f++)
+        int i = 1, j = 2;
+        while (j < nums.size())
         {
-            if (nums[s] != nums[f])
-                nums[++s] = nums[f];
-            else
+            if (nums[i] == nums[j])
             {
-                if (nums[s] == nums[s-1])
-                    continue;
+                if (nums[i-1] == nums[i])
+                    ++j;
                 else
-                    nums[++s] = nums[f];
-            }
+                    nums[++i] = nums[j++];
+            }else
+                nums[++i] = nums[j++];  
         }
-        return s + 1;
+        return i + 1;
     }
 };
 
@@ -382,7 +426,7 @@ public:
 链接：https://leetcode-cn.com/problems/3sum-closest
 
 
-解题思路：和上一题的方法相同，唯一需要注意的是返回这三个数的和！
+解题思路：和上一题的方法相同，只是这里可以不用去重，唯一需要注意的是返回这三个数的和！
 
 时间复杂度：O(NlogN+N^2) ≈ O(N^2)
 
