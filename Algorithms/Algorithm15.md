@@ -1,4 +1,5 @@
 - [十五.细节实现专题](#十五细节实现专题)
+    - [66.加一](#66加一)
     - [7.整数反转](#7整数反转)
     - [9.回文数](#9回文数)
     - [56.合并区间](#56合并区间)
@@ -9,8 +10,6 @@
     - [76.最小覆盖子串](#76最小覆盖子串)
     - [30.串联所有单词的子串](#30串联所有单词的子串)
     - [128.最长连续序列](#128最长连续序列)
-    - [54.螺旋矩阵](#54螺旋矩阵)
-    - [59.螺旋矩阵2](#59螺旋矩阵2)
     - [6.Z字形变换](#6z字形变换)
     - [68.文本左右对齐](#68文本左右对齐)
     - [剑指 Offer 61. 扑克牌中的顺子](#剑指-offer-61-扑克牌中的顺子)
@@ -18,7 +17,49 @@
 
 ### 十五.细节实现专题
 
----------------------------
+
+
+-----------------------------------
+##### 66.加一
+>题目描述：给定一个由 整数 组成的 非空 数组所表示的非负整数，在该数的基础上加一。
+最高位数字存放在数组的首位， 数组中每个元素只存储单个数字。
+你可以假设除了整数 0 之外，这个整数不会以零开头。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/plus-one
+
+解题思路：该题从后往前一次遍历即可求得。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    vector<int> plusOne(vector<int>& digits) {
+        if (digits.empty())
+            return {};
+        reverse(digits.begin(), digits.end());
+        int carry = 1;
+        for (int i = 0; i < digits.size(); ++i)
+        {
+            int sum = digits[i] + carry;
+            carry = sum / 10;
+            digits[i] = sum % 10;
+        }
+        if (carry)
+            digits.push_back(1);
+        reverse(digits.begin(), digits.end());
+        return digits;
+    }
+};
+
+```
+
+
+
+
 ##### 7.整数反转
 >题目描述:给出一个 32 位的有符号整数，你需要将这个整数中每位上的数字进行反转。
 假设我们的环境只能存储得下 32 位的有符号整数，则其数值范围为 [−2^31,  2^31 − 1]。请根据这个假设，如果反转后整数溢出那么就返回 0。
@@ -521,105 +562,6 @@ public:
 
 
 <br>
-
-
----------------------------
-##### 54.螺旋矩阵
->题目描述:给定一个包含 m x n 个元素的矩阵（m 行, n 列），请按照顺时针螺旋顺序，返回矩阵中的所有元素。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/spiral-matrix
-
-解题思路：设置上下左右边界即可。
-
-时间复杂度：O(M*N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    vector<int> spiralOrder(vector<vector<int>>& matrix) {
-        if (matrix.empty())
-            return {};
-        vector<int> ans;
-        int M = matrix.size(), N = matrix[0].size();
-        int up = 0, down = M-1, l = 0, r = N-1;//设置上下左右边界
-        while (1)
-        {
-            for (int j = l; j <= r; j++)
-                ans.push_back(matrix[up][j]);
-            if (++up > down)
-                break;
-            for (int i = up; i <= down; i++)
-                ans.push_back(matrix[i][r]);
-            if (--r < l)
-                break;
-            for (int j = r; j >= l; j--)
-                ans.push_back(matrix[down][j]);
-            if (--down < up)
-                break;
-            for (int i = down; i >= up; i--)
-                ans.push_back(matrix[i][l]);
-            if (++l > r)
-                break;
-        }
-        return ans;
-    }
-};
-
-```
-
-<br>
-
----------------------------
-##### 59.螺旋矩阵2
->题目描述:给定一个正整数 n，生成一个包含 1 到 n^2 所有元素，且元素按顺时针顺序螺旋排列的正方形矩阵。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/spiral-matrix-ii
-
-解题思路：螺旋遍历的方法，与上一题解法相同。
-
-时间复杂度：O(N^2)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    vector<vector<int>> generateMatrix(int n) {
-        vector<vector<int>> matrix(n, vector<int>(n));
-        int up = 0, down = n-1, l = 0, r = n-1;//设置上下左右边界
-        int cnt = 0;
-        while (1)
-        {
-            for (int j = l; j <= r; j++)
-                matrix[up][j] = ++cnt;
-            if (++up > down)
-                break;
-            for (int i = up; i <= down; i++)
-                matrix[i][r] = ++cnt;
-            if (--r < l)
-                break;
-            for (int j = r; j >= l; j--)
-                matrix[down][j] = ++cnt;
-            if (--down < up)
-                break;
-            for (int i = down; i >= up; i--)
-                matrix[i][l] = ++cnt;
-            if (++l > r)
-                break;
-        }
-        return matrix;
-    }
-};
-
-```
-
-<br>
-
-
 
 
 ---------------------------

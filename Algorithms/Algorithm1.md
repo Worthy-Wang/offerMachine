@@ -1,4 +1,5 @@
 - [一.数组专题](#一数组专题)
+    - [27.移除元素](#27移除元素)
     - [26.删除排序数组中的重复项](#26删除排序数组中的重复项)
     - [80.删除排序数组中的重复项2](#80删除排序数组中的重复项2)
     - [剑指 Offer 39. 数组中出现次数超过一半的数字](#剑指-offer-39-数组中出现次数超过一半的数字)
@@ -8,20 +9,61 @@
     - [15.三数之和](#15三数之和)
     - [16.最接近的三数之和](#16最接近的三数之和)
     - [18.四数之和](#18四数之和)
-    - [27.移除元素](#27移除元素)
     - [11.盛最多水的容器](#11盛最多水的容器)
     - [42.接雨水](#42接雨水)
-    - [48.旋转图像](#48旋转图像)
-    - [66.加一](#66加一)
-    - [70.爬楼梯](#70爬楼梯)
-    - [73.矩阵置零](#73矩阵置零)
     - [134.加油站](#134加油站)
     - [135.分发糖果](#135分发糖果)
+    - [48.旋转图像](#48旋转图像)
+    - [73.矩阵置零](#73矩阵置零)
+    - [54.螺旋矩阵](#54螺旋矩阵)
+    - [59.螺旋矩阵2](#59螺旋矩阵2)
     - [剑指 Offer 03. 数组中重复的数字](#剑指-offer-03-数组中重复的数字)
     - [41.缺失的第一个正数](#41缺失的第一个正数)
 
 
 ### 一.数组专题
+
+
+
+-------------------------------
+
+##### 27.移除元素
+
+>题目描述：给你一个数组 nums 和一个值 val，你需要 原地 移除所有数值等于 val 的元素，并返回移除后数组的新长度。
+不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并 原地 修改输入数组。
+元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/remove-element
+
+解题思路：此题直接用双指针法解决。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    int removeElement(vector<int>& nums, int val) {
+        int i = 0, j = 0;
+        while (j < nums.size())
+        {
+            if (nums[j] == val)
+                ++j;
+            else
+                nums[i++] = nums[j++];
+        }
+        return i;
+    }
+};
+
+
+```
+
+<br>
+
 
 ---------------------------
 ##### 26.删除排序数组中的重复项
@@ -183,7 +225,7 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof
 
-解题思路：投票法，只需要进行一次遍历即可。
+解题思路：投票法，只需要进行一次遍历即可。先找出出现频率最高的数字，再判断该数字的出现频率是否超过数组的一半。
 
 时间复杂度：O(N)
 
@@ -192,30 +234,29 @@ public:
 ```cpp
 class Solution {
 public:
-    int majorityElement(vector<int>& nums) {
-        if (nums.empty())
-            return -1;
-        pair<int,int> pairs; //数字，得票
-        pairs.first = nums[0], pairs.second = 1;
-        for (int i = 1; i < nums.size(); i++)
+    int majorityElement(vector<int>& nums) 
+    {   
+        int num = nums[0], cnt = 1;
+        for (int i = 1; i < nums.size(); ++i)
         {
-            if (nums[i] == pairs.first)
-                pairs.second++;
-            else
+            if (num == nums[i])
             {
-                pairs.second--;
-                if (0 == pairs.second)
+                ++cnt;
+            }else
+            {
+                --cnt;
+                if (0 == cnt)
                 {
-                    pairs.first = nums[i];
-                    pairs.second = 1;
+                    num = nums[i];
+                    cnt = 1;
                 }
             }
         }
-        int cnt = 0;
-        for (auto& e: nums)
-            if (e == pairs.first)
-                cnt++;
-        return cnt>=(double)nums.size()/2 ? pairs.first : -1;
+        cnt = 0;
+        for (const auto& e: nums)
+            if (num == e)
+                cnt ++;
+        return cnt >= (double)nums.size()/2 ? num : -1;
     }
 };
 
@@ -536,47 +577,6 @@ public:
 
 <br>
 
--------------------------------
-
-##### 27.移除元素
-
->题目描述：给你一个数组 nums 和一个值 val，你需要 原地 移除所有数值等于 val 的元素，并返回移除后数组的新长度。
-不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并 原地 修改输入数组。
-元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/remove-element
-
-解题思路：此题直接用双指针法解决。
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-
-```cpp
-class Solution {
-public:
-    int removeElement(vector<int>& nums, int val) {
-        if (nums.empty())
-            return 0;
-        int i = -1, j = 0;
-        for(; j < nums.size(); j++)
-        {
-            if (nums[j] == val)
-                continue;
-            else
-                nums[++i] = nums[j];
-        }
-        return i + 1;
-    }
-};
-
-
-```
-
-<br>
-
 
 
 ---------------------------
@@ -679,7 +679,7 @@ public:
             return 0;
         int n = height.size();
         vector<int> l(n), r(n);
-        l[0] = height[0], r[n-1] = height[n-1];
+        l[0] = height[0], r[n-1] = height[n-1]; 
         for (int i = 1; i < n; i++)
             l[i] = std::max(l[i-1], height[i]);
         for (int i = n-2; i >= 0; i--)
@@ -695,7 +695,7 @@ public:
 
 * **解法三**
 
-解题思路：双指针法，分别放置左右指针位于数组头尾部，可以让两个指针向中间靠拢，并且让左右两指针的较小值作为蓄水处（另外一个较大值就可以作为蓄水的屏障），设置左最大值和右最大值并不断更新。
+解题思路：双指针法，分别放置左右指针位于数组头尾部，可以让两个指针向中间靠拢，并且让左右两指针的较小值作为蓄水处（另外一个较大值就可以作为蓄水的屏障，且保证较大值一定比另一边连续的值都大），设置左最大值和右最大值并不断更新。
 
 时间复杂度：O(N)
 
@@ -736,188 +736,7 @@ public:
 
 <br>
 
----------------------------------
-##### 48.旋转图像
 
->题目描述：给定一个 n × n 的二维矩阵表示一个图像。
-将图像顺时针旋转 90 度。
-你必须在原地旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要使用另一个矩阵来旋转图像。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/rotate-image
-
-
-解题思路：暴力法，先对矩阵进行转置，再交换列即可。
-
-时间复杂度：O(N^2)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    void rotate(vector<vector<int>>& matrix) {
-        int n = matrix.size();
-        for(int i = 0; i < n; i++)
-            for (int j = i + 1; j < n; j++)
-                swap(matrix[i][j], matrix[j][i]);
-        for (int j = 0; j < n/2; j++)
-            for(int i = 0; i < n; i++)
-                swap(matrix[i][j], matrix[i][n-1-j]);
-    }
-};
-
-```
-
-
-
-
-
-
------------------------------------
-##### 66.加一
->题目描述：给定一个由 整数 组成的 非空 数组所表示的非负整数，在该数的基础上加一。
-最高位数字存放在数组的首位， 数组中每个元素只存储单个数字。
-你可以假设除了整数 0 之外，这个整数不会以零开头。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/plus-one
-
-解题思路：该题从后往前一次遍历即可求得。
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    vector<int> plusOne(vector<int>& digits) {
-        if (digits.empty())
-            return {};
-        reverse(digits.begin(), digits.end());
-        int carry = 1;
-        for (int i = 0; i < digits.size(); ++i)
-        {
-            int sum = digits[i] + carry;
-            carry = sum / 10;
-            digits[i] = sum % 10;
-        }
-        if (carry)
-            digits.push_back(1);
-        reverse(digits.begin(), digits.end());
-        return digits;
-    }
-};
-
-```
-
-
-
-
-<br>
-
----------------------------------
-##### 70.爬楼梯
->题目描述：假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
-每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
-注意：给定 n 是一个正整数。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/climbing-stairs
-
-
-解题思路：经典动态规划题，dp[i] = dp[i-1] + dp[i-2]，可以用滚动数组的方式优化空间复杂度
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    int climbStairs(int n) {
-        if (1 == n)
-            return 1;
-        if (2 == n)
-            return 2;
-        int fx1 = 1, fx2 = 2;
-        int fx;
-        for (int i = 3; i <= n; i++)
-        {
-            fx = fx1 + fx2;
-            fx1 = fx2;
-            fx2 = fx;
-        }
-        return fx;
-    }
-};
-
-```
-
---------------------
-##### 73.矩阵置零
->题目描述：给定一个 m x n 的矩阵，如果一个元素为 0，则将其所在行和列的所有元素都设为 0。请使用原地算法（要求空间复杂度优化为O(1)）。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/set-matrix-zeroes
-
-* **解法一**
-
-解题思路：暴力法，将整个矩阵遍历，若某一个元素为0则将该元素所在行与列置零，最坏的情况也就是矩阵中所有的元素均为0。
-
-时间复杂度：O(M*N*(M+N))
-
-空间复杂度：O(1)
-
-* **二解法**
-
-解题思路：第一次先遍历 M*N 整个数组，过程中将第一行与第一列作为为标志位，并记录下第一行与第一列中是否本身就有0的存在；第二次遍历从下标1开始进行，若行列的某一个标志位为0的话就置零；第三次遍历看是否需要将第一行第一列置零。
-
-时间复杂度：O(M*N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    void setZeroes(vector<vector<int>>& matrix) {
-        
-        int m = matrix.size(), n = matrix[0].size();
-        bool isRow = false, isCol = false; //        
-        //第一次遍历，记录第一行第一列的标志位
-        for (int i = 0; i < m; ++i)
-            for (int j = 0; j < n; ++j)
-                if (0 == matrix[i][j])
-                {
-                    if (0 == i)
-                        isRow = true;
-                    if (0 == j)
-                        isCol = true;
-                    matrix[i][0] = 0;
-                    matrix[0][j] = 0;
-                }
-        //第二次遍历，根据标志位将矩阵置零
-        for (int i = 1; i < m; ++i)
-            for (int j = 1; j < n; ++j)
-                if (0==matrix[0][j] || 0==matrix[i][0])
-                    matrix[i][j] = 0;
-        //第三次，将第一行第一列置零
-        if (isRow)
-        {
-            for (int j = 0; j < n; ++j)
-                matrix[0][j] = 0;
-        }
-        if (isCol)
-        {
-            for (int i = 0; i < m; ++i)
-                matrix[i][0] = 0;
-        }
-    }
-};
-```
-
-<br>
 
 -----------------------
 ##### 134.加油站
@@ -1000,16 +819,16 @@ class Solution {
 public:
     int candy(vector<int>& ratings) {
         int n = ratings.size();
-        vector<int> candy(n, 1);
-        for (int i = 1; i < n; i++)
-            if (ratings[i]>ratings[i-1] &&  candy[i] <= candy[i-1])
-                    candy[i] = candy[i-1]+1;
-        for (int i = n-2; i >= 0; i--)
-            if (ratings[i] > ratings[i+1] && candy[i] <= candy[i+1])
-                    candy[i] = candy[i+1]+1;
+        vector<int> l(n, 1), r(n, 1);
+        for (int i = 1; i < n; ++i)
+            if (ratings[i] > ratings[i-1])
+                l[i] = l[i-1] + 1;
+        for (int i = n - 2; i >= 0; --i)
+            if (ratings[i] > ratings[i+1])
+                r[i] = r[i+1] + 1;
         int sum = 0;
-        for (auto& i: candy)
-            sum += i;
+        for (int i = 0; i < n; ++i)
+            sum += std::max(l[i], r[i]);
         return sum;
     }
 };
@@ -1019,6 +838,208 @@ public:
 
 
 <br>
+
+
+
+---------------------------------
+##### 48.旋转图像
+
+>题目描述：给定一个 n × n 的二维矩阵表示一个图像。
+将图像顺时针旋转 90 度。
+你必须在原地旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要使用另一个矩阵来旋转图像。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/rotate-image
+
+
+解题思路：暴力法，先对矩阵进行转置，再交换列即可。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    void rotate(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        for(int i = 0; i < n; i++)
+            for (int j = i + 1; j < n; j++)
+                swap(matrix[i][j], matrix[j][i]);
+        for (int j = 0; j < n/2; j++)
+            for(int i = 0; i < n; i++)
+                swap(matrix[i][j], matrix[i][n-1-j]);
+    }
+};
+
+```
+
+<br>
+
+
+--------------------
+##### 73.矩阵置零
+>题目描述：给定一个 m x n 的矩阵，如果一个元素为 0，则将其所在行和列的所有元素都设为 0。请使用原地算法（要求空间复杂度优化为O(1)）。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/set-matrix-zeroes
+
+* **解法一**
+
+解题思路：暴力法，将整个矩阵遍历，若某一个元素为0则将该元素所在行与列置零，最坏的情况也就是矩阵中所有的元素均为0。
+
+时间复杂度：O(M*N*(M+N))
+
+空间复杂度：O(1)
+
+* **解法二**
+
+解题思路：第一次先遍历 M*N 整个数组，过程中将第一行与第一列作为为标志位，并记录下第一行与第一列中是否本身就有0的存在；第二次遍历从下标1开始进行，若行列的某一个标志位为0的话就置零；第三次遍历看是否需要将第一行第一列置零。
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    void setZeroes(vector<vector<int>>& matrix) {
+        
+        int m = matrix.size(), n = matrix[0].size();
+        bool isRow = false, isCol = false; //        
+        //第一次遍历，记录第一行第一列的标志位
+        for (int i = 0; i < m; ++i)
+            for (int j = 0; j < n; ++j)
+                if (0 == matrix[i][j])
+                {
+                    if (0 == i)
+                        isRow = true;
+                    if (0 == j)
+                        isCol = true;
+                    matrix[i][0] = 0;
+                    matrix[0][j] = 0;
+                }
+        //第二次遍历，根据标志位将矩阵置零
+        for (int i = 1; i < m; ++i)
+            for (int j = 1; j < n; ++j)
+                if (0==matrix[0][j] || 0==matrix[i][0])
+                    matrix[i][j] = 0;
+        //第三次，将第一行第一列置零
+        if (isRow)
+        {
+            for (int j = 0; j < n; ++j)
+                matrix[0][j] = 0;
+        }
+        if (isCol)
+        {
+            for (int i = 0; i < m; ++i)
+                matrix[i][0] = 0;
+        }
+    }
+};
+```
+
+<br>
+
+
+
+---------------------------
+##### 54.螺旋矩阵
+>题目描述:给定一个包含 m x n 个元素的矩阵（m 行, n 列），请按照顺时针螺旋顺序，返回矩阵中的所有元素。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/spiral-matrix
+
+解题思路：设置上下左右边界即可。
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        if (matrix.empty())
+            return {};
+        vector<int> ans;
+        int M = matrix.size(), N = matrix[0].size();
+        int up = 0, down = M-1, l = 0, r = N-1;//设置上下左右边界
+        while (1)
+        {
+            for (int j = l; j <= r; j++)
+                ans.push_back(matrix[up][j]);
+            if (++up > down)
+                break;
+            for (int i = up; i <= down; i++)
+                ans.push_back(matrix[i][r]);
+            if (--r < l)
+                break;
+            for (int j = r; j >= l; j--)
+                ans.push_back(matrix[down][j]);
+            if (--down < up)
+                break;
+            for (int i = down; i >= up; i--)
+                ans.push_back(matrix[i][l]);
+            if (++l > r)
+                break;
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 59.螺旋矩阵2
+>题目描述:给定一个正整数 n，生成一个包含 1 到 n^2 所有元素，且元素按顺时针顺序螺旋排列的正方形矩阵。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/spiral-matrix-ii
+
+解题思路：螺旋遍历的方法，与上一题解法相同。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> generateMatrix(int n) {
+        vector<vector<int>> matrix(n, vector<int>(n));
+        int up = 0, down = n-1, l = 0, r = n-1;//设置上下左右边界
+        int cnt = 0;
+        while (1)
+        {
+            for (int j = l; j <= r; j++)
+                matrix[up][j] = ++cnt;
+            if (++up > down)
+                break;
+            for (int i = up; i <= down; i++)
+                matrix[i][r] = ++cnt;
+            if (--r < l)
+                break;
+            for (int j = r; j >= l; j--)
+                matrix[down][j] = ++cnt;
+            if (--down < up)
+                break;
+            for (int i = down; i >= up; i--)
+                matrix[i][l] = ++cnt;
+            if (++l > r)
+                break;
+        }
+        return matrix;
+    }
+};
+
+```
+
+<br>
+
+
 
 ---------------------------
 ##### 剑指 Offer 03. 数组中重复的数字
@@ -1100,3 +1121,4 @@ public:
 
 <br>
 
+----------------------------------
