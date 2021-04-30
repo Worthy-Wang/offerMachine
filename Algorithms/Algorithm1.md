@@ -19,6 +19,7 @@
     - [59.螺旋矩阵2](#59螺旋矩阵2)
     - [剑指 Offer 03. 数组中重复的数字](#剑指-offer-03-数组中重复的数字)
     - [41.缺失的第一个正数](#41缺失的第一个正数)
+    - [1539. 第 k 个缺失的正整数](#1539-第-k-个缺失的正整数)
 
 
 ### 一.数组专题
@@ -1122,3 +1123,67 @@ public:
 <br>
 
 ----------------------------------
+##### 1539. 第 k 个缺失的正整数
+>题目描述：给你一个 严格升序排列 的正整数数组 arr 和一个整数 k 。
+请你找到这个数组里第 k 个缺失的正整数。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/kth-missing-positive-number
+
+
+解题思路：进行一次遍历计数即可
+
+时间复杂度：O(N) N代表的是arr.back()
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    int findKthPositive(vector<int>& arr, int k) {
+        if (arr.empty())
+            return k;
+        int cnt = 0;
+        int i = 0;
+        for (int num = 1; num < arr.back(); ++num)
+        {
+            if (num == arr[i])
+            {
+                ++i;
+            }else
+            {
+                cnt++;
+                if (cnt == k)
+                    return num;
+            }
+        }
+        return arr.back() + (k - cnt);
+    }
+};
+
+
+* **解法二**
+
+解题思路：可以以占位的思想来解决该题，如果nums[i] <= k , 则说明 Nums[i]占用了 k的一个位子，所以k+1
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    int findKthPositive(vector<int>& arr, int k) {
+        for (const auto& e: arr)
+            if (e <= k)
+                ++k;
+        return k;        
+    }
+};
+
+```
+
+
+```
