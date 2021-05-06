@@ -127,26 +127,24 @@ public:
 class Solution {
 public:
     int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
-        if (obstacleGrid.empty())
-            return 0;
         int m = obstacleGrid.size(), n = obstacleGrid[0].size();
-        vector<vector<int>> dp(m, vector<int>(n, 1));
-        for (int i = 0; i < m; i++)
-            if (1 == obstacleGrid[i][0])
-            {
-                for (int k = i; k < m; k++)
-                    dp[k][0] = 0;
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        for (int i = 0; i < m; ++i)
+        {
+            if (0 == obstacleGrid[i][0])
+                dp[i][0] = 1;
+            else
                 break;
-            }
-        for (int j = 0; j < n; j++)
-            if (1 == obstacleGrid[0][j])
-            {
-                for (int k = j; k < n; k++)
-                    dp[0][k] = 0; 
+        }
+        for (int j = 0; j < n; ++j)
+        {
+            if (0 == obstacleGrid[0][j])
+                dp[0][j] = 1;
+            else
                 break;
-            }
-        for (int i = 1; i < m; i++)
-            for (int j = 1; j < n; j++)
+        }
+        for (int i = 1; i < m; ++i)
+            for (int j = 1; j < n; ++j)
             {
                 if (1 == obstacleGrid[i][j])
                     dp[i][j] = 0;
@@ -154,6 +152,7 @@ public:
                     dp[i][j] = dp[i-1][j] + dp[i][j-1];
             }
         return dp[m-1][n-1];
+
     }
 };
 
@@ -170,9 +169,11 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof
 
+* **解法一**
+
 解题思路：DFS，机器人相当于只能向下或者向右走，需要设置visited数组保存走过的路径，注意不需要回溯。
 
-时间复杂度：O(M*N* 3^K) K是数字的位数
+时间复杂度：O(M*N)
 
 空间复杂度：O(M*N)
 
@@ -209,6 +210,130 @@ public:
         return ans;
     }
 };
+```
+
+* **解法二**
+
+解题思路：BFS，需要设置辅助visited队列和辅助queue
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(M*N)
+
+```cpp
+
+class Solution {
+public:
+    int countK(int i)
+    {
+        int sum = 0;
+        while (i)
+        {
+            sum += i % 10;
+            i /= 10;
+        }
+        return sum;
+    }
+    
+    int movingCount(int m, int n, int k) {
+        int ans = 0;
+        vector<vector<int>> visited(m, vector<int>(n, 0));
+        queue<pair<int,int>> que;
+        que.push(std::make_pair(0, 0));        
+        visited[0][0] = 1;
+        while (!que.empty())
+        {
+            queue<pair<int,int>> tQue;
+            while(!que.empty())
+            {
+                pair<int,int> p = que.front();
+                que.pop();
+                ++ans;
+                int i = p.first, j = p.second;
+                if (i < m && j < n && countK(i+1) + countK(j) <= k && !visited[i+1][j])
+                {
+                    visited[i+1][j] = 1;
+                    tQue.push(std::make_pair(i+1, j));
+                }
+                if (i < m && j < n && countK(i) + countK(j+1) <= k && !visited[i][j+1])
+                {
+                    visited[i][j+1] = 1;
+                    tQue.push(std::make_pair(i, j+1));
+                }
+            }
+            swap(que, tQue);
+        }
+        return ans;
+    }
+};
+
+```
+
+
+* **解法三**
+
+解题思路：动态规划
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(M*N)
+
+```cpp
+class Solution {
+public:
+    int countK(int i)
+    {
+        int sum = 0;
+        while (i)
+        {
+            sum += i % 10;
+            i /= 10;
+        }
+        return sum;
+    }
+
+    int movingCount(int m, int n, int k) 
+    {   
+        if (k < 0)
+            return 0;
+        int cnt = 1;
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        for (int i = 1; i < m; ++i)
+        {
+            if (countK(i) > k)
+                break;
+            else
+            {
+                dp[i][0] = 1;
+                ++cnt;
+            }
+        }
+        for (int j = 1; j < n; ++j)
+        {
+            if (countK(j) > k)
+                break;
+            else
+            {
+                dp[0][j] = 1;
+                ++cnt;
+            }
+        }
+        for (int i = 1; i < m; ++i)
+            for (int j = 1; j < n; ++j)
+            {
+                if ((0 == dp[i-1][j] && 0 == dp[i][j-1]) || countK(i) + countK(j) > k)
+                    continue;
+                else
+                {
+                    ++cnt;
+                    dp[i][j] = 1;
+                }
+            }
+        return cnt;
+    }
+};
+
+
 ```
 
 <br>
@@ -249,6 +374,23 @@ public:
 
 ```
 
+当然，该题也可以直接进行原地操作。
+
+```cpp
+int maxValue(vector<vector<int>>& grid) 
+{   
+    int m = grid.size(), n = grid[0].size();
+    for (int i = 1; i < m; ++i)
+        grid[i][0] += grid[i-1][0];
+    for (int j = 1; j < n; ++j)
+        grid[0][j] += grid[0][j-1];
+    for (int i = 1; i < m; ++i)
+        for (int j = 1; j < n; ++j)
+            grid[i][j] = std::max(grid[i-1][j], grid[i][j-1]) + grid[i][j];
+    return grid[m-1][n-1];
+}
+```
+
 <br>
 
 
@@ -286,6 +428,26 @@ public:
             for (int j = 1; j < N; j++)
                 dp[i][j] = std::min(dp[i-1][j], dp[i][j-1]) + grid[i][j];
         return dp[M-1][N-1];
+    }
+};
+
+```
+
+该题和上一题完全基本相同，也可以使用原地算法
+
+```cpp
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+        for (int i = 1; i < m; ++i)
+            grid[i][0] += grid[i-1][0];
+        for (int j = 1; j < n; ++j)
+            grid[0][j] += grid[0][j-1];
+        for (int i = 1; i < m; ++i)
+            for (int j = 1; j < n; ++j)
+                grid[i][j] = std::min(grid[i-1][j], grid[i][j-1]) + grid[i][j];
+        return grid[m-1][n-1];
     }
 };
 
