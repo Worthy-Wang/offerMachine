@@ -14,12 +14,13 @@
     - [44.通配符匹配](#44通配符匹配)
     - [10.正则表达式匹配](#10正则表达式匹配)
     - [97.交错字符串](#97交错字符串)
+    - [87.扰乱字符串](#87扰乱字符串)
     - [72.编辑距离](#72编辑距离)
-    - [剑指 Offer 46. 把数字翻译成字符串](#剑指-offer-46-把数字翻译成字符串)
-    - [91.解码方法](#91解码方法)
     - [115.不同的子序列](#115不同的子序列)
     - [139.单词拆分](#139单词拆分)
     - [140.单词拆分2](#140单词拆分2)
+    - [剑指 Offer 46. 把数字翻译成字符串](#剑指-offer-46-把数字翻译成字符串)
+    - [91.解码方法](#91解码方法)
     - [剑指 Offer 49. 丑数](#剑指-offer-49-丑数)
     - [剑指 Offer 62. 圆圈中最后剩下的数字](#剑指-offer-62-圆圈中最后剩下的数字)
     - [123.买卖股票的最佳时机3](#123买卖股票的最佳时机3)
@@ -592,16 +593,15 @@ public:
 class Solution {
 public:
     vector<int> getRow(int rowIndex) {
-        rowIndex++;
-        vector<int> dp0(rowIndex, 1);
-        for (int i = 0; i < rowIndex; i++)
+        ++rowIndex;
+        vector<vector<int>> dp(2, vector<int>(rowIndex, 1));
+        for (int i = 1; i < rowIndex; ++i)
         {
-            vector<int> dp1(rowIndex, 1);
-            for (int j = 1; j < i; j ++)
-                dp1[j] = dp0[j-1] + dp0[j];
-            dp0 = dp1;
+            for (int j = 1; j < i; ++j)
+                dp[1][j] = dp[0][j-1] + dp[0][j];
+            dp[0] = dp[1];
         }
-        return dp0;
+        return dp[0];
     }
 };
 
@@ -619,23 +619,27 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/integer-break
 
-解题思路：动态规划
+解题思路：动态规划, dp[i]代表拆分整数i能够获得的最大乘积
 
 时间复杂度：O(N^2)
 
-空间复杂度：O(1)
+空间复杂度：O(N)
 
 ```cpp
 class Solution {
 public:
     int integerBreak(int n) {
-        vector<int> dp(n+1, 0);
-        dp[0] = 0, dp[1] = 1, dp[2] = 1;
-        for (int i = 3; i <= n; ++i)
-        {
+        if (n <= 1)
+            return 0;
+        vector<int> dp(n + 1, 0);
+        dp[1] = 1;
+        for (int i = 2; i <= n; ++i)
             for (int j = 1; j < i; ++j)
-                dp[i] = std::max(dp[i], max(j,dp[j]) * max(dp[i-j], i-j));
-        } 
+            {
+                int l = std::max(j , dp[j]);
+                int r = std::max(i-j, dp[i-j]);
+                dp[i] = std::max(dp[i], l * r);
+            }
         return dp[n];
     }
 };
@@ -653,7 +657,8 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/maximum-subarray
 
-解题思路：动态规划，dp[i] = std::max(dp[i-1]+nums[i], nums[i]), 将动态规划数组优化为只有两个即 dp[0] 和 dp[1]
+解题思路：动态规划，设置dp数组记录当前较为大的子序和，最大的子序和会在过程中出现，用一个ans做记录即可。
+dp[i] = std::max(dp[i-1]+nums[i], nums[i]), 将动态规划数组优化为只有两个即 dp[0] 和 dp[1]
 
 时间复杂度：O(N)
 
@@ -663,13 +668,13 @@ public:
 class Solution {
 public:
     int maxSubArray(vector<int>& nums) {
-        int dp0 = 0, dp1;
-        int ans = INT32_MIN;
-        for (int i = 0; i < nums.size(); ++i)
+        int n = nums.size();
+        int ans = nums[0], dp0 = nums[0], dp1 = nums[0];
+        for (int i = 1; i < n; ++i)
         {
-            dp1 = std::max(nums[i], nums[i] + dp0);
+            dp1 = std::max(dp0 + nums[i], nums[i]);
+            ans = std::max(ans, dp1);
             dp0 = dp1;
-            ans = std::max(dp0, ans);
         }
         return ans;
     }
@@ -710,30 +715,31 @@ public:
 class Solution {
 public:
     string longestPalindrome(string s) {
+        int n = s.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
         int maxLen = 0;
-        pair<int,int> res;
-        int N = s.size();
-        vector<vector<int>> dp(N, vector<int>(N, 0));
-        for (int j = 0; j < N; j++)
-        {
-            for (int i = 0; i <= j; i++)
+        string ans = "";
+        for (int j = 0; j < n; ++j)
+            for (int i = 0; i <= j; ++i)
             {
                 if (i == j)
                     dp[i][j] = 1;
-                else if(j-i==1 || j-i==2)
-                    dp[i][j] = (s[i]==s[j]);
+                else if (j == i + 1)
+                    dp[i][j] = (s[i] == s[j]);
                 else
-                    dp[i][j] = (dp[i+1][j-1]&&s[i]==s[j]);
-                
-                if (dp[i][j] && maxLen<j-i+1)
+                    dp[i][j] = (s[i] == s[j] && dp[i+1][j-1]);
+
+                if (dp[i][j])
                 {
-                    maxLen = j-i+1;
-                    res.first = i, res.second = j;
+                    int len = j - i + 1;
+                    if (len > maxLen)
+                    {
+                        maxLen = len;
+                        ans = s.substr(i, len);
+                    }
                 }
             }
-        } 
-        int i = res.first, j = res.second;
-        return s.substr(i, j-i+1);
+        return ans;
     }
 };
 
@@ -804,9 +810,6 @@ p 可能为空，且只包含从 a-z 的小写字母，以及字符 ? 和 
 链接：https://leetcode-cn.com/problems/wildcard-matching
 
 解题思路：动态规划，dp[i][j]代表s[i]长度的字符串能否被p[j]长度的字符串进行通配符匹配
-s[i]==p[j] dp[i][j] = dp[i-1][j-1]
-'?'==p[j] dp[i][j] = dp[i-1][j-1]
-'*'==p[j] dp[i][j] = dp[i-1][j] || dp[i][j-1]
 
 时间复杂度：O(M*N)
 
@@ -817,33 +820,23 @@ class Solution {
 public:
     bool isMatch(string s, string p) {
         int m = s.size(), n = p.size();
-        vector<vector<bool>> dp(m+1, vector<bool>(n+1, false));
-        dp[0][0] = true;
+        vector<vector<int>> dp(m+1, vector<int>(n+1, 0));
+        dp[0][0] = 1;
         for (int j = 1; j <= n; ++j)
             if ('*' == p[j-1])
                 dp[0][j] = dp[0][j-1];
-
-        for (int i = 1; i <= m; ++i )
+            
+        for (int i = 1; i <= m; ++i)
             for (int j = 1; j <= n; ++j)
             {
-                if ('*' == p[j-1])
-                {
-                    if (dp[i][j-1]) //匹配0个
-                        dp[i][j] = true;
-                    else //匹配1个或多个
-                        dp[i][j] = dp[i-1][j];
-                }else if ('?' == p[j-1])
-                {
+                if ('?' == p[j-1])
                     dp[i][j] = dp[i-1][j-1];
-                }else
-                {
-                    if (s[i-1] == p[j-1])
-                        dp[i][j]  = dp[i-1][j-1];
-                    else
-                        dp[i][j] = false;
-                }
+                else if ('*' == p[j-1])
+                    dp[i][j] = dp[i-1][j] || dp[i][j-1];
+                else
+                    dp[i][j] = (s[i-1] == p[j-1] && dp[i-1][j-1]);
             }
-        return dp[m][n];
+        return dp[m][n];        
     }
 };
 
@@ -874,33 +867,29 @@ class Solution {
 public:
     bool isMatch(string s, string p) {
         int m = s.size(), n = p.size();
-        vector<vector<bool>> dp(m+1, vector<bool>(n+1, false));
-        dp[0][0] = true;
+        vector<vector<int>> dp(m+1, vector<int>(n+1, 0));
+        dp[0][0] = 1;
         for (int j = 1; j <= n; ++j)
-            if  ('*' == p[j-1])
+            if ('*' == p[j-1])
                 dp[0][j] = dp[0][j-2];
 
         for (int i = 1; i <= m; ++i)
             for (int j = 1; j <= n; ++j)
             {
-                if ('*' == p[j-1])
-                {
-                    if (dp[i][j-2]) //*匹配0个
-                        dp[i][j] = true;
-                    else if (s[i-1]==p[j-2] || '.'==p[j-2])//*匹配1个或多个
-                        dp[i][j] = dp[i-1][j];
-                }else if('.' == p[j-1])
-                {
+                if ('.' == p[j-1])
                     dp[i][j] = dp[i-1][j-1];
-                }else
+                else if ('*' == p[j-1])
                 {
-                    if (s[i-1] == p[j-1])
-                        dp[i][j] = dp[i-1][j-1];
-                    else
-                        dp[i][j] = false;
+                    if (dp[i][j-2]) //匹配0个
+                        dp[i][j] = dp[i][j-2];
+                    else if (s[i-1]==p[j-2] || '.'==p[j-2])//匹配1个或多个
+                        dp[i][j] = dp[i-1][j];
                 }
-            }
-        return dp[m][n];  
+                else
+                    dp[i][j] = (s[i-1] == p[j-1] && dp[i-1][j-1]); 
+            }    
+    
+        return dp[m][n];
     }
 };
 
@@ -920,11 +909,11 @@ t = t1 + t2 + ... + tm
 提示：a + b 意味着字符串 a 和 b 连接。
 s1、s2、和 s3 都由小写英文字母组成
 
-
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/interleaving-string
 
 解题思路：dp[i][j]代表s1[i]的子串和s2[j]的子串能否形成交错的字符串。
+状态转移方程为： dp[i][j] = (dp[i-1][j] && s1[i-1]==s3[i+j-1]) || (dp[i][j-1] && s2[j-1]==s3[i+j-1]);
 
 时间复杂度：O(M*N)
 
@@ -934,38 +923,101 @@ s1、s2、和 s3 都由小写英文字母组成
 class Solution {
 public:
     bool isInterleave(string s1, string s2, string s3) {
-        int m = s1.size(), n = s2.size();
-        if (m + n != s3.size())
+        int m = s1.size(), n = s2.size(), len = s3.size();
+        if (m + n != len)
             return false;
-        
-        vector<vector<bool>> dp(m+1, vector<bool>(n+1, false));
-        dp[0][0] = true;
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+        dp[0][0] = 1;
+
         for (int i = 1; i <= m; ++i)
-            if (s1[i-1] == s3[i-1])
-                dp[i][0] = true;
-            else
-                break;
+            dp[i][0] = (dp[i-1][0] && s1[i-1]==s3[i-1]);
 
         for (int j = 1; j <= n; ++j)
-            if (s2[j-1] == s3[j-1])
-                dp[0][j] = true;
-            else
-                break;
-        
+            dp[0][j] = (dp[0][j-1] && s2[j-1]==s3[j-1]);
+
         for (int i = 1; i <= m; ++i)
             for (int j = 1; j <= n; ++j)
-            {
-                if ((dp[i-1][j]&&s1[i-1]==s3[i+j-1]) || (dp[i][j-1]&&s2[j-1]==s3[i+j-1]))
-                    dp[i][j] = true;
-                else
-                    dp[i][j] = false;
-            }
+                dp[i][j] = (dp[i-1][j] && s1[i-1]==s3[i+j-1]) || (dp[i][j-1] && s2[j-1]==s3[i+j-1]);
+    
         return dp[m][n];
     }
 };
 ```
 
 <br>
+
+
+
+
+---------------------------
+##### 87.扰乱字符串
+>题目描述:给定一个字符串 s1，我们可以把它递归地分割成两个非空子字符串，从而将其表示为二叉树。
+下图是字符串 s1 = "great" 的一种可能的表示形式。
+    great
+   /    \
+  gr    eat
+ / \    /  \
+g   r  e   at
+           / \
+          a   t
+在扰乱这个字符串的过程中，我们可以挑选任何一个非叶节点，然后交换它的两个子节点。
+例如，如果我们挑选非叶节点 "gr" ，交换它的两个子节点，将会产生扰乱字符串 "rgeat" 。
+    rgeat
+   /    \
+  rg    eat
+ / \    /  \
+r   g  e   at
+           / \
+          a   t
+我们将 "rgeat” 称作 "great" 的一个扰乱字符串。
+同样地，如果我们继续交换节点 "eat" 和 "at" 的子节点，将会产生另一个新的扰乱字符串 "rgtae" 。
+    rgtae
+   /    \
+  rg    tae
+ / \    /  \
+r   g  ta  e
+       / \
+      t   a
+我们将 "rgtae” 称作 "great" 的一个扰乱字符串。
+给出两个长度相等的字符串 s1 和 s2，判断 s2 是否是 s1 的扰乱字符串。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/scramble-string
+
+解题思路：该题使用递归解决。
+
+时间复杂度：
+
+空间复杂度：
+
+```cpp
+class Solution {
+public:
+    bool isScramble(string s1, string s2) {
+        if (s1 == s2)
+            return true;
+        string t1 = s1, t2 = s2;
+        sort(t1.begin(), t1.end());
+        sort(t2.begin(), t2.end());
+        if (t1 != t2)
+            return false;
+
+        int n = s1.size();
+        for (int i = 1; i < n; ++i)
+        {
+            bool ans1 = isScramble(s1.substr(0,i), s2.substr(0,i)) && isScramble(s1.substr(i,n-i), s2.substr(i,n-i));
+            bool ans2 = isScramble(s1.substr(0,i), s2.substr(n-i,i)) && isScramble(s1.substr(i,n-i), s2.substr(0, n-i));
+            if (ans1 || ans2)
+                return true;
+        }
+        return false;
+    }
+};
+```
+
+<br>
+
+
 
 
 
@@ -1020,97 +1072,6 @@ public:
 
 <br>
 
-
----------------------------
-##### 剑指 Offer 46. 把数字翻译成字符串
->题目描述:给定一个数字，我们按照如下规则把它翻译为字符串：0 翻译成 “a” ，1 翻译成 “b”，……，11 翻译成 “l”，……，25 翻译成 “z”。一个数字可能有多个翻译。请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof
-
-解题思路：动态规划，该题 相较于上一题更为简单，因为0可以直接翻译。
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    int translateNum(int num) {
-        int dp0 = 1, dp1 = 1, dp2 = 1;
-        string s(to_string(num));
-        for (int i = 1; i < s.size(); i++)
-        {
-            int x = stoi(s.substr(i-1, 2));
-            if (10<=x && x<=25)
-                dp2 = dp1 + dp0;
-            else
-                dp2 = dp1;
-            dp0 = dp1;
-            dp1 = dp2;
-        }        
-        return dp2;
-    }
-};
-
-```
-
-<br>
-
-
----------------------------
-##### 91.解码方法
->题目描述:一条包含字母 A-Z 的消息通过以下方式进行了编码：
-'A' -> 1
-'B' -> 2
-...
-'Z' -> 26
-给定一个只包含数字的非空字符串，请计算解码方法的总数。
-题目数据保证答案肯定是一个 32 位的整数。
-s 只包含数字，并且可能包含前导零。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/decode-ways
-
-解题思路：动态规划，先处理遇到 00 10 20 30 ... 的情况，这几种情况中只有 10 20 是合法的。
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    int numDecodings(string s) {
-        if (s.empty() || '0' == s[0])
-            return 0;
-        int dp0 = 1, dp1 = 1, dp2 = 1;
-        for (int i = 1; i < s.size(); i++)
-        {
-            if ('0' == s[i])
-            {
-                if ('1'==s[i-1] || '2'==s[i-1])
-                    dp2 = dp0;
-                else
-                    return 0;
-            }else
-            {
-                if (('2'==s[i-1]&&'1'<=s[i]&&s[i]<='6') || ('1'==s[i-1]))
-                    dp2 = dp1 + dp0;
-                else
-                    dp2 = dp1;
-            }
-            dp0 = dp1;
-            dp1 = dp2;
-        }
-        return dp2;
-    }
-};
-
-```
-
-<br>
 
 
 
@@ -1230,6 +1191,99 @@ public:
 空间复杂度：
 
 ```cpp
+
+```
+
+<br>
+
+
+
+---------------------------
+##### 剑指 Offer 46. 把数字翻译成字符串
+>题目描述:给定一个数字，我们按照如下规则把它翻译为字符串：0 翻译成 “a” ，1 翻译成 “b”，……，11 翻译成 “l”，……，25 翻译成 “z”。一个数字可能有多个翻译。请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof
+
+解题思路：动态规划，该题 相较于上一题更为简单，因为0可以直接翻译。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int translateNum(int num) {
+        int dp0 = 1, dp1 = 1, dp2 = 1;
+        string s(to_string(num));
+        for (int i = 1; i < s.size(); i++)
+        {
+            int x = stoi(s.substr(i-1, 2));
+            if (10<=x && x<=25)
+                dp2 = dp1 + dp0;
+            else
+                dp2 = dp1;
+            dp0 = dp1;
+            dp1 = dp2;
+        }        
+        return dp2;
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 91.解码方法
+>题目描述:一条包含字母 A-Z 的消息通过以下方式进行了编码：
+'A' -> 1
+'B' -> 2
+...
+'Z' -> 26
+给定一个只包含数字的非空字符串，请计算解码方法的总数。
+题目数据保证答案肯定是一个 32 位的整数。
+s 只包含数字，并且可能包含前导零。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/decode-ways
+
+解题思路：动态规划，先处理遇到 00 10 20 30 ... 的情况，这几种情况中只有 10 20 是合法的。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int numDecodings(string s) {
+        if (s.empty() || '0' == s[0])
+            return 0;
+        int dp0 = 1, dp1 = 1, dp2 = 1;
+        for (int i = 1; i < s.size(); i++)
+        {
+            if ('0' == s[i])
+            {
+                if ('1'==s[i-1] || '2'==s[i-1])
+                    dp2 = dp0;
+                else
+                    return 0;
+            }else
+            {
+                if (('2'==s[i-1]&&'1'<=s[i]&&s[i]<='6') || ('1'==s[i-1]))
+                    dp2 = dp1 + dp0;
+                else
+                    dp2 = dp1;
+            }
+            dp0 = dp1;
+            dp1 = dp2;
+        }
+        return dp2;
+    }
+};
 
 ```
 
