@@ -4,7 +4,6 @@
     - [121.买卖股票的最佳时机](#121买卖股票的最佳时机)
     - [122.买卖股票的最佳时机2](#122买卖股票的最佳时机2)
     - [123.买卖股票的最佳时机3](#123买卖股票的最佳时机3)
-    - [11.盛最多水的容器](#11盛最多水的容器)
 
 
 ### 十一.贪心法专题
@@ -197,48 +196,6 @@ public:
     }
 };
 
-```
-
-<br>
-
-
-
----------------------------
-##### 11.盛最多水的容器
->题目描述:给你 n 个非负整数 a1，a2，...，an，每个数代表坐标中的一个点 (i, ai) 。在坐标内画 n 条垂直线，垂直线 i 的两个端点分别为 (i, ai) 和 (i, 0) 。找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
-说明：你不能倾斜容器。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/container-with-most-water
-
-解题思路：用双指针向中间靠拢，选两个容器之间较小的向中间靠拢，找到更大的容器就停下。
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    int maxArea(vector<int>& height) {
-        int l = 0, r = height.size()-1;
-        int ans = 0;
-        while (l < r)
-        {
-            if (height[l] <= height[r])
-            {
-                ans = std::max(ans, (r-l) * height[l]);
-                ++l;
-            }
-            else 
-            {
-                ans = std::max(ans, (r-l) * height[r]);
-                --r;
-            }
-        }
-        return ans;
-    }
-};
 ```
 
 <br>

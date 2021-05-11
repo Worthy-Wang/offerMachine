@@ -15,15 +15,14 @@
     - [10.正则表达式匹配](#10正则表达式匹配)
     - [97.交错字符串](#97交错字符串)
     - [87.扰乱字符串](#87扰乱字符串)
-    - [72.编辑距离](#72编辑距离)
     - [115.不同的子序列](#115不同的子序列)
+    - [72.编辑距离](#72编辑距离)
     - [139.单词拆分](#139单词拆分)
     - [140.单词拆分2](#140单词拆分2)
     - [剑指 Offer 46. 把数字翻译成字符串](#剑指-offer-46-把数字翻译成字符串)
     - [91.解码方法](#91解码方法)
     - [剑指 Offer 49. 丑数](#剑指-offer-49-丑数)
     - [剑指 Offer 62. 圆圈中最后剩下的数字](#剑指-offer-62-圆圈中最后剩下的数字)
-    - [123.买卖股票的最佳时机3](#123买卖股票的最佳时机3)
     - [剑指 Offer 66. 构建乘积数组](#剑指-offer-66-构建乘积数组)
 
 
@@ -984,7 +983,9 @@ r   g  ta  e
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/scramble-string
 
-解题思路：该题使用递归解决。
+* **解法一**
+
+解题思路：递归，该方法的复杂度较高，会超时。
 
 时间复杂度：
 
@@ -1015,8 +1016,110 @@ public:
 };
 ```
 
+* **解法二**
+
+解题思路：使用三维动态规划的方法，dp[i][j][k]代表 s1以i为起点， s2以j为起点 ，长度为k 的字符串是否是可以通过交换得到。
+设置len不断增加字符串的长度区间，用k在len中进行分隔，
+
+时间复杂度：O(N^4)
+
+空间复杂度：O(N^3)
+
+```cpp
+class Solution {
+public:
+    bool isScramble(string s1, string s2) {
+        if (s1.size() != s2.size())
+            return false;
+        int n = s1.size();
+        vector<vector<vector<int>>> dp(n, vector<vector<int>>(n, vector<int>(n + 1, 0)));
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < n; ++j)
+                dp[i][j][1] = (s1[i] == s2[j]);
+        
+        for (int len = 2; len <= n; ++len) //len是字符串的长度区间，逐步从2增加到n
+            for (int i = 0; i <= n - len; ++i)
+                for (int j = 0; j <= n - len; ++j)
+                    for (int k = 1; k < len; ++k) //k作为分隔点，将长度区间len进行分隔
+                    {
+                        if (dp[i][j][k] && dp[i+k][j+k][len-k])//正常对应情况
+                        {
+                            dp[i][j][len] = true;
+                            break;
+                        }
+                        if (dp[i][j+len-k][k] && dp[i+k][j][len-k])//前后交错对应情况
+                        {
+                            dp[i][j][len] = true;
+                            break;
+                        }
+                    }
+
+        return dp[0][0][n];
+    }
+};
+
+```
+
+
 <br>
 
+
+
+---------------------------
+##### 115.不同的子序列
+>题目描述:给定一个字符串 s 和一个字符串 t ，计算在 s 的子序列中 t 出现的个数。
+字符串的一个 子序列 是指，通过删除一些（也可以不删除）字符且不干扰剩余字符相对位置所组成的新字符串。（例如，"ACE" 是 "ABCDE" 的一个子序列，而 "AEC" 不是）
+题目数据保证答案符合 32 位带符号整数范围。
+s 和 t 由英文字母组成
+输入：s = "rabbbit", t = "rabbit"
+输出：3
+解释：
+如下图所示, 有 3 种可以从 s 中得到 "rabbit" 的方案。
+(上箭头符号 ^ 表示选取的字母)
+rabbbit
+^^^^ ^^
+rabbbit
+^^ ^^^^
+rabbbit
+^^^ ^^^
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/distinct-subsequences
+
+解题思路：创建动态规划数组，dp[i][j]代表s[i]字符串中t[j]字符串出现的个数
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(M*N)
+
+```cpp
+class Solution {
+public:
+    int numDistinct(string s, string t) {
+        int m = s.size(), n = t.size();
+        vector<vector<long>> dp(m+1, vector<long>(n+1, 0));
+        dp[0][0] = 1;
+        for (int i = 1; i <= m; ++i)
+            dp[i][0] = 1;
+        for (int j = 1; j <= n; ++j)
+            dp[0][j] = 0;
+
+        for (int i = 1; i <= m; ++i)
+            for (int j = 1; j <= n; ++j)
+            {
+                if (s[i-1] == t[j-1])
+                    dp[i][j] = dp[i-1][j] + dp[i-1][j-1];
+                else
+                    dp[i][j] = dp[i-1][j];
+            }
+        return dp[m][n];
+    }
+};
+
+
+```
+
+<br>
 
 
 
@@ -1075,58 +1178,6 @@ public:
 
 
 
----------------------------
-##### 115.不同的子序列
->题目描述:给定一个字符串 s 和一个字符串 t ，计算在 s 的子序列中 t 出现的个数。
-字符串的一个 子序列 是指，通过删除一些（也可以不删除）字符且不干扰剩余字符相对位置所组成的新字符串。（例如，"ACE" 是 "ABCDE" 的一个子序列，而 "AEC" 不是）
-题目数据保证答案符合 32 位带符号整数范围。
-s 和 t 由英文字母组成
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/distinct-subsequences
-
-解题思路：创建动态规划数组，将字符串t的子串不断在s串中进行匹配，最后生成动态规划数组。
-    a  b
-  1 0  0
-a 1 1  0
-a 1 
-b 1
-b 1
-
-时间复杂度：O(M*N)
-
-空间复杂度：O(M*N)
-
-```cpp
-class Solution {
-public:
-    int numDistinct(string s, string t) {
-        int m = s.size(), n = t.size();
-        vector<vector<long>> dp(m+1, vector<long>(n+1, 0));
-        dp[0][0] = 1;
-        for (int i = 1; i <= m; ++i)
-            dp[i][0] = 1;
-        for (int j = 1; j <= n; ++j)
-            dp[0][j] = 0;
-
-        for (int i = 1; i <= m; ++i)
-            for (int j = 1; j <= n; ++j)
-            {
-                if (s[i-1] == t[j-1])
-                    dp[i][j] = dp[i-1][j] + dp[i-1][j-1];
-                else
-                    dp[i][j] = dp[i-1][j];
-            }
-        return dp[m][n];
-    }
-};
-
-
-```
-
-<br>
-
-
 
 ---------------------------
 ##### 139.单词拆分
@@ -1138,9 +1189,50 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/word-break
 
-解题思路：动态规划，创建动态规划数组存放哪些位置可以被拆分。
+* **解法一**
 
-时间复杂度：O(M + N^2) N是s的长度，M是wordDict的长度 
+解题思路：DFS回溯算法，该方法最容易想到，但是由于该题的结果并不是求解所有的结果，而只是判断是否能够拆分单词，所以动态规划才是较好的方法（DFS通常会超时）。
+
+时间复杂度：
+
+空间复杂度：
+
+```cpp
+class Solution {
+    bool ans = false;
+public:
+    void DFS(string& s, int start, unordered_set<string>& hashset)
+    {
+        if (ans)
+            return;
+        if (start == s.size())
+        {
+            ans = true;
+            return;
+        }
+
+        for (int i = start; i < s.size(); ++i)
+        {
+            if (hashset.find(s.substr(start, i-start+1)) != hashset.end())
+                DFS(s, i + 1, hashset);
+        }
+    }
+
+    bool wordBreak(string s, vector<string>& wordDict) {
+        unordered_set<string> hashset(wordDict.begin(), wordDict.end());
+        DFS(s, 0, hashset);
+        return ans;
+    }
+};
+```
+
+
+* **解法二**
+
+解题思路：这一类的问题实质上都属于背包算法，有时间可以总结这一类的问题（该题的leetcode题解中有相关解答）。
+该题采用动态规划，创建动态规划数组存放哪些位置可以被拆分。
+
+时间复杂度：O(N^2) N是s的长度，M是wordDict的长度 
 
 空间复杂度：O(M+N)
 
@@ -1150,18 +1242,16 @@ public:
     bool wordBreak(string s, vector<string>& wordDict) {
         unordered_set<string> hashset(wordDict.begin(), wordDict.end());
         int n = s.size();
-        vector<bool> dp(n+1, false);
-        s.insert(s.begin(), '0');
-        dp[0] = true;
-        for (int j = 1; j <= n; ++j)
+        vector<int> dp(n + 1, 0);
+        dp[0] = 1;
+        for (int i = 0; i < n; ++i)
         {
-            for (int i = 0; i < j; ++i)
+            if (!dp[i])
+                continue;
+            for (int j = i + 1; j <= n; ++j)
             {
-                if (dp[i] && hashset.count(s.substr(i+1, j-i)))
-                {
-                    dp[j] = true;
-                    break;
-                }
+                if (hashset.find(s.substr(i, j-i)) != hashset.end())
+                    dp[j] = 1;
             }
         }
         return dp[n];
@@ -1184,17 +1274,51 @@ public:
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/word-break-ii
 
-解题思路：
+解题思路：递归，类似于求全排列的方法
 
 时间复杂度：
 
 空间复杂度：
 
 ```cpp
+class Solution {
+    vector<string> ans;
+public:
+    void DFS(string& s, int start, unordered_set<string>& hashset, vector<string>& path)
+    {
+        if (start == s.size())
+        {
+            string str;
+            for (const auto& e: path)
+                str = str + e + " ";
+            str.pop_back();
+            ans.push_back(std::move(str));
+            return;
+        }
 
+        for (int i = start; i < s.size(); ++i)
+        {
+            if (hashset.find(s.substr(start, i - start + 1)) != hashset.end())
+            {
+                path.push_back(s.substr(start, i - start + 1));
+                DFS(s, i + 1, hashset, path);
+                path.pop_back();
+            }
+        }
+    }
+
+    vector<string> wordBreak(string s, vector<string>& wordDict) {
+        unordered_set<string> hashset(wordDict.begin(), wordDict.end());
+        int start = 0;
+        vector<string> path;
+        DFS(s, start, hashset, path);
+        return ans;
+    }
+};
 ```
 
 <br>
+
 
 
 
@@ -1260,26 +1384,26 @@ s 只包含数字，并且可能包含前导零。
 class Solution {
 public:
     int numDecodings(string s) {
-        if (s.empty() || '0' == s[0])
+        if ('0' == s[0])
             return 0;
         int dp0 = 1, dp1 = 1, dp2 = 1;
-        for (int i = 1; i < s.size(); i++)
+        for (int i = 1; i < s.size(); ++i)
         {
             if ('0' == s[i])
             {
-                if ('1'==s[i-1] || '2'==s[i-1])
-                    dp2 = dp0;
-                else
+                if (!('1' == s[i-1] || '2' == s[i-1]))
                     return 0;
+                else
+                    dp2 = dp0;
             }else
             {
-                if (('2'==s[i-1]&&'1'<=s[i]&&s[i]<='6') || ('1'==s[i-1]))
+                int num = stoi(s.substr(i-1, 2));
+                if (10 < num && num <= 26)
                     dp2 = dp1 + dp0;
                 else
                     dp2 = dp1;
             }
-            dp0 = dp1;
-            dp1 = dp2;
+            dp0 = dp1, dp1 = dp2;
         }
         return dp2;
     }
@@ -1354,73 +1478,18 @@ dp1 = (dp0+m)%n
 class Solution {
 public:
     int lastRemaining(int n, int m) {
-        if (0 == n || 1 == n)
-            return 0;
-        int dp0 = 0, dp1;
-        for (int i = 1; i <= n; i++)
+        int pos0 = 0, pos1 = 0;
+        for (int i = 2; i <= n; ++i)
         {
-            dp1 = (dp0 + m) % i;
-            dp0 = dp1;
+            pos1 = (pos0 + m) % i;
+            pos0 = pos1;
         }
-        return dp1;
+        return pos0;
     }
 };
 ```
 
 <br>
-
-
-
----------------------------
-##### 123.买卖股票的最佳时机3
->题目描述:给定一个数组，它的第 i 个元素是一支给定的股票在第 i 天的价格。
-设计一个算法来计算你所能获取的最大利润。你最多可以完成 两笔 交易。
-注意: 你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii
-
-解题思路：动态规划法，创建两个动态规划数组 left 与 right ，left记录 [0, i] 能够收获的最大收益， right记录 [i, n] 能够收获的最大收益；
-left[i]：设置最小值，从左到右遍历，并存放得到的最大利润
-right[i]：设置最大值，从右到左遍历，并存放得到的最大利润
-最后找出left[i]+right[i]的最大值即可。 
-
-时间复杂度：O(N)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-public:
-    int maxProfit(vector<int>& prices) {
-        int n = prices.size();
-        vector<int> left(n), right(n);
-        left[0] = 0, right[n-1] = 0;
-        int minPrice = prices[0], maxPrice = prices[n-1];
-        for (int i = 1; i < n; i++)
-        {
-            minPrice = std::min(minPrice, prices[i]);
-            left[i] = std::max(left[i-1], prices[i]-minPrice);
-        }
-        for (int i = n-2; i >= 0; i-- )
-        {
-            maxPrice = std::max(prices[i], maxPrice);
-            right[i] = std::max(right[i+1], maxPrice - prices[i]);         
-        }
-        int ans = 0;
-        for (int i = 0; i < n; i++)
-            ans = std::max(left[i]+right[i], ans);
-        return ans;
-    }
-};
-
-```
-
-<br>
-
-
-
-
 
 
 ---------------------------
@@ -1437,24 +1506,19 @@ public:
 空间复杂度：O(N)
 
 ```cpp
-class Solution {
-public:
-    vector<int> constructArr(vector<int>& a) {
-        if (a.empty())
-            return {};
-        int n = a.size();
-        vector<int> left(n), right(n);
-        left[0] = 1, right[n-1] = 1;
-        for (int i = 1; i < n; i++)
-            left[i] = left[i-1] * a[i-1];
-        for (int i = n-2; i >= 0; i--)
-            right[i] = right[i+1] * a[i+1];
-        vector<int> ans;
-        for (int i = 0; i < n; i++)
-            ans.push_back(left[i]*right[i]);
-        return ans;
-    }
-};
+vector<int> constructArr(vector<int>& a)
+{
+    int n = a.size();
+    vector<int> l(n, 1), r(n, 1);
+    for (int i = 1; i < n; ++i)
+        l[i] = l[i-1] * a[i-1];
+    for (int i = n-2; i >= 0; --i)
+        r[i] = r[i+1] * a[i+1];
+    vector<int> ans(n, 0);
+    for (int i = 0; i < n; ++i)
+        ans[i] = l[i] * r[i];
+    return ans;
+}
 
 ```
 

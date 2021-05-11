@@ -11,6 +11,8 @@
     - [18.四数之和](#18四数之和)
     - [11.盛最多水的容器](#11盛最多水的容器)
     - [42.接雨水](#42接雨水)
+    - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
+    - [85.最大矩阵](#85最大矩阵)
     - [134.加油站](#134加油站)
     - [135.分发糖果](#135分发糖果)
     - [48.旋转图像](#48旋转图像)
@@ -717,13 +719,13 @@ public:
             if (height[l] <= height[r])
             {
                 lMax = std::max(lMax, height[l]);
-                ans = ans + lMax - height[l]; 
+                ans += lMax - height[l]; 
                 l++;
             }
             else
             {
                 rMax = std::max(rMax, height[r]);
-                ans = ans + rMax - height[r];
+                ans += rMax - height[r];
                 r--;
             }
         }
@@ -733,6 +735,139 @@ public:
 
 ```
 
+
+<br>
+
+
+---------------------------
+##### 84.柱状图中最大的矩形
+>题目描述:给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+求在该柱状图中，能够勾勒出来的矩形的最大面积。
+示例:
+输入: [2,1,5,6,2,3]
+输出: 10
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/largest-rectangle-in-histogram
+
+* **解法一**
+
+解题思路：暴力法，两层for循环，采用中心扩散法，第一次遍历中的柱子作为最低的高度向两边扩散。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(1)
+
+
+* **解法二**
+
+解题思路：单调栈法，在暴力法的基础上进行改进。在暴力法中是以当前柱体为最低高度向左右两边展开，需要分别找到 左边第一个小于当前柱体高度的 和 右边第一个小于当前柱体高度的。而单调栈可以帮助我们完成该任务，当 当前柱体的高 小于 栈顶的高时，栈顶出栈，这样就同时找到了左右两边的更小值。注意此处操作的节点是 弹出栈的那一个。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        if (heights.empty())
+            return 0;
+        int ans = 0;
+        heights.push_back(0);//在数组尾部加入一个最小的数，保证单调栈中的所有数都可以进行计算
+        std::stack<int> stk;//单调栈存储的是下标
+        for (int i = 0; i < heights.size(); i++)
+        {
+            while (!stk.empty() && heights[i]<heights[stk.top()])
+            {
+                int mid = stk.top();
+                stk.pop();
+                int l = stk.empty() ? -1 : stk.top();
+                int r = i;
+                ans = std::max(ans, heights[mid]*(r-l-1));
+            }
+            stk.push(i);
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+
+---------------------------
+##### 85.最大矩阵
+>题目描述:给定一个仅包含 0 和 1 、大小为 rows x cols 的二维二进制矩阵，找出只包含 1 的最大矩形，并返回其面积。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/maximal-rectangle
+
+* **解法一**
+
+解题思路：调用上一题求最大矩阵的解法，一行一行的计算，求解出最大矩阵
+
+时间复杂度：O(M*N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        if (heights.empty())
+            return 0;
+        heights.push_back(0);
+        int ans = 0;
+        stack<int> stk;
+        for (int i = 0; i < heights.size(); i++)
+        {
+            while (!stk.empty() && heights[i]<heights[stk.top()])
+            {
+                int mid = stk.top();
+                stk.pop();
+                int l = stk.empty()? -1 : stk.top();
+                int r = i;
+                ans = std::max(ans, (r-l-1)*heights[mid]);
+            }
+            stk.push(i);
+        }
+        heights.pop_back();
+        return ans;
+    }
+
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if (matrix.empty())
+            return 0;
+        int ans = 0;
+        int M = matrix.size(), N = matrix[0].size();
+        vector<vector<int>> nums(M, vector<int>(N));
+        for (int i = 0; i < M; i++)
+            for (int j = 0; j < N; j++)
+                if ('1' == matrix[i][j])
+                    nums[i][j] = 1;
+                else 
+                    nums[i][j] = 0;
+
+        for (int i = 1; i < M; i++)
+            for (int j = 0; j < N; j++)
+                if (0 == nums[i][j])
+                    continue;
+                else
+                    nums[i][j] += nums[i-1][j];
+                    
+        for (int i = 0; i < M; i++)
+        {
+            int res = largestRectangleArea(nums[i]);
+            ans = std::max(ans, res);
+        }
+        return ans;
+    }
+};
+
+```
 
 
 <br>
