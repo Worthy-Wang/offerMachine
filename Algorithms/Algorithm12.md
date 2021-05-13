@@ -8,19 +8,15 @@
     - [120.三角形最小路径和](#120三角形最小路径和)
     - [118.杨辉三角](#118杨辉三角)
     - [119.杨辉三角2](#119杨辉三角2)
-    - [343. 整数拆分](#343-整数拆分)
-    - [53.最大子序和](#53最大子序和)
-    - [5.最长回文子串](#5最长回文子串)
     - [44.通配符匹配](#44通配符匹配)
     - [10.正则表达式匹配](#10正则表达式匹配)
     - [97.交错字符串](#97交错字符串)
     - [87.扰乱字符串](#87扰乱字符串)
     - [115.不同的子序列](#115不同的子序列)
     - [72.编辑距离](#72编辑距离)
-    - [139.单词拆分](#139单词拆分)
-    - [140.单词拆分2](#140单词拆分2)
     - [剑指 Offer 46. 把数字翻译成字符串](#剑指-offer-46-把数字翻译成字符串)
     - [91.解码方法](#91解码方法)
+    - [343. 整数拆分](#343-整数拆分)
     - [剑指 Offer 49. 丑数](#剑指-offer-49-丑数)
     - [剑指 Offer 62. 圆圈中最后剩下的数字](#剑指-offer-62-圆圈中最后剩下的数字)
     - [剑指 Offer 66. 构建乘积数组](#剑指-offer-66-构建乘积数组)
@@ -611,188 +607,6 @@ public:
 
 
 
----------------------------
-##### 343. 整数拆分
->题目描述：给定一个正整数 n，将其拆分为至少两个正整数的和，并使这些整数的乘积最大化。 返回你可以获得的最大乘积。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/integer-break
-
-解题思路：动态规划, dp[i]代表拆分整数i能够获得的最大乘积
-
-时间复杂度：O(N^2)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-public:
-    int integerBreak(int n) {
-        if (n <= 1)
-            return 0;
-        vector<int> dp(n + 1, 0);
-        dp[1] = 1;
-        for (int i = 2; i <= n; ++i)
-            for (int j = 1; j < i; ++j)
-            {
-                int l = std::max(j , dp[j]);
-                int r = std::max(i-j, dp[i-j]);
-                dp[i] = std::max(dp[i], l * r);
-            }
-        return dp[n];
-    }
-};
-```
-
-<br>
-
-
-
----------------------------
-##### 53.最大子序和
->题目描述:给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
-
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/maximum-subarray
-
-解题思路：动态规划，设置dp数组记录当前较为大的子序和，最大的子序和会在过程中出现，用一个ans做记录即可。
-dp[i] = std::max(dp[i-1]+nums[i], nums[i]), 将动态规划数组优化为只有两个即 dp[0] 和 dp[1]
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    int maxSubArray(vector<int>& nums) {
-        int n = nums.size();
-        int ans = nums[0], dp0 = nums[0], dp1 = nums[0];
-        for (int i = 1; i < n; ++i)
-        {
-            dp1 = std::max(dp0 + nums[i], nums[i]);
-            ans = std::max(ans, dp1);
-            dp0 = dp1;
-        }
-        return ans;
-    }
-};
-
-```
-
-<br>
-
-
-
-
------------------------------
-##### 5.最长回文子串
->题目描述：给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/longest-palindromic-substring
-
-* **解法一**
-
-解题思路：暴力法，用两层for循环O(N^2)，再使用一层for循环判断是否为回文。
-
-时间复杂度：O(N^3)
-
-空间复杂度：O(1)
-
-* **解法二**
-
-解题思路：动态规划，dp[i][j],i代表起始位置，j代表结束位置。二维动态数组只需要填充右上部分，并且是从左往右一列一列的填充。
-状态转移方程：dp[i][j] = (s[i]==s[j] && dp[i+1][j-1])
-
-时间复杂度：O(N^2)
-
-空间复杂度：O(N^2)
-
-```cpp
-class Solution {
-public:
-    string longestPalindrome(string s) {
-        int n = s.size();
-        vector<vector<int>> dp(n, vector<int>(n, 0));
-        int maxLen = 0;
-        string ans = "";
-        for (int j = 0; j < n; ++j)
-            for (int i = 0; i <= j; ++i)
-            {
-                if (i == j)
-                    dp[i][j] = 1;
-                else if (j == i + 1)
-                    dp[i][j] = (s[i] == s[j]);
-                else
-                    dp[i][j] = (s[i] == s[j] && dp[i+1][j-1]);
-
-                if (dp[i][j])
-                {
-                    int len = j - i + 1;
-                    if (len > maxLen)
-                    {
-                        maxLen = len;
-                        ans = s.substr(i, len);
-                    }
-                }
-            }
-        return ans;
-    }
-};
-
-```
-
-
-* **解法三**
-
-解题思路：中心扩展法，以一个for循环遍历元素，该元素作为回文子串的中心左右两边扩散。注意需要区分最长回文的子串有奇数个还是偶数个。
-
-时间复杂度：O(N^2)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    string longestPalindrome(string s) {
-        if (s.empty())
-            return string();
-        string ans;
-        int maxLen = 0;
-        for (int i = 0; i < s.size(); i++)
-        {
-            //回文串字符数为奇数
-            int l = i, r = i;
-            while (0<=l&&r<s.size() && s[l]==s[r])
-                l--, r++;
-            if (r-l-1 > maxLen)
-            {
-                maxLen = r - l - 1;
-                ans = s.substr(l+1, maxLen);
-            }
-
-            //回文串字符数为偶数
-            l = i, r = i+1;
-            while (0<=l&&r<s.size() && s[l]==s[r])
-                l--, r++;
-            if (r-l-1 > maxLen)
-            {
-                maxLen = r - l - 1;
-                ans = s.substr(l+1, maxLen);
-            }
-        }
-        return ans;
-    }
-};
-
-```
-
-
-<br>
-
-
 
 
 -----------------------------
@@ -1177,151 +991,6 @@ public:
 
 
 
-
-
----------------------------
-##### 139.单词拆分
->题目描述:给定一个非空字符串 s 和一个包含非空单词的列表 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。
-说明：
-拆分时可以重复使用字典中的单词。
-你可以假设字典中没有重复的单词。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/word-break
-
-* **解法一**
-
-解题思路：DFS回溯算法，该方法最容易想到，但是由于该题的结果并不是求解所有的结果，而只是判断是否能够拆分单词，所以动态规划才是较好的方法（DFS通常会超时）。
-
-时间复杂度：
-
-空间复杂度：
-
-```cpp
-class Solution {
-    bool ans = false;
-public:
-    void DFS(string& s, int start, unordered_set<string>& hashset)
-    {
-        if (ans)
-            return;
-        if (start == s.size())
-        {
-            ans = true;
-            return;
-        }
-
-        for (int i = start; i < s.size(); ++i)
-        {
-            if (hashset.find(s.substr(start, i-start+1)) != hashset.end())
-                DFS(s, i + 1, hashset);
-        }
-    }
-
-    bool wordBreak(string s, vector<string>& wordDict) {
-        unordered_set<string> hashset(wordDict.begin(), wordDict.end());
-        DFS(s, 0, hashset);
-        return ans;
-    }
-};
-```
-
-
-* **解法二**
-
-解题思路：这一类的问题实质上都属于背包算法，有时间可以总结这一类的问题（该题的leetcode题解中有相关解答）。
-该题采用动态规划，创建动态规划数组存放哪些位置可以被拆分。
-
-时间复杂度：O(N^2) N是s的长度，M是wordDict的长度 
-
-空间复杂度：O(M+N)
-
-```cpp
-class Solution {
-public:
-    bool wordBreak(string s, vector<string>& wordDict) {
-        unordered_set<string> hashset(wordDict.begin(), wordDict.end());
-        int n = s.size();
-        vector<int> dp(n + 1, 0);
-        dp[0] = 1;
-        for (int i = 0; i < n; ++i)
-        {
-            if (!dp[i])
-                continue;
-            for (int j = i + 1; j <= n; ++j)
-            {
-                if (hashset.find(s.substr(i, j-i)) != hashset.end())
-                    dp[j] = 1;
-            }
-        }
-        return dp[n];
-    }
-};
-```
-
-<br>
-
-
-
-
----------------------------
-##### 140.单词拆分2
->题目描述:给定一个非空字符串 s 和一个包含非空单词列表的字典 wordDict，在字符串中增加空格来构建一个句子，使得句子中所有的单词都在词典中。返回所有这些可能的句子。
-说明：
-分隔时可以重复使用字典中的单词。
-你可以假设字典中没有重复的单词。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/word-break-ii
-
-解题思路：递归，类似于求全排列的方法
-
-时间复杂度：
-
-空间复杂度：
-
-```cpp
-class Solution {
-    vector<string> ans;
-public:
-    void DFS(string& s, int start, unordered_set<string>& hashset, vector<string>& path)
-    {
-        if (start == s.size())
-        {
-            string str;
-            for (const auto& e: path)
-                str = str + e + " ";
-            str.pop_back();
-            ans.push_back(std::move(str));
-            return;
-        }
-
-        for (int i = start; i < s.size(); ++i)
-        {
-            if (hashset.find(s.substr(start, i - start + 1)) != hashset.end())
-            {
-                path.push_back(s.substr(start, i - start + 1));
-                DFS(s, i + 1, hashset, path);
-                path.pop_back();
-            }
-        }
-    }
-
-    vector<string> wordBreak(string s, vector<string>& wordDict) {
-        unordered_set<string> hashset(wordDict.begin(), wordDict.end());
-        int start = 0;
-        vector<string> path;
-        DFS(s, start, hashset, path);
-        return ans;
-    }
-};
-```
-
-<br>
-
-
-
-
 ---------------------------
 ##### 剑指 Offer 46. 把数字翻译成字符串
 >题目描述:给定一个数字，我们按照如下规则把它翻译为字符串：0 翻译成 “a” ，1 翻译成 “b”，……，11 翻译成 “l”，……，25 翻译成 “z”。一个数字可能有多个翻译。请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
@@ -1412,6 +1081,45 @@ public:
 ```
 
 <br>
+
+
+
+
+---------------------------
+##### 343. 整数拆分
+>题目描述：给定一个正整数 n，将其拆分为至少两个正整数的和，并使这些整数的乘积最大化。 返回你可以获得的最大乘积。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/integer-break
+
+解题思路：动态规划, dp[i]代表拆分整数i能够获得的最大乘积
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int integerBreak(int n) {
+        if (n <= 1)
+            return 0;
+        vector<int> dp(n + 1, 0);
+        dp[1] = 1;
+        for (int i = 2; i <= n; ++i)
+            for (int j = 1; j < i; ++j)
+            {
+                int l = std::max(j , dp[j]);
+                int r = std::max(i-j, dp[i-j]);
+                dp[i] = std::max(dp[i], l * r);
+            }
+        return dp[n];
+    }
+};
+```
+
+<br>
+
 
 
 

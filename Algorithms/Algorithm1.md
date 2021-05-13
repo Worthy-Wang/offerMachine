@@ -13,6 +13,8 @@
     - [42.接雨水](#42接雨水)
     - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
     - [85.最大矩阵](#85最大矩阵)
+    - [面试题 17.24. 最大子矩阵](#面试题-1724-最大子矩阵)
+    - [53.最大子序和](#53最大子序和)
     - [134.加油站](#134加油站)
     - [135.分发糖果](#135分发糖果)
     - [48.旋转图像](#48旋转图像)
@@ -811,7 +813,7 @@ public:
 
 时间复杂度：O(M*N)
 
-空间复杂度：O(N)
+空间复杂度：O(M*N)
 
 ```cpp
 class Solution {
@@ -819,50 +821,47 @@ public:
     int largestRectangleArea(vector<int>& heights) {
         if (heights.empty())
             return 0;
-        heights.push_back(0);
         int ans = 0;
-        stack<int> stk;
+        heights.push_back(0);//在数组尾部加入一个最小的数，保证单调栈中的所有数都可以进行计算
+        std::stack<int> stk;//单调栈存储的是下标
         for (int i = 0; i < heights.size(); i++)
         {
             while (!stk.empty() && heights[i]<heights[stk.top()])
             {
                 int mid = stk.top();
                 stk.pop();
-                int l = stk.empty()? -1 : stk.top();
+                int l = stk.empty() ? -1 : stk.top();
                 int r = i;
-                ans = std::max(ans, (r-l-1)*heights[mid]);
+                ans = std::max(ans, heights[mid]*(r-l-1));
             }
             stk.push(i);
         }
-        heights.pop_back();
         return ans;
     }
 
     int maximalRectangle(vector<vector<char>>& matrix) {
         if (matrix.empty())
             return 0;
-        int ans = 0;
-        int M = matrix.size(), N = matrix[0].size();
-        vector<vector<int>> nums(M, vector<int>(N));
-        for (int i = 0; i < M; i++)
-            for (int j = 0; j < N; j++)
-                if ('1' == matrix[i][j])
-                    nums[i][j] = 1;
-                else 
-                    nums[i][j] = 0;
-
-        for (int i = 1; i < M; i++)
-            for (int j = 0; j < N; j++)
-                if (0 == nums[i][j])
-                    continue;
+        int m = matrix.size(), n = matrix[0].size();
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        for (int i = 0; i < m; ++i)
+            for (int j = 0; j < n; ++j)
+            {
+                if ('0' == matrix[i][j])
+                    dp[i][j] = 0;
                 else
-                    nums[i][j] += nums[i-1][j];
-                    
-        for (int i = 0; i < M; i++)
-        {
-            int res = largestRectangleArea(nums[i]);
-            ans = std::max(ans, res);
-        }
+                {
+                    if (0 == i)
+                        dp[i][j] = 1;
+                    else
+                        dp[i][j] = dp[i-1][j] + 1;
+                }
+            }
+        
+        int ans = 0;
+        for (int i = 0; i < m; ++i)
+            ans = std::max(ans, largestRectangleArea(dp[i]));
+
         return ans;
     }
 };
@@ -871,6 +870,133 @@ public:
 
 
 <br>
+
+---------------------------
+##### 面试题 17.24. 最大子矩阵
+>题目描述：给定一个正整数、负整数和 0 组成的 N × M 矩阵，编写代码找出元素总和最大的子矩阵。leetcode要求如下：
+
+
+解题思路：最大子序和的变形题，dp[i]代表着矩阵第j列从上到下的累加和,sum代表每一次的局部累加最大值。
+
+时间复杂度：O(M^2*N)
+
+空间复杂度：O(N)
+
+
+来源：牛客,只要求求出最大和
+链接：https://www.nowcoder.com/questionTerminal/a5a0b05f0505406ca837a3a76a5419b3?commentTags=C%2FC%2B%2B
+
+```cpp
+int getMaxMatrix(vector<vector<int>>& matrix) 
+{   
+    int m = matrix.size(), n = matrix[0].size();
+    vector<int> dp(n, 0);
+    int ans = 0, sum = 0;
+    for (int up = 0; up < m; ++up)
+    {
+        std::fill(dp.begin(), dp.end(), 0);
+        for (int i = up; i < m; ++i)
+        {
+            sum = 0;
+            for (int j = 0; j < n; ++j)
+            {
+                dp[j] += matrix[i][j];
+                sum = std::max(sum + dp[j], dp[j]);
+                ans = std::max(ans, sum);
+            }
+        }
+    }
+    return ans;
+}
+
+
+```
+
+来源：力扣（LeetCode）返回一个数组 [r1, c1, r2, c2]，其中 r1, c1 分别代表子矩阵左上角的行号和列号，r2, c2 分别代表右下角的行号和列号。若有多个满足条件的子矩阵，返回任意一个均可。
+链接：https://leetcode-cn.com/problems/max-submatrix-lcci/submissions/
+
+```cpp
+vector<int> getMaxMatrix(vector<vector<int>>& matrix) 
+{   
+    vector<int> ans(4, 0);
+    int m = matrix.size(), n = matrix[0].size();
+    vector<int> dp(n, 0);
+    int maxSum = INT32_MIN;
+    int r1 = 0, c1 = 0, r2 = 0, c2 = 0;
+    for (int up = 0; up < m; ++up)
+    {
+        std::fill(dp.begin(), dp.end(), 0);
+        for (int i = up; i < m; ++i)
+        {
+            int sum = 0;
+            for (int j = 0; j < n; ++j)
+            {
+                dp[j] += matrix[i][j];
+
+                if (sum + dp[j] <= dp[j])
+                {
+                    sum = dp[j];
+                    r1 = up, c1 = j;
+                }else
+                    sum += dp[j];
+                
+                if (maxSum < sum)
+                {
+                    maxSum = sum;
+                    r2 = i, c2 = j;
+                    ans[0] = r1, ans[1] = c1, ans[2] = r2, ans[3] = c2;
+                }
+            }
+        }
+    }
+    return ans;
+}
+
+
+```
+
+
+<br>
+
+
+
+---------------------------
+##### 53.最大子序和
+>题目描述:给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/maximum-subarray
+
+解题思路：动态规划，设置dp数组记录当前较为大的子序和，最大的子序和会在过程中出现，用一个ans做记录即可。
+dp[i] = std::max(dp[i-1]+nums[i], nums[i]), 将动态规划数组优化为只有两个即 dp[0] 和 dp[1]
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int n = nums.size();
+        int ans = nums[0], dp0 = nums[0], dp1 = nums[0];
+        for (int i = 1; i < n; ++i)
+        {
+            dp1 = std::max(dp0 + nums[i], nums[i]);
+            ans = std::max(ans, dp1);
+            dp0 = dp1;
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+
 
 
 

@@ -5,7 +5,6 @@
     - [56.合并区间](#56合并区间)
     - [57.插入区间](#57插入区间)
     - [14.最长公共前缀](#14最长公共前缀)
-    - [5.最长回文子串](#5最长回文子串)
     - [3.无重复字符的最长子串](#3无重复字符的最长子串)
     - [76.最小覆盖子串](#76最小覆盖子串)
     - [30.串联所有单词的子串](#30串联所有单词的子串)
@@ -13,6 +12,8 @@
     - [6.Z字形变换](#6z字形变换)
     - [68.文本左右对齐](#68文本左右对齐)
     - [剑指 Offer 61. 扑克牌中的顺子](#剑指-offer-61-扑克牌中的顺子)
+    - [12.整形转罗马数字](#12整形转罗马数字)
+    - [13.罗马数字转整形](#13罗马数字转整形)
 
 
 ### 十五.细节实现专题
@@ -246,111 +247,6 @@ public:
     }
 };
 ```
-
-<br>
-
------------------------------
-##### 5.最长回文子串
->题目描述：给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/longest-palindromic-substring
-
-* **解法一**
-
-解题思路：暴力法，用两层for循环O(N^2)，再使用一层for循环判断是否为回文。
-
-时间复杂度：O(N^3)
-
-空间复杂度：O(1)
-
-* **解法二**
-
-解题思路：动态规划，dp[i][j],i代表起始位置，j代表结束位置。二维动态数组只需要填充右上部分，并且是从左往右一列一列的填充。
-状态转移方程：dp[i][j] = (s[i]==s[j] && dp[i+1][j-1])
-
-时间复杂度：O(N^2)
-
-空间复杂度：O(N^2)
-
-```cpp
-class Solution {
-public:
-    string longestPalindrome(string s) {
-        int maxLen = 0;
-        pair<int,int> res;
-        int N = s.size();
-        vector<vector<int>> dp(N, vector<int>(N, 0));
-        for (int j = 0; j < N; j++)
-        {
-            for (int i = 0; i <= j; i++)
-            {
-                if (i == j)
-                    dp[i][j] = 1;
-                else if(j-i==1 || j-i==2)
-                    dp[i][j] = (s[i]==s[j]);
-                else
-                    dp[i][j] = (dp[i+1][j-1]&&s[i]==s[j]);
-                
-                if (dp[i][j] && maxLen<j-i+1)
-                {
-                    maxLen = j-i+1;
-                    res.first = i, res.second = j;
-                }
-            }
-        } 
-        int i = res.first, j = res.second;
-        return s.substr(i, j-i+1);
-    }
-};
-
-```
-
-
-* **解法三**
-
-解题思路：中心扩展法，以一个for循环遍历元素，该元素作为回文子串的中心左右两边扩散。注意需要区分最长回文的子串有奇数个还是偶数个。
-
-时间复杂度：O(N^2)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    string longestPalindrome(string s) {
-        if (s.empty())
-            return string();
-        string ans;
-        int maxLen = 0;
-        for (int i = 0; i < s.size(); i++)
-        {
-            //回文串字符数为奇数
-            int l = i, r = i;
-            while (0<=l&&r<s.size() && s[l]==s[r])
-                l--, r++;
-            if (r-l-1 > maxLen)
-            {
-                maxLen = r - l - 1;
-                ans = s.substr(l+1, maxLen);
-            }
-
-            //回文串字符数为偶数
-            l = i, r = i+1;
-            while (0<=l&&r<s.size() && s[l]==s[r])
-                l--, r++;
-            if (r-l-1 > maxLen)
-            {
-                maxLen = r - l - 1;
-                ans = s.substr(l+1, maxLen);
-            }
-        }
-        return ans;
-    }
-};
-
-```
-
 
 <br>
 
@@ -680,4 +576,108 @@ public:
 
 <br>
 
+
+
+-----------------------------
+##### 12.整形转罗马数字
+>题目描述：罗马数字包含以下七种字符： I， V， X， L，C，D 和 M。 
+字符          数值
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+例如， 罗马数字 2 写做 II ，即为两个并列的 1。12 写做 XII ，即为 X + II 。 27 写做  XXVII, 即为 XX + V + II 。
+通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做 IIII，而是 IV。数字 1 在数字 5 的左边，所表示的数等于大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为 IX。这个特殊的规则只适用于以下六种情况：
+I 可以放在 V (5) 和 X (10) 的左边，来表示 4 和 9。
+X 可以放在 L (50) 和 C (100) 的左边，来表示 40 和 90。 
+C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
+给定一个整数，将其转为罗马数字。输入确保在 1 到 3999 的范围内。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/integer-to-roman
+
+解题思路：首先使用vector进行整形数字与罗马数字的映射（不用哈希表的原因是无法将数字进行从大到小的遍历），我们注意到 4, 9 这样的数是需要单独设置的，也就是这些需要有单独个性的数，需要添加到哈希表里面去；接下来再从最大的数字（1000）开始求余数，再将罗马数字累加即可得到结果。
+   
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    string intToRoman(int num) {
+        vector<pair<int, string>> vec{{1000,"M"}, {900,"CM"}, {500,"D"}, {400,"CD"}, {100,"C"}, {90,"XC"}, {50,"L"}, {40, "XL"}, {10,"X"}, {9, "IX"}, {5,"V"}, {4,"IV"}, {1,"I"}};
+        string ans;
+        for (auto& e: vec)
+        {
+            int cnt = num / e.first;
+            for (int i = 0; i < cnt; i++)
+                ans += e.second;
+            num -= cnt * e.first;
+        }
+        return ans;
+    }
+};
+
+
+```
+
+<br>
+
+
+-----------------------------
+##### 13.罗马数字转整形
+>题目描述：
+罗马数字包含以下七种字符: I， V， X， L，C，D 和 M。
+字符          数值
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+例如， 罗马数字 2 写做 II ，即为两个并列的 1。12 写做 XII ，即为 X + II 。 27 写做  XXVII, 即为 XX + V + II 。
+通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做 IIII，而是 IV。数字 1 在数字 5 的左边，所表示的数等于大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为 IX。这个特殊的规则只适用于以下六种情况：
+I 可以放在 V (5) 和 X (10) 的左边，来表示 4 和 9。
+X 可以放在 L (50) 和 C (100) 的左边，来表示 40 和 90。 
+C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
+给定一个罗马数字，将其转换成整数。输入确保在 1 到 3999 的范围内。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/roman-to-integer
+
+解题思路：创建哈希表实现 罗马数字->普通数字，从罗马数字的字符串开始遍历，注意罗马数字可能会是两个连续的字符。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int romanToInt(string s) {
+        unordered_map<string, int> hashmap{{"I", 1}, {"IV", 4}, {"V",5}, {"IX", 9}, {"X", 10},  {"XL", 40}, {"L", 50}, {"XC", 90}, {"C", 100}, {"CD", 400}, {"D", 500}, {"CM", 900}, {"M", 1000}};
+        int i = 0;
+        int ans = 0;
+        while (i < s.size())
+        {
+            if (hashmap.count(s.substr(i, 2)))
+            {
+                ans += hashmap[s.substr(i, 2)];
+                i += 2;
+            }else
+            {
+                ans += hashmap[s.substr(i, 1)];
+                i += 1;
+            }
+        }
+        return ans;
+    }
+};
+
+<br>
 
