@@ -160,28 +160,19 @@ public:
 class Solution {
 public:
     string addBinary(string a, string b) {
-        int n1 = a.size(), n2 = b.size();
-        if (n1 < n2)
-        {
-            for (int i = 0; i < n2-n1; i++)
-                a = '0' + a;
-        }
-        else
-        {
-            for (int i = 0; i < n1-n2; i++)
-                b = '0' + b;
-        }
-
+        int m = a.size(), n = b.size();
         string ans;
         int carry = 0;
-        for (int i = std::max(n1,n2)-1; i >= 0; i--)
+        int i = m-1, j = n-1;
+        while (i >= 0 || j >= 0 || carry)
         {
-            int sum = a[i]-'0' + b[i]-'0' + carry;
-            ans = to_string(sum%2) + ans;
-            carry = (sum>=2 ? 1 : 0);
+            int num1 = i >= 0 ? a[i--] - '0' : 0;
+            int num2 = j >= 0? b[j--] - '0' : 0;
+            int sum = num1 + num2 + carry;
+            int num = sum % 2;
+            carry = sum / 2;
+            ans = to_string(num) + ans;
         }
-        if (carry)
-            ans = '1' + ans;
         return ans;
     }
 };
@@ -252,32 +243,32 @@ num1 和 num2 均不以零开头，除非是数字 0 本身。
 class Solution {
 public:
     string multiply(string num1, string num2) {
-        if ('0'==num1[0] || '0'==num2[0])
+        if ("0" == num1 || "0" == num2)
             return "0";
-        reverse(num1.begin(), num1.end());
-        reverse(num2.begin(), num2.end());
-        vector<int> temp(num1.size() + num2.size(), 0);
-        for (int j = 0; j < num2.size(); j++)
-        {
-            for (int i = 0; i < num1.size(); i++)
+        int m = num1.size(), n = num2.size();
+        vector<int> ans(m + n, 0);
+        for (int i = m - 1; i >= 0; --i)
+            for (int j = n -1; j >= 0; --j)
             {
-                int multi = (num1[i]-'0') * (num2[j]-'0');
-                multi += temp[i+j];  //还得加上原来已有的
-                temp[i+j] = multi%10;
-                temp[i+j+1] += multi / 10;
+                int multi = (num1[i] - '0') * (num2[j] - '0');
+                ans[i + j + 1] += multi;
             }
-        }
-        
-        string ans;
-        int i = temp.size()-1;
-        while (0 == temp[i])  //跳过前面的0
-            i--;
-        while (i >= 0)
+        for (int i = ans.size() - 1; i > 0; --i)
         {
-            ans.push_back(temp[i] + '0');
-            i--;
+            ans[i-1] += ans[i] / 10;
+            ans[i] %= 10;
         }
-        return ans;
+
+        int i = 0;
+        string s;
+        while (0 == ans[i])
+            ++i;
+        while (i < ans.size())
+        {
+            s = s + to_string(ans[i]);
+            ++i;
+        }
+        return s;
     }
 };
 ```
@@ -561,10 +552,27 @@ public:
 };
 ```
 
+当然，也可以不用在原地修改。
+
+```cpp
+class Solution {
+public:
+    string replaceSpace(string s) {
+        string ans;
+        for (const auto& e: s)
+        {
+            if (' ' == e)
+                ans += "%20";
+            else
+                ans.push_back(e);
+        }
+        return ans;
+    }
+};
+```
+
+
 <br>
-
-
-
 
 ---------------------------
 ##### 剑指 Offer 58 - II. 左旋转字符串
