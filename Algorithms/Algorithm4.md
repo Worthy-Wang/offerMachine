@@ -7,6 +7,7 @@
     - [32.最长的有效括号](#32最长的有效括号)
     - [150.逆波兰表达式求值](#150逆波兰表达式求值)
     - [239. 滑动窗口最大值](#239-滑动窗口最大值)
+    - [22.括号生成](#22括号生成)
 
 ### 四.栈和队列专题
 
@@ -418,6 +419,60 @@ public:
     }
 };
 
+
+```
+
+<br>
+
+
+
+---------------------------
+##### 22.括号生成
+>题目描述:数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/generate-parentheses
+
+解题思路：DFS法，记录左右括号的剩余值，当剩余值都为0时说明匹配完成；注意左括号的剩余值是必须小于右括号的剩余值。
+
+时间复杂度：
+
+空间复杂度：
+
+```cpp
+class Solution {
+    vector<string> ans;
+public:
+    void DFS(int l, int r, string& path)
+    {
+        if (0==l && 0==r)
+        {
+            ans.push_back(path);
+            return;
+        }
+
+        if (l)
+        {
+            path.push_back('(');
+            DFS(l-1, r, path);
+            path.pop_back();
+        }
+        if (l < r)
+        {
+            path.push_back(')');
+            DFS(l, r-1, path);
+            path.pop_back();
+        }
+    }
+
+    vector<string> generateParenthesis(int n) {
+        if (n <= 0)
+            return {};
+        string path;
+        DFS(n, n, path);
+        return ans;
+    }
+};
 
 ```
 

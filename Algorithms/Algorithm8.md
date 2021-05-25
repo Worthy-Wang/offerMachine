@@ -2,11 +2,12 @@
     - [78.子集](#78子集)
     - [90.子集2](#90子集2)
     - [77.组合](#77组合)
+    - [39.组合总合](#39组合总合)
+    - [40.组合总合2](#40组合总合2)
     - [46.全排列](#46全排列)
     - [47.全排列2](#47全排列2)
     - [60.排列序列](#60排列序列)
     - [31.下一个排列](#31下一个排列)
-    - [17.电话号码的字母组合](#17电话号码的字母组合)
 
 
 ### 八.暴力枚举专题
@@ -148,6 +149,118 @@ public:
         return ans;
     }
 };
+
+```
+
+<br>
+
+
+
+
+---------------------------
+##### 39.组合总合
+>题目描述:给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+candidates 中的数字可以无限制重复被选取。
+说明：
+所有数字（包括 target）都是正整数。
+解集不能包含重复的组合。 
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/combination-sum
+
+解题思路：DFS法，需要设置辅助变量path记录路径，以及每次遍历的起始点start。
+
+时间复杂度：O(N!)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    vector<vector<int>> ans;
+public:
+    
+    void DFS(vector<int>& nums, int start, int target, vector<int>& path)
+    {
+        if (0 == target)
+        {
+            ans.push_back(path);
+            return;
+        }
+
+        for (int i = start; i < nums.size(); ++i)
+        {
+            if (target < nums[i])
+                return;
+            path.push_back(nums[i]);
+            DFS(nums, i, target - nums[i], path);
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        sort(candidates.begin(), candidates.end(), std::less<int>());
+        vector<int> path;
+        DFS(candidates, 0, target, path);
+        return ans;
+    }
+};
+
+```
+
+
+<br>
+
+
+---------------------------
+##### 40.组合总合2
+>题目描述:给定一个数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+candidates 中的每个数字在每个组合中只能使用一次。
+所有数字（包括目标数）都是正整数。
+解集不能包含重复的组合。 
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/combination-sum-ii
+
+解题思路：用DFS法解决，需要设置辅助变量path记录路径，并设置起始点start。
+
+时间复杂度：O(N!)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    vector<vector<int>> ans;
+public:
+    
+    void DFS(vector<int>& nums, int start, int target, vector<int>& path)
+    {
+        if (0 == target)
+        {
+            ans.push_back(path);
+            return;
+        }
+
+        for (int i = start; i < nums.size(); ++i)
+        {
+            if (target < nums[i])
+                return;
+            if (i>start && nums[i]==nums[i-1])
+                continue;
+            path.push_back(nums[i]);
+            DFS(nums, i + 1, target - nums[i], path);
+            path.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        sort(candidates.begin(), candidates.end(), std::less<int>());
+        vector<int> path;
+        DFS(candidates, 0, target, path);
+        return ans;
+    }
+};
+
+
 
 ```
 
@@ -418,73 +531,23 @@ public:
 class Solution {
 public:
     void nextPermutation(vector<int>& nums) {
-        if (nums.size() < 2)
-            return;
-        for (int i = nums.size()-2; i >= 0; --i)
-            if (nums[i] < nums[i+1])
-                for (int j = nums.size()-1; j > i; j--)
-                    if (nums[j] > nums[i])
-                    {
-                        swap(nums[i], nums[j]);
-                        reverse(nums.begin()+i+1, nums.end());
-                        return;
-                    }
-        //已经是最大的排列
-        reverse(nums.begin(), nums.end());
+        int l = nums.size()-2;
+        for (; l >= 0 && nums[l] >= nums[l+1]; --l);
+        if (l < 0)
+        {
+            std::reverse(nums.begin(), nums.end());
+        }else
+        {
+            int r = nums.size() - 1;
+            while (nums[l] >= nums[r])
+                --r;
+            swap(nums[l], nums[r]);
+            std::reverse(nums.begin() + l + 1, nums.end());
+        }
     }
 };
 ```
 
 <br>
-
-
----------------------------
-##### 17.电话号码的字母组合
->题目描述:给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。此题需要看原链接。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number
-
-解题思路：回溯法
-
-时间复杂度：O(K^N) K是数字对应字符串的平均长度
-
-空间复杂度：O(N) N是数字字符串的长度
-
-```cpp
-class Solution {
-    vector<string> ans;
-    unordered_map<char, string> hashmap{{'2',"abc"}, {'3',"def"},{'4',"ghi"},{'5',"jkl"},{'6',"mno"},{'7',"pqrs"},{'8',"tuv"}, {'9', "wxyz"}};
-public:
-    void DFS(string& digits, int start, string& path)
-    {
-        if (path.size() == digits.size())
-        {
-            ans.push_back(path);
-            return;
-        }
-
-        string s = hashmap[digits[start]];
-        for (int i = 0; i < s.size(); i++)
-        {
-            path.push_back(s[i]);
-            DFS(digits, start+1, path);
-            path.pop_back();
-        }
-    }
-
-    vector<string> letterCombinations(string digits) {
-        if (digits.empty())
-            return {};
-        string path;
-        DFS(digits, 0, path);
-        return ans;
-    }
-};
-
-```
-
-<br>
-
 
 

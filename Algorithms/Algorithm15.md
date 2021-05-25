@@ -12,8 +12,11 @@
     - [6.Z字形变换](#6z字形变换)
     - [68.文本左右对齐](#68文本左右对齐)
     - [剑指 Offer 61. 扑克牌中的顺子](#剑指-offer-61-扑克牌中的顺子)
+    - [149.直线上最多的点数](#149直线上最多的点数)
+    - [93.复原IP地址](#93复原ip地址)
     - [12.整形转罗马数字](#12整形转罗马数字)
     - [13.罗马数字转整形](#13罗马数字转整形)
+    - [17.电话号码的字母组合](#17电话号码的字母组合)
 
 
 ### 十五.细节实现专题
@@ -578,6 +581,146 @@ public:
 
 
 
+---------------------------
+##### 149.直线上最多的点数
+>题目描述:给定一个二维平面，平面上有 n 个点，求最多有多少个点在同一条直线上。
+示例 1:
+输入: [[1,1],[2,2],[3,3]]
+输出: 3
+解释:
+^
+|
+|        o
+|     o
+|  o  
++------------->
+0  1  2  3  4
+示例 2:
+输入: [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
+输出: 4
+解释:
+^
+|
+|  o
+|     o        o
+|        o
+|  o        o
++------------------->
+0  1  2  3  4  5  6
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/max-points-on-a-line
+
+解题思路：依次遍历各个点，与后面的点进行计算斜率，找出同一个斜率中拥有的最多点数即可。需要注意两点：1.斜率可能出现与x轴或者y轴相平行，所以斜率的形式要用string表示；2.可能会出现重复的点的情况，所以用dup记录重复的点的个数。
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int GCD(int a, int b)
+    {
+        while (b)
+        {
+            int t = a % b;
+            a = b;
+            b = t;
+        }
+        return a;
+    }
+
+    int maxPoints(vector<vector<int>>& points) {
+        int ans = 0;
+        for (int i = 0; i < points.size(); ++i)
+        {
+            unordered_map<string, int> hashmap;//<斜率,点个数>
+            int curMax = 0;
+            int dup = 0;
+            for (int j = i+1; j < points.size(); ++j)
+            {
+                int x1 = points[i][0], y1 = points[i][1];
+                int x2 = points[j][0], y2 = points[j][1];
+                int diffX = x2 - x1, diffY = y2 - y1, gcd = GCD(diffX, diffY);
+                if (0==diffX && 0==diffY)
+                {
+                    dup++;
+                    continue;
+                }
+                string key = to_string(diffX/gcd) + "/" + to_string(diffY/gcd);
+                hashmap[key]++;
+                curMax = std::max(curMax, hashmap[key]);
+            }
+            ans = std::max(curMax + 1 + dup, ans); //curMax+1是因为要加上i指向的这一个点, 加上dup是因为要加上重复的点
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 93.复原IP地址
+>题目描述:给定一个只包含数字的字符串，复原它并返回所有可能的 IP 地址格式。
+有效的 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 '.' 分隔。
+例如："0.1.2.201" 和 "192.168.1.1" 是 有效的 IP 地址，但是 "0.011.255.245"、"192.168.1.312" j是 无效的 IP 地址。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/restore-ip-addresses
+
+解题思路：DFS法，设置path辅助变量存储分割好的数字，设置start起始位置作为每一次数字的开头，剪枝操作实质上也就是将不符合规定的IP地址值跳过。
+
+时间复杂度：O(N!)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    vector<string> ans;
+public:
+    void DFS(string& s, int start, vector<string>& path)
+    {
+        if (start == s.size() && 4 == path.size())
+        {
+            string res = path[0] + "." + path[1] + "." + path[2] + "." + path[3];
+            ans.push_back(std::move(res));
+            return;
+        }
+        if (path.size() > 4)
+            return;
+
+        for (int i = start; i < s.size(); ++i)
+        {
+            string str = s.substr(start, i-start + 1);
+            if (stoi(str) > 255)
+                break;
+            path.push_back(str);
+            DFS(s, i+1, path);
+            path.pop_back();
+            if ("0" == str)
+                break;
+        }
+    }
+
+    vector<string> restoreIpAddresses(string s) {
+        vector<string> path;
+        DFS(s, 0, path);
+        return ans;
+    }
+};
+
+
+
+```
+
+<br>
+
+
+
 -----------------------------
 ##### 12.整形转罗马数字
 >题目描述：罗马数字包含以下七种字符： I， V， X， L，C，D 和 M。 
@@ -681,3 +824,101 @@ public:
 
 <br>
 
+
+
+---------------------------
+##### 17.电话号码的字母组合
+>题目描述:给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。此题需要看原链接。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number
+
+解题思路：回溯法
+
+时间复杂度：O(K^N) K是数字对应字符串的平均长度
+
+空间复杂度：O(N) N是数字字符串的长度
+
+```cpp
+class Solution {
+    vector<string> ans;
+    unordered_map<char, string> hashmap{{'2',"abc"}, {'3',"def"},{'4',"ghi"},{'5',"jkl"},{'6',"mno"},{'7',"pqrs"},{'8',"tuv"}, {'9', "wxyz"}};
+public:
+    void DFS(string& digits, int start, string& path)
+    {
+        if (path.size() == digits.size())
+        {
+            ans.push_back(path);
+            return;
+        }
+
+        string s = hashmap[digits[start]];
+        for (int i = 0; i < s.size(); i++)
+        {
+            path.push_back(s[i]);
+            DFS(digits, start+1, path);
+            path.pop_back();
+        }
+    }
+
+    vector<string> letterCombinations(string digits) {
+        if (digits.empty())
+            return {};
+        string path;
+        DFS(digits, 0, path);
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 17.电话号码的字母组合
+>题目描述:给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。此题需要看原链接。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number
+
+解题思路：回溯法
+
+时间复杂度：O(K^N) K是数字对应字符串的平均长度
+
+空间复杂度：O(N) N是数字字符串的长度
+
+```cpp
+class Solution {
+    vector<string> ans;
+    unordered_map<char, string> hashmap{{'2',"abc"}, {'3',"def"},{'4',"ghi"},{'5',"jkl"},{'6',"mno"},{'7',"pqrs"},{'8',"tuv"}, {'9', "wxyz"}};
+public:
+    void DFS(string& digits, int start, string& path)
+    {
+        if (path.size() == digits.size())
+        {
+            ans.push_back(path);
+            return;
+        }
+
+        string s = hashmap[digits[start]];
+        for (int i = 0; i < s.size(); i++)
+        {
+            path.push_back(s[i]);
+            DFS(digits, start+1, path);
+            path.pop_back();
+        }
+    }
+
+    vector<string> letterCombinations(string digits) {
+        if (digits.empty())
+            return {};
+        string path;
+        DFS(digits, 0, path);
+        return ans;
+    }
+};
+
+```
+
+<br>

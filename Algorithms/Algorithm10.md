@@ -1,19 +1,14 @@
 - [十.DFS专题](#十dfs专题)
     - [139.单词拆分](#139单词拆分)
     - [140.单词拆分2](#140单词拆分2)
-    - [79.单词搜索](#79单词搜索)
-    - [130.被围绕的区域](#130被围绕的区域)
     - [131.分割回文串](#131分割回文串)
     - [132.分割回文串2](#132分割回文串2)
+    - [79.单词搜索](#79单词搜索)
+    - [130.被围绕的区域](#130被围绕的区域)
     - [36.有效的数独](#36有效的数独)
     - [37.解数独](#37解数独)
     - [51.N皇后](#51n皇后)
     - [52.N皇后2](#52n皇后2)
-    - [149.直线上最多的点数](#149直线上最多的点数)
-    - [93.复原IP地址](#93复原ip地址)
-    - [39.组合总合](#39组合总合)
-    - [40.组合总合2](#40组合总合2)
-    - [22.括号生成](#22括号生成)
 
 
 ### 十.DFS专题
@@ -161,6 +156,173 @@ public:
 
 
 
+---------------------------
+##### 131.分割回文串
+>题目描述:给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
+返回 s 所有可能的分割方案。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/palindrome-partitioning
+
+解题思路：DFS法 ，横向上遍历子串，在满足回文串的情况下再进行递归。
+
+时间复杂度：
+
+空间复杂度：
+
+```cpp
+class Solution {
+    vector<vector<string>> ans;
+public:
+    bool isPalindrome(const string& s)
+    {
+        int l = 0, r = s.size()-1;
+        while (l <= r)
+        {
+            if (s[l] != s[r])
+                return false;
+            l++,r--;
+        }
+        return true;
+    }
+
+    void DFS(string& s, int start , vector<string>& path)
+    {
+        if (start == s.size())
+        {
+            ans.push_back(path);
+            return;
+        }
+
+        for (int i = start; i < s.size(); i++)
+        {
+            string sub = s.substr(start, i-start+1);
+            if (!isPalindrome(sub))
+                continue;
+            path.push_back(sub);
+            DFS(s, i + 1, path);
+            path.pop_back();
+        }
+    }
+
+    vector<vector<string>> partition(string s) {
+        if (s.empty())
+            return {};
+        vector<string> path;
+        DFS(s, 0, path);
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 132.分割回文串2
+>题目描述:给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
+返回符合要求的最少分割次数。
+示例:
+输入: "aab"
+输出: 1
+解释: 进行一次分割就可将 s 分割成 ["aa","b"] 这样两个回文子串。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/palindrome-partitioning-ii
+
+* **解法一**
+
+解题思路：经典的动态规划题目，进行一次遍历string，先检测该子串是否会回文串，是则分割次数为0；否则在右边部分满足是回文串的情况下，查看左边部分的最小分割次数。
+
+时间复杂度：O(N^3)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+public:
+    bool isPalin(string& s, int l, int r)
+    {
+        int i = l, j = r;
+        while (i < j)
+            if (s[i++] != s[j--])
+                return false;
+        return true;
+    }
+
+    int minCut(string s) {
+        int n = s.size();
+        //dp[i]代表s[0]到s[i]的最少分割次数
+        vector<int> dp(n);
+        for (int i = 0; i < n; ++i)
+            dp[i] = i; //1个字符最少分割0次，2个字符最少分割1次
+        
+        for (int i = 0; i < n; ++i)
+        {
+            if (isPalin(s, 0, i))
+                dp[i] = 0;
+            else
+            {
+                for (int mid = 0; mid < i;  ++mid)
+                    if (isPalin(s, mid+1, i - mid))
+                        dp[i] = std::min(dp[i], dp[mid] + 1);
+            }
+        }
+
+        return dp[n-1];
+    }
+};
+
+```
+
+<br>
+
+
+
+* **解法二**
+
+解题思路：在上一个解法的基础上对isPalin函数进行优化，将其优化为二维的动态规划数组，相当于空间换时间
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N^2)
+
+```cpp
+class Solution {
+public:
+    int minCut(string s) {
+        int n = s.size();
+        //isPalin[i][j]代表s[i]到s[j]的子串是否为回文串
+        vector<vector<bool>> isPalin(n, vector<bool>(n, false));
+        for (int j = 0; j < n; ++j)
+            for (int i = 0; i <= j; ++i)
+                if (s[i]==s[j] && (j-i<=2 || isPalin[i+1][j-1]))
+                    isPalin[i][j] = true;
+        //dp[i]代表s[0]到s[i]的最少分割次数
+        vector<int> dp(n);
+        for (int i = 0; i < n; ++i)
+            dp[i] = i; //1个字符最少分割0次，2个字符最少分割1次
+        
+        for (int i = 0; i < n; ++i)
+        {
+            if (isPalin[0][i])
+                dp[i] = 0;
+            else
+            {
+                for (int mid = 0; mid < i;  ++mid)
+                    if (isPalin[mid+1][i])
+                        dp[i] = std::min(dp[i], dp[mid] + 1);
+            }
+        }
+
+        return dp[n-1];
+    }
+};
+
+```
+
+<br>
 
 
 ---------------------------
@@ -282,176 +444,6 @@ public:
 
 
 
----------------------------
-##### 131.分割回文串
->题目描述:给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
-返回 s 所有可能的分割方案。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/palindrome-partitioning
-
-解题思路：DFS法 ，横向上遍历子串，在满足回文串的情况下再进行递归。
-
-时间复杂度：
-
-空间复杂度：
-
-```cpp
-class Solution {
-    vector<vector<string>> ans;
-public:
-    bool isPalindrome(const string& s)
-    {
-        int l = 0, r = s.size()-1;
-        while (l <= r)
-        {
-            if (s[l] != s[r])
-                return false;
-            l++,r--;
-        }
-        return true;
-    }
-
-    void DFS(string& s, int start , vector<string>& path)
-    {
-        if (start == s.size())
-        {
-            ans.push_back(path);
-            return;
-        }
-
-        for (int i = start; i < s.size(); i++)
-        {
-            string sub = s.substr(start, i-start+1);
-            if (!isPalindrome(sub))
-                continue;
-            path.push_back(sub);
-            DFS(s, i + 1, path);
-            path.pop_back();
-        }
-    }
-
-    vector<vector<string>> partition(string s) {
-        if (s.empty())
-            return {};
-        vector<string> path;
-        DFS(s, 0, path);
-        return ans;
-    }
-};
-
-```
-
-<br>
-
----------------------------
-##### 132.分割回文串2
->题目描述:给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
-返回符合要求的最少分割次数。
-示例:
-输入: "aab"
-输出: 1
-解释: 进行一次分割就可将 s 分割成 ["aa","b"] 这样两个回文子串。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/palindrome-partitioning-ii
-
-* **解法一**
-
-解题思路：经典的动态规划题目，进行一次遍历string，先检测该子串是否会回文串，是则分割次数为0；否则在右边部分满足是回文串的情况下，查看左边部分的最小分割次数。
-
-时间复杂度：O(N^3)
-
-空间复杂度：O(N)
-
-
-```cpp
-class Solution {
-public:
-    bool isPalin(string& s, int l, int r)
-    {
-        int i = l, j = r;
-        while (i < j)
-            if (s[i++] != s[j--])
-                return false;
-        return true;
-    }
-
-    int minCut(string s) {
-        int n = s.size();
-        //dp[i]代表s[0]到s[i]的最少分割次数
-        vector<int> dp(n);
-        for (int i = 0; i < n; ++i)
-            dp[i] = i; //1个字符最少分割0次，2个字符最少分割1次
-        
-        for (int i = 0; i < n; ++i)
-        {
-            if (isPalin(s, 0, i))
-                dp[i] = 0;
-            else
-            {
-                for (int mid = 0; mid < i;  ++mid)
-                    if (isPalin(s, mid+1, i))
-                        dp[i] = std::min(dp[i], dp[mid] + 1);
-            }
-        }
-
-        return dp[n-1];
-    }
-};
-
-```
-
-<br>
-
-
-
-* **解法二**
-
-解题思路：在上一个解法的基础上对isPalin函数进行优化，将其优化为二维的动态规划数组，相当于空间换时间
-
-时间复杂度：O(N^2)
-
-空间复杂度：O(N^2)
-
-```cpp
-class Solution {
-public:
-    int minCut(string s) {
-        int n = s.size();
-        //isPalin[i][j]代表s[i]到s[j]的子串是否为回文串
-        vector<vector<bool>> isPalin(n, vector<bool>(n, false));
-        for (int j = 0; j < n; ++j)
-            for (int i = 0; i <= j; ++i)
-                if (s[i]==s[j] && (j-i<=2 || isPalin[i+1][j-1]))
-                    isPalin[i][j] = true;
-        //dp[i]代表s[0]到s[i]的最少分割次数
-        vector<int> dp(n);
-        for (int i = 0; i < n; ++i)
-            dp[i] = i; //1个字符最少分割0次，2个字符最少分割1次
-        
-        for (int i = 0; i < n; ++i)
-        {
-            if (isPalin[0][i])
-                dp[i] = 0;
-            else
-            {
-                for (int mid = 0; mid < i;  ++mid)
-                    if (isPalin[mid+1][i])
-                        dp[i] = std::min(dp[i], dp[mid] + 1);
-            }
-        }
-
-        return dp[n-1];
-    }
-};
-
-```
-
-<br>
-
-
-
 
 -----------------------------------
 ##### 36.有效的数独
@@ -478,6 +470,7 @@ public:
         vector<vector<int>> rows(9, vector<int>(10, 0));
         vector<vector<int>> columns(9, vector<int>(10, 0));
         vector<vector<vector<int>>> boxes(3, vector<vector<int>>(3, vector<int>(10, 0)));
+        //int rows[9][10] = {0}, cols[9][10] = {0}, boxes[3][3][10] = {0}; 或者直接这样写也行
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
@@ -487,12 +480,9 @@ public:
                     int num = board[i][j] - '0';
                     if (rows[i][num] || columns[j][num] || boxes[i/3][j/3][num])
                         return false;
-                    else
-                    {
-                        rows[i][num]++;
-                        columns[j][num]++;
-                        boxes[i/3][j/3][num]++;
-                    }
+                    rows[i][num]++;
+                    columns[j][num]++;
+                    boxes[i/3][j/3][num]++;
                 }
             }
         }
@@ -529,49 +519,52 @@ public:
 
 ```cpp
 class Solution {
-private:
-    int rows[9][10] = {0};//rows[i][j] 表示第 i 行是否存在 j
-    int cols[9][10] = {0};//cols[i][j] 表示第 i 列是否存在 j
-    int grid[3][3][10] = {0};//grid[i][j][k] 表示第 {i, j} 个九宫格是否存在 k
-    vector<pair<int, int>> spaces;//记录下空白格的坐标   
+    int rows[9][10] = {0};
+    int cols[9][10] = {0};
+    int boxes[3][3][10] = {0};
+    vector<pair<int,int>> spaces; //存储目前未充填的位置
     vector<vector<char>> ans;
 public:
-    void dfs(vector<vector<char>>& board, int idx){
-        //已经遍历完了空格，成功完成
-        if(idx == spaces.size()){
+    void DFS(vector<vector<char>>& board, int idx)
+    {
+        if (idx == spaces.size())
+        {
             ans = board;
             return;
         }
-        pair<int, int> axis = spaces[idx];
-        int row = axis.first, col = axis.second;//当前空格的行和列
-        //找到合法的可以填写的数字
-        for(int i = 1; i <= 9; i ++){
-            if(!rows[row][i] && !cols[col][i] && !grid[row/3][col/3][i]){
-                board[row][col] = i + '0';
-                rows[row][i] = 1; cols[col][i] = 1;
-                grid[row/3][col/3][i] = 1;
-                dfs(board, idx + 1);
-                //回溯
-                board[row][col] = '.';
-                rows[row][i] = 0; cols[col][i] = 0;
-                grid[row/3][col/3][i] = 0;
-            }
+        pair<int,int> space = spaces[idx];
+        int i = space.first, j = space.second;
+        for (int num = 1; num <= 9; ++num)
+        {
+            if (rows[i][num] || cols[j][num] || boxes[i/3][j/3][num])
+                continue;
+            rows[i][num] = 1, cols[j][num] = 1, boxes[i/3][j/3][num] = 1;
+            board[i][j] = num + '0';
+            DFS(board, idx + 1);
+            rows[i][num] = 0, cols[j][num] = 0, boxes[i/3][j/3][num] = 0;
+            board[i][j] = '.';
         }
     }
 
     void solveSudoku(vector<vector<char>>& board) {
-        //初始化
-        for(int i = 0; i < 9; i ++){
-            for(int j = 0; j < 9; j ++){
-                if(board[i][j] == '.') spaces.push_back({i, j});
-                else{
-                    rows[i][board[i][j] - '0'] = 1;
-                    cols[j][board[i][j] - '0'] = 1;
-                    grid[i/3][j/3][board[i][j] - '0'] = 1;
+        for (int i = 0; i < 9; ++i)
+        {
+            for (int j = 0; j < 9; ++j)
+            {
+                if ('.' == board[i][j])
+                {
+                    spaces.push_back(make_pair(i,j));
+                }
+                else
+                {
+                    int num = board[i][j] - '0';
+                    rows[i][num] = 1;
+                    cols[j][num] = 1;
+                    boxes[i/3][j/3][num] = 1; 
                 }
             }
         }
-        dfs(board, 0);
+        DFS(board, 0);
         board = ans;
     }
 };
@@ -601,36 +594,38 @@ public:
 空间复杂度：O(N)
 
 ```cpp
-class Solution {
+class Solution
+{
     vector<vector<string>> ans;
-    unordered_map<int,int> rows,  columns, line1, line2;
+    unordered_map<int,int> cols, line1, line2;
 public:
-    void DFS(vector<string>& board, int n, int i)
+    void DFS(int n, int i, vector<string>& board)
     {
         if (i == n)
         {
             ans.push_back(board);
-            return;            
+            return;
         }
 
         for (int j = 0; j < n; ++j)
         {
-            if (rows[i] || columns[j] || line1[i+j] || line2[i-j])
+            if (cols[j] || line1[j + i] || line2[j - i])
                 continue;
-            rows[i] = 1, columns[j] = 1, line1[i+j] = 1, line2[i-j] = 1;
             board[i][j] = 'Q';
-            DFS(board, n, i+1);
+            cols[j] = 1, line1[j + i] = 1, line2[j - i] = 1;
+            DFS(n, i + 1, board);
+            cols[j] = 0, line1[j + i] = 0, line2[j - i] = 0;
             board[i][j] = '.';
-            rows[i] = 0, columns[j] = 0, line1[i+j] = 0, line2[i-j] = 0;
         }
     }
 
     vector<vector<string>> solveNQueens(int n) {
         vector<string> board(n, string(n, '.'));
-        DFS(board, n, 0);
+        DFS(n, 0, board);
         return ans;
     }
 };
+
 ```
 
 <br>
@@ -653,32 +648,30 @@ public:
 
 ```cpp
 class Solution {
-    int ans = 0;
-    unordered_map<int,int> rows, columns, line1, line2;
+    int cnt = 0;
+    unordered_map<int,int> cols, line1, line2;
 public:
-    void DFS(int i, int n)
+    void DFS(int n, int i)
     {
         if (i == n)
         {
-            ans++;
+            ++cnt;
             return;
         }
 
         for (int j = 0; j < n; ++j)
         {
-            if (rows[i] || columns[j] || line1[i+j] || line2[i-j])
+            if (cols[j] || line1[j-i] || line2[j+i])
                 continue;
-            rows[i] = 1, columns[j] = 1, line1[i+j] = 1, line2[i-j] = 1;
-            DFS(i+1, n);
-            rows[i] = 0, columns[j] = 0, line1[i+j] = 0, line2[i-j] = 0;
+            cols[j] = 1, line1[j-i] = 1, line2[j+i] = 1;
+            DFS(n, i + 1);
+            cols[j] = 0, line1[j-i] = 0, line2[j+i] = 0;
         }
     }
 
     int totalNQueens(int n) {
-        if (n<=0)
-            return 0;
-        DFS(0, n);
-        return ans;
+        DFS(n, 0);
+        return cnt;
     }
 };
 
@@ -687,304 +680,4 @@ public:
 <br>
 
 
----------------------------
-##### 149.直线上最多的点数
->题目描述:给定一个二维平面，平面上有 n 个点，求最多有多少个点在同一条直线上。
-示例 1:
-输入: [[1,1],[2,2],[3,3]]
-输出: 3
-解释:
-^
-|
-|        o
-|     o
-|  o  
-+------------->
-0  1  2  3  4
-示例 2:
-输入: [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
-输出: 4
-解释:
-^
-|
-|  o
-|     o        o
-|        o
-|  o        o
-+------------------->
-0  1  2  3  4  5  6
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/max-points-on-a-line
-
-解题思路：依次遍历各个点，与后面的点进行计算斜率，找出同一个斜率中拥有的最多点数即可。需要注意两点：1.斜率可能出现与x轴或者y轴相平行，所以斜率的形式要用string表示；2.可能会出现重复的点的情况，所以用dup记录重复的点的个数。
-
-时间复杂度：O(N^2)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-public:
-    int GCD(int a, int b)
-    {
-        while (b)
-        {
-            int t = a % b;
-            a = b;
-            b = t;
-        }
-        return a;
-    }
-
-    int maxPoints(vector<vector<int>>& points) {
-        int ans = 0;
-        for (int i = 0; i < points.size(); ++i)
-        {
-            unordered_map<string, int> hashmap;//<斜率,点个数>
-            int curMax = 0;
-            int dup = 0;
-            for (int j = i+1; j < points.size(); ++j)
-            {
-                int x1 = points[i][0], y1 = points[i][1];
-                int x2 = points[j][0], y2 = points[j][1];
-                int diffX = x2 - x1, diffY = y2 - y1, gcd = GCD(diffX, diffY);
-                if (0==diffX && 0==diffY)
-                {
-                    dup++;
-                    continue;
-                }
-                string key = to_string(diffX/gcd) + "/" + to_string(diffY/gcd);
-                hashmap[key]++;
-                curMax = std::max(curMax, hashmap[key]);
-            }
-            ans = std::max(curMax + 1 + dup, ans); //curMax+1是因为要加上i指向的这一个点, 加上dup是因为要加上重复的点
-        }
-        return ans;
-    }
-};
-
-```
-
-<br>
-
-
----------------------------
-##### 93.复原IP地址
->题目描述:给定一个只包含数字的字符串，复原它并返回所有可能的 IP 地址格式。
-有效的 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 '.' 分隔。
-例如："0.1.2.201" 和 "192.168.1.1" 是 有效的 IP 地址，但是 "0.011.255.245"、"192.168.1.312" j是 无效的 IP 地址。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/restore-ip-addresses
-
-解题思路：DFS法，设置path辅助变量存储分割好的数字，设置start起始位置作为每一次数字的开头，剪枝操作实质上也就是将不符合规定的IP地址值跳过。
-
-时间复杂度：O(N!)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-    vector<string> ans;
-public:
-    void DFS(string& s, int start, vector<string>& path)
-    {
-        if (start == s.size() && 4 == path.size())
-        {
-            string res = path[0] + "." + path[1] + "." + path[2] + "." + path[3];
-            ans.push_back(std::move(res));
-            return;
-        }
-        if (path.size() > 4)
-            return;
-
-        for (int i = start; i < s.size(); ++i)
-        {
-            string str = s.substr(start, i-start + 1);
-            if (stoi(str) > 255)
-                break;
-            path.push_back(str);
-            DFS(s, i+1, path);
-            path.pop_back();
-            if ("0" == str)
-                break;
-        }
-    }
-
-    vector<string> restoreIpAddresses(string s) {
-        vector<string> path;
-        DFS(s, 0, path);
-        return ans;
-    }
-};
-
-
-
-```
-
-<br>
-
-
----------------------------
-##### 39.组合总合
->题目描述:给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
-candidates 中的数字可以无限制重复被选取。
-说明：
-所有数字（包括 target）都是正整数。
-解集不能包含重复的组合。 
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/combination-sum
-
-解题思路：DFS法，需要设置辅助变量path记录路径，以及每次遍历的起始点start。
-
-时间复杂度：O(N!)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-    vector<vector<int>> ans;
-public:
-    
-    void DFS(vector<int>& nums, int start, int target, vector<int>& path)
-    {
-        if (0 == target)
-        {
-            ans.push_back(path);
-            return;
-        }
-
-        for (int i = start; i < nums.size(); ++i)
-        {
-            if (target < nums[i])
-                return;
-            path.push_back(nums[i]);
-            DFS(nums, i, target - nums[i], path);
-            path.pop_back();
-        }
-    }
-
-    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
-        sort(candidates.begin(), candidates.end(), std::less<int>());
-        vector<int> path;
-        DFS(candidates, 0, target, path);
-        return ans;
-    }
-};
-
-```
-
-
-<br>
-
-
----------------------------
-##### 40.组合总合2
->题目描述:给定一个数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
-candidates 中的每个数字在每个组合中只能使用一次。
-所有数字（包括目标数）都是正整数。
-解集不能包含重复的组合。 
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/combination-sum-ii
-
-解题思路：用DFS法解决，需要设置辅助变量path记录路径，并设置起始点start。
-
-时间复杂度：O(N!)
-
-空间复杂度：O(N)
-
-```cpp
-class Solution {
-    vector<vector<int>> ans;
-public:
-    
-    void DFS(vector<int>& nums, int start, int target, vector<int>& path)
-    {
-        if (0 == target)
-        {
-            ans.push_back(path);
-            return;
-        }
-
-        for (int i = start; i < nums.size(); ++i)
-        {
-            if (target < nums[i])
-                return;
-            if (i>start && nums[i]==nums[i-1])
-                continue;
-            path.push_back(nums[i]);
-            DFS(nums, i + 1, target - nums[i], path);
-            path.pop_back();
-        }
-    }
-
-    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
-        sort(candidates.begin(), candidates.end(), std::less<int>());
-        vector<int> path;
-        DFS(candidates, 0, target, path);
-        return ans;
-    }
-};
-
-
-
-```
-
-<br>
-
-
----------------------------
-##### 22.括号生成
->题目描述:数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/generate-parentheses
-
-解题思路：DFS法，记录左右括号的剩余值，当剩余值都为0时说明匹配完成；注意左括号的剩余值是必须小于右括号的剩余值。
-
-时间复杂度：
-
-空间复杂度：
-
-```cpp
-class Solution {
-    vector<string> ans;
-public:
-    void DFS(int l, int r, string& path)
-    {
-        if (0==l && 0==r)
-        {
-            ans.push_back(path);
-            return;
-        }
-
-        if (l)
-        {
-            path.push_back('(');
-            DFS(l-1, r, path);
-            path.pop_back();
-        }
-        if (l < r)
-        {
-            path.push_back(')');
-            DFS(l, r-1, path);
-            path.pop_back();
-        }
-    }
-
-    vector<string> generateParenthesis(int n) {
-        if (n <= 0)
-            return {};
-        string path;
-        DFS(n, n, path);
-        return ans;
-    }
-};
-
-```
-
-<br>
 
