@@ -16,7 +16,7 @@
     - [72.编辑距离](#72编辑距离)
     - [剑指 Offer 46. 把数字翻译成字符串](#剑指-offer-46-把数字翻译成字符串)
     - [91.解码方法](#91解码方法)
-    - [343. 整数拆分](#343-整数拆分)
+    - [38.外观数列](#38外观数列)
     - [剑指 Offer 49. 丑数](#剑指-offer-49-丑数)
     - [剑指 Offer 62. 圆圈中最后剩下的数字](#剑指-offer-62-圆圈中最后剩下的数字)
     - [剑指 Offer 66. 构建乘积数组](#剑指-offer-66-构建乘积数组)
@@ -1083,44 +1083,89 @@ public:
 <br>
 
 
-
-
----------------------------
-##### 343. 整数拆分
->题目描述：给定一个正整数 n，将其拆分为至少两个正整数的和，并使这些整数的乘积最大化。 返回你可以获得的最大乘积。
+-----------------------------
+##### 38.外观数列
+>题目描述：给定一个正整数 n ，输出外观数列的第 n 项。
+「外观数列」是一个整数序列，从数字 1 开始，序列中的每一项都是对前一项的描述。
+你可以将其视作是由递归公式定义的数字字符串序列：
+countAndSay(1) = "1"
+countAndSay(n) 是对 countAndSay(n-1) 的描述，然后转换成另一个数字字符串。
+前五项如下：
+1.     1
+2.     11
+3.     21
+4.     1211
+5.     111221
+第一项是数字 1 
+描述前一项，这个数是 1 即 “ 一 个 1 ”，记作 "11"
+描述前一项，这个数是 11 即 “ 二 个 1 ” ，记作 "21"
+描述前一项，这个数是 21 即 “ 一 个 2 + 一 个 1 ” ，记作 "1211"
+描述前一项，这个数是 1211 即 “ 一 个 1 + 一 个 2 + 二 个 1 ” ，记作 "111221"
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/integer-break
+链接：https://leetcode-cn.com/problems/count-and-say
 
-解题思路：动态规划, dp[i]代表拆分整数i能够获得的最大乘积
+解题思路：动态规划，dp[n] 总是通过 dp[n-1]计算得出，在此题中用两个string代替即可。
 
-时间复杂度：O(N^2)
+时间复杂度：O(N)
 
-空间复杂度：O(N)
+空间复杂度：O(1)
 
 ```cpp
 class Solution {
 public:
-    int integerBreak(int n) {
-        if (n <= 1)
-            return 0;
-        vector<int> dp(n + 1, 0);
-        dp[1] = 1;
-        for (int i = 2; i <= n; ++i)
-            for (int j = 1; j < i; ++j)
+    string countAndSay(int n) {
+        string s0 = "1";
+        for (int k = 2; k <= n; ++k)
+        {
+            string s1;
+            int i = 0;
+            while (i < s0.size())
             {
-                int l = std::max(j , dp[j]);
-                int r = std::max(i-j, dp[i-j]);
-                dp[i] = std::max(dp[i], l * r);
+                int j = i;
+                while (j < s0.size() && s0[j] == s0[i])
+                    ++j;
+                s1 = s1 + to_string(j - i) + s0[i];
+                i = j;
             }
-        return dp[n];
+            s0 = s1;
+        }
+        return s0;
     }
 };
 ```
 
+也可以使用STL库中的find_if 和 find_if_not进行查找。
+
+```cpp
+class Solution {
+public:
+    string countAndSay(int n) {
+        if (0 == n)
+            return string();
+        string s0 = "1";
+        for (int i = 1; i < n; ++i)
+        {
+            auto beg = s0.begin();
+            string s1;
+            while (beg != s0.end())
+            {
+                auto it = std::find_if_not(beg, s0.end(), [&](char ch){
+                    return *beg == ch;
+                });
+                int num = *beg - '0', cnt = std::distance(beg, it);
+                s1 += to_string(cnt) + to_string(num);
+                beg = it;
+            }
+            s0 = s1;
+        }
+        return s0;
+    }
+};
+
+```
+
 <br>
-
-
 
 
 ---------------------------

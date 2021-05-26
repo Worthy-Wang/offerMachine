@@ -15,6 +15,7 @@
     - [85.最大矩阵](#85最大矩阵)
     - [面试题 17.24. 最大子矩阵](#面试题-1724-最大子矩阵)
     - [53.最大子序和](#53最大子序和)
+    - [128.最长连续序列](#128最长连续序列)
     - [134.加油站](#134加油站)
     - [135.分发糖果](#135分发糖果)
     - [48.旋转图像](#48旋转图像)
@@ -24,6 +25,7 @@
     - [剑指 Offer 03. 数组中重复的数字](#剑指-offer-03-数组中重复的数字)
     - [41.缺失的第一个正数](#41缺失的第一个正数)
     - [1539. 第 k 个缺失的正整数](#1539-第-k-个缺失的正整数)
+    - [剑指 Offer 61. 扑克牌中的顺子](#剑指-offer-61-扑克牌中的顺子)
 
 
 ### 一.数组专题
@@ -998,6 +1000,96 @@ public:
 
 
 
+--------------------------
+##### 128.最长连续序列
+>题目描述：给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+要求：你可以设计并实现时间复杂度为 O(n) 的解决方案吗？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-consecutive-sequence
+
+* **解法一**
+
+解题思路：采用中心扩散的思想，先用hashset将所有元素存储，以任意一点为中心不断向两边扩散，同时需要一遍扩散一边删除hashset中的元素，这样可以保证只有一次遍历。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        unordered_set<int> hashset;
+        for (const auto& e: nums)
+            hashset.insert(e);
+        int maxLen = 0;
+        while (!hashset.empty())
+        {
+            int cur = (*hashset.begin()), l = cur - 1, r = cur + 1;
+            hashset.erase(cur);
+            while (hashset.find(l) != hashset.end())
+            {
+                hashset.erase(l);
+                --l;
+            }
+            while (hashset.find(r) != hashset.end())
+            {
+                hashset.erase(r);
+                ++r;
+            }
+            maxLen = std::max(maxLen, r - l - 1);
+        }
+        return maxLen;
+    }
+};
+
+```
+
+* **解法二**
+
+
+解题思路：并查集，下标代表该数字，存放的元素代表能够到达的下一个数字之前
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+    unordered_map<int,int> union_find;//<数字，数字能够到达的下一个开区间>
+public:
+    int find(int i)
+    {
+        if (union_find.count(i))
+        {
+            union_find[i] = find(union_find[i]);
+            return union_find[i];
+        }else
+            return i;
+    }
+
+    int longestConsecutive(vector<int>& nums) {
+        for (auto& i: nums)
+            union_find[i] = i+1;
+        int ans = 0;
+        for (auto& i: nums)
+        {
+            union_find[i] = find(union_find[i]);
+            ans = std::max(ans, union_find[i] - i);
+        }
+        return ans;
+    }
+};
+
+```
+
+
+<br>
+
+
 
 
 -----------------------
@@ -1447,4 +1539,41 @@ public:
 ```
 
 
+---------------------------
+##### 剑指 Offer 61. 扑克牌中的顺子
+>题目描述:从扑克牌中随机抽5张牌，判断是不是一个顺子，即这5张牌是不是连续的。2～10为数字本身，A为1，J为11，Q为12，K为13，而大、小王为 0 ，可以看成任意数字。A 不能视为 14。
+数组长度为 5 
+数组的数取值为 [0, 13] .
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof
+
+解题思路：先排序，再判断数组中有无重复元素，再判断前后的元素值的差值即可。
+
+时间复杂度：O(1)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    bool isStraight(vector<int>& nums) {
+        sort(nums.begin(), nums.end(), std::less<int>());
+        for (int i = 0; i < nums.size(); ++i)
+        {
+            if (0 == nums[i])
+                continue;
+            if (0<i && nums[i-1]==nums[i])
+                return false;
+        }
+        int i = 0;
+        while (0 == nums[i]) ++i;
+        return nums.back()-nums[i] <= 4;
+    }
+};
+
 ```
+
+<br>
+
+

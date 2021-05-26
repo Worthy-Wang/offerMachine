@@ -6,12 +6,16 @@
     - [43.字符串相乘](#43字符串相乘)
     - [5.最长回文子串](#5最长回文子串)
     - [125.验证回文串](#125验证回文串)
+    - [14.最长公共前缀](#14最长公共前缀)
+    - [3.无重复字符的最长子串](#3无重复字符的最长子串)
+    - [76.最小覆盖子串](#76最小覆盖子串)
+    - [30.串联所有单词的子串](#30串联所有单词的子串)
+    - [6.Z字形变换](#6z字形变换)
     - [151. 翻转字符串里的单词](#151-翻转字符串里的单词)
     - [剑指 Offer 05. 替换空格](#剑指-offer-05-替换空格)
     - [剑指 Offer 58 - II. 左旋转字符串](#剑指-offer-58---ii-左旋转字符串)
     - [28.实现strStr()](#28实现strstr)
     - [49.字母异位词分组](#49字母异位词分组)
-    - [38.外观数列](#38外观数列)
     - [71.简化路径](#71简化路径)
     - [58.最后一个单词的长度](#58最后一个单词的长度)
 
@@ -438,6 +442,244 @@ public:
 <br>
 
 
+
+-----------------------------
+##### 14.最长公共前缀
+>题目描述：编写一个函数来查找字符串数组中的最长公共前缀。
+如果不存在公共前缀，返回空字符串 ""。
+说明:
+所有输入只包含小写字母 a-z 。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-common-prefix
+
+解题思路：由于字符串数组也是一个M行N列的数组，那么直接按照列进行遍历即可，平均情况是O(k*M),k为前缀长度，最差的情况是O(M*N)。
+
+时间复杂度：O(M)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    string longestCommonPrefix(vector<string>& strs) {
+        if (strs.empty())
+            return string();
+        for (int j = 0; j < strs[0].size(); ++j)
+            for (int i = 0; i < strs.size(); ++i)
+                if (strs[0][j]!=strs[i][j] || j>=strs[i].size())
+                    return strs[0].substr(0, j);
+        return strs[0];
+    }
+};
+```
+
+<br>
+
+
+---------------------------
+##### 3.无重复字符的最长子串
+>题目描述:给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
+s 由英文字母、数字、符号和空格组成
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-substring-without-repeating-characters
+
+解题思路：滑动窗口法，用双指针模拟deque，创建辅助哈希set，双指针指向的范围存放的便是子串，进行一次遍历即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        int l = 0, r = 0;
+        int ans = 0;
+        unordered_set<char> hashset;
+        while (r < s.size())
+        {
+            while (hashset.find(s[r]) != hashset.end())
+            {
+                hashset.erase(s[l]);
+                ++l;
+            }   
+            hashset.insert((s[r]));
+            ans = std::max(ans, r - l + 1);
+            ++r;         
+        }
+        return ans;
+    }
+};
+```
+
+<br>
+
+
+
+
+---------------------------
+##### 76.最小覆盖子串
+>题目描述:给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+注意：如果 s 中存在这样的子串，我们保证它是唯一的答案。
+s 和 t 由英文字母组成
+进阶：你能设计一个在 o(n) 时间内解决此问题的算法吗？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/minimum-window-substring
+
+解题思路： 先想到暴力法，两次 for循环，比较后找到最小的子串，需要用hashmap来存储t串中的元素。
+再想到用滑动窗口的优化法，设置双指针i j ，当滑动窗口中包含t串中的所有元素时，i++； 没有包含t串中的所有元素时，j++。
+
+时间复杂度：O(N) N为s串的长度
+
+空间复杂度：O(M) M为t串的长度
+
+```cpp
+class Solution {
+public:
+    bool check(unordered_map<char,int>& sMap, unordered_map<char,int>& tMap)
+    {
+        for (const auto& e: tMap)
+            if (sMap[e.first] < e.second)
+                return false;
+        return true;
+    }
+
+    string minWindow(string s, string t) {
+        unordered_map<char,int> sMap, tMap;
+        for (const auto& ch: t)
+            tMap[ch]++;
+        int l = 0, r = 0, minLen = INT32_MAX;
+        string ans;
+        while (r < s.size())
+        {
+            sMap[s[r]]++;
+            while (check(sMap, tMap))
+            {
+                if (r - l + 1 < minLen)
+                {
+                    minLen = r - l + 1;
+                    ans = s.substr(l, minLen);
+                }
+                sMap[s[l]]--;
+                ++l;
+            }
+            ++r;
+        }
+        return ans;
+    }
+};
+```
+
+<br>
+
+
+
+---------------------------
+##### 30.串联所有单词的子串
+>题目描述:给定一个字符串 s 和一些**长度相同**的单词 words。找出 s 中恰好可以由 words 中所有单词串联形成的子串的起始位置。
+注意子串要与 words 中的单词完全匹配，中间不能有其他字符，但不需要考虑 words 中单词串联的顺序。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/substring-with-concatenation-of-all-words
+
+解题思路：暴力法，将words看做一个字符串进行比较即可
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    bool check(string s, unordered_map<string,int>& wordMap, int n, int m)
+    {
+        unordered_map<string,int> hashmap;
+        for (int i = 0; i < s.size(); i+=m)
+            hashmap[s.substr(i, m)]++;
+        return hashmap==wordMap;
+    }
+
+    vector<int> findSubstring(string s, vector<string>& words) {
+        unordered_map<string, int> wordMap;
+        for (auto& e: words)
+            wordMap[e]++;
+        int n = words.size(), m = words[0].size(), wordsLen = m*n;
+        vector<int> ans;
+
+        for (int i = 0; i < s.size()-wordsLen +1; i++)
+        {
+            string s2 = s.substr(i, wordsLen);
+            if (check(s2, wordMap, n, m))
+                ans.push_back(i);
+        }
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+
+
+---------------------------
+##### 6.Z字形变换
+>题目描述:将一个给定字符串根据给定的行数，以从上往下、从左到右进行 Z 字形排列。
+比如输入字符串为 "LEETCODEISHIRING" 行数为 3 时，排列如下：
+L   C   I   R
+E T O E S I I G
+E   D   H   N
+之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如："LCIRETOESIIGEDHN"。
+请你实现这个将字符串进行指定行数变换的函数：
+string convert(string s, int numRows);
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/zigzag-conversion
+
+解题思路：创建一个vector<string>数组存储Z字形变换，然后按照行进行读取即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    string convert(string s, int numRows) {
+        if (1 == numRows)
+            return s;
+        int idx = 0, i = 0, add = 1;
+        vector<string> nums(numRows);
+        while (idx < s.size())
+        {
+            nums[i].push_back(s[idx]);
+            if (0 == i)
+                add = 1;
+            else if (numRows-1 == i)
+                add = -1;
+            i += add;
+            ++idx;
+        }
+        
+        string ans;
+        for (auto& s: nums)
+            ans += s;
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+
+
+
 ---------------------------
 ##### 151. 翻转字符串里的单词
 给定一个字符串，逐个翻转字符串中的每个单词。
@@ -772,89 +1014,6 @@ public:
 
 
 
-
------------------------------
-##### 38.外观数列
->题目描述：给定一个正整数 n ，输出外观数列的第 n 项。
-「外观数列」是一个整数序列，从数字 1 开始，序列中的每一项都是对前一项的描述。
-你可以将其视作是由递归公式定义的数字字符串序列：
-countAndSay(1) = "1"
-countAndSay(n) 是对 countAndSay(n-1) 的描述，然后转换成另一个数字字符串。
-前五项如下：
-1.     1
-2.     11
-3.     21
-4.     1211
-5.     111221
-第一项是数字 1 
-描述前一项，这个数是 1 即 “ 一 个 1 ”，记作 "11"
-描述前一项，这个数是 11 即 “ 二 个 1 ” ，记作 "21"
-描述前一项，这个数是 21 即 “ 一 个 2 + 一 个 1 ” ，记作 "1211"
-描述前一项，这个数是 1211 即 “ 一 个 1 + 一 个 2 + 二 个 1 ” ，记作 "111221"
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/count-and-say
-
-解题思路：动态规划，dp[n] 总是通过 dp[n-1]计算得出，在此题中用两个string代替即可。
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    string countAndSay(int n) {
-        string ans = "1";
-        for (int k = 1; k < n; ++k)
-        {
-            int i = 0, j = 0;
-            string temp;
-            while (i < ans.size())
-            {
-                while (j<ans.size() && ans[i]==ans[j])
-                    ++j;
-                temp += to_string(j-i) + to_string(ans[i]-'0');
-                i = j;
-            }
-            ans = temp;
-        }
-        return ans;
-    }
-};
-```
-
-也可以使用STL库中的find_if 和 find_if_not进行查找。
-
-```cpp
-class Solution {
-public:
-    string countAndSay(int n) {
-        if (0 == n)
-            return string();
-        string s0 = "1";
-        for (int i = 1; i < n; ++i)
-        {
-            auto beg = s0.begin();
-            string s1;
-            while (beg != s0.end())
-            {
-                auto it = std::find_if_not(beg, s0.end(), [&](char ch){
-                    return *beg == ch;
-                });
-                int num = *beg - '0', cnt = std::distance(beg, it);
-                s1 += to_string(cnt) + to_string(num);
-                beg = it;
-            }
-            s0 = s1;
-        }
-        return s0;
-    }
-};
-
-```
-
-<br>
 
 
 -----------------------------
