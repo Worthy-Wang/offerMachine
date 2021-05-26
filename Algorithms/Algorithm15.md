@@ -36,19 +36,19 @@
 class Solution {
 public:
     vector<int> plusOne(vector<int>& digits) {
-        if (digits.empty())
-            return {};
-        reverse(digits.begin(), digits.end());
         int carry = 1;
-        for (int i = 0; i < digits.size(); ++i)
+        int i = digits.size() - 1;
+        while (0 <= i)
         {
-            int sum = digits[i] + carry;
-            carry = sum / 10;
+            int sum =  digits[i] + carry;
             digits[i] = sum % 10;
+            carry = sum / 10;
+            --i;
+            if (!carry)
+                break;
         }
         if (carry)
-            digits.push_back(1);
-        reverse(digits.begin(), digits.end());
+            digits.insert(digits.begin(), 1);
         return digits;
     }
 };
