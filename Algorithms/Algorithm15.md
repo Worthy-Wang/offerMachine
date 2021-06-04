@@ -275,11 +275,15 @@ public:
 
 空间复杂度：
 
+
 ```cpp
+
+
 
 ```
 
 <br>
+
 
 ---------------------------
 ##### 149.直线上最多的点数
@@ -325,35 +329,38 @@ public:
         while (b)
         {
             int t = a % b;
-            a = b;
+            a = b; 
             b = t;
         }
         return a;
     }
 
     int maxPoints(vector<vector<int>>& points) {
+        if (points.empty())
+            return 0;
+        int n = points.size();
         int ans = 0;
-        for (int i = 0; i < points.size(); ++i)
+        for (int i = 0; i < n; ++i)
         {
-            unordered_map<string, int> hashmap;//<斜率,点个数>
-            int curMax = 0;
+            unordered_map<string, int> hashmap; // <以第i个点为起点的斜率, 直线数>
             int dup = 0;
-            for (int j = i+1; j < points.size(); ++j)
+            int maxHashVal = 0;
+            for (int j = i + 1; j < n; ++j)
             {
-                int x1 = points[i][0], y1 = points[i][1];
-                int x2 = points[j][0], y2 = points[j][1];
-                int diffX = x2 - x1, diffY = y2 - y1, gcd = GCD(diffX, diffY);
-                if (0==diffX && 0==diffY)
+                int diffx = points[j][0] - points[i][0];
+                int diffy = points[j][1] - points[i][1];
+                if (diffx == 0 && diffy == 0)
                 {
-                    dup++;
+                    dup ++;
                     continue;
                 }
-                string key = to_string(diffX/gcd) + "/" + to_string(diffY/gcd);
-                hashmap[key]++;
-                curMax = std::max(curMax, hashmap[key]);
+                int gcd = GCD(diffx, diffy);
+                string key = to_string(diffx / gcd) + "/" + to_string(diffy / gcd);
+                hashmap[key] ++;
+                maxHashVal = std::max(maxHashVal, hashmap[key]);                   
             }
-            ans = std::max(curMax + 1 + dup, ans); //curMax+1是因为要加上i指向的这一个点, 加上dup是因为要加上重复的点
-        }
+            ans = std::max(ans, dup + 1 + maxHashVal);
+        } 
         return ans;
     }
 };
@@ -452,19 +459,19 @@ C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
 class Solution {
 public:
     string intToRoman(int num) {
-        vector<pair<int, string>> vec{{1000,"M"}, {900,"CM"}, {500,"D"}, {400,"CD"}, {100,"C"}, {90,"XC"}, {50,"L"}, {40, "XL"}, {10,"X"}, {9, "IX"}, {5,"V"}, {4,"IV"}, {1,"I"}};
+        vector<int> iVec{1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000};
+        vector<string> sVec{"I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M"};
         string ans;
-        for (auto& e: vec)
+        for (int i = iVec.size() - 1; i >= 0; --i)
         {
-            int cnt = num / e.first;
-            for (int i = 0; i < cnt; i++)
-                ans += e.second;
-            num -= cnt * e.first;
+            int cnt = num / iVec[i];
+            num %= iVec[i];
+            for (int j = 0; j < cnt; ++j)
+                ans = ans + sVec[i];
         }
         return ans;
     }
 };
-
 
 ```
 

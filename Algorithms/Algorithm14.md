@@ -31,17 +31,17 @@ n 是 32 位有符号整数，其数值范围是 [−2^31, 2^31 − 1] 。
 ```cpp
 class Solution {
 public:
-    double Pow(double x, long long n)
-    {
-        double res = 1;
-        while (n)
-        {
-            if (n & 0x1)
-                res *= x;
+    double Pow(double x, long n)
+    {   
+        double ans = 1;
+        for (int i = 0; i < 32; ++i){
+            if ((1 << i) & n)
+            {
+                ans *= x;
+            }            
             x *= x;
-            n >>= 1;
         }
-        return res;
+        return ans;
     }
 
     double myPow(double x, int n) {
@@ -49,11 +49,12 @@ public:
             return 1;
         if (1 == x)
             return 1;
-        long long N = n;
-        if (n < 0)
-            return 1.0 / Pow(x, -N);
-        else
+        long N = n;
+
+        if (N > 0)
             return Pow(x, N);
+        else
+            return 1.0 / Pow(x, -N);
     }
 };
 
@@ -176,6 +177,19 @@ public:
 >题目描述：格雷编码是一个二进制数字系统，在该系统中，两个连续的数值仅有一个位数的差异。
 给定一个代表编码总位数的非负整数 n，打印其格雷编码序列。即使有多个不同答案，你也只需要返回其中一种。
 格雷编码序列必须以 0 开头。
+输入: 2
+输出: [0,1,3,2]
+解释:
+00 - 0
+01 - 1
+11 - 3
+10 - 2
+对于给定的 n，其格雷编码序列并不唯一。
+例如，[0,2,3,1] 也是一个有效的格雷编码序列。
+00 - 0
+10 - 2
+11 - 3
+01 - 1
 
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/gray-code
@@ -291,24 +305,25 @@ public:
 ```cpp
 class Solution {
 public:
-    int divide(int dividend, int divisor)
-    {
-        long a = dividend >= 0 ? dividend : -(long)dividend;
-        long b = divisor >= 0 ? divisor : -(long)divisor;
-        long ans = 0;
-        for (int i = 31; i>=0 ; --i)
+    int divide(int dividend, int divisor) {
+        long a = abs(dividend), b = abs(divisor);
+        long cnt = 0;
+        for (int i = 31; i >= 0; --i)
         {
-            if (a >= b*((unsigned)1<<i))
+            if (a >= b * (unsigned)(1 << i))
             {
-                a -= b*((unsigned)1<<i);
-                ans += ((unsigned)1<<i);
+                a -= b * (unsigned)(1 << i);
+                cnt += (unsigned)(1 << i);
             }
         }
-        if (((dividend >> 31) ^ (divisor >> 31)))
-            ans = -ans;
-        if (ans > INT32_MAX || ans < INT32_MIN)
+
+        if ((dividend>0 && divisor >0) || (dividend<0 && divisor<0))
+            cnt = cnt;
+        else
+            cnt = -cnt;
+        if (cnt > INT32_MAX || cnt < INT32_MIN)
             return INT32_MAX;
-        return ans;
+        return cnt;
     }
 };
 
@@ -352,6 +367,23 @@ public:
     }
 };
 ```
+
+
+当然，按位与的方法也可以解决：
+```cpp
+class Solution {
+public:
+    int hammingWeight(uint32_t n) {
+        int cnt = 0;
+        for (int i = 0; i < 32; ++i)
+            if ((1 << i) & n)
+                cnt ++;
+        return cnt;
+    }
+};
+
+```
+
 
 <br>
 

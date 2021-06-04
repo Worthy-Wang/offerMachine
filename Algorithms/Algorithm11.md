@@ -62,19 +62,18 @@ public:
 class Solution {
 public:
     int jump(vector<int>& nums) {
-        if (nums.size() <= 1)
+        if (nums.size() == 1)
             return 0;
-        int end = nums[0], nextEnd = end;
-        int cnt = 0;
-        for (int i = 0; i < nums.size()-1; ++i)
+        int curEnd = nums[0], nextEnd = nums[0], cnt = 0;
+        for (int i = 0; i < nums.size() - 1; ++i)
         {
             nextEnd = std::max(nextEnd, i + nums[i]);
-            if (i == end)
+            if (i == curEnd)
             {
-                end = nextEnd;
-                ++cnt;
+                curEnd = nextEnd;
+                cnt++;
             }
-        }
+        }        
         return cnt + 1;
     }
 };
@@ -103,14 +102,12 @@ public:
 class Solution {
 public:
     int maxProfit(vector<int>& prices) {
-        if (prices.empty())
-            return 0;
-        int minPrice = prices[0];
+        int lmin = prices[0];
         int ans = 0;
-        for (int i = 1; i < prices.size(); i++)
+        for (int i = 1; i < prices.size(); ++i)
         {
-            minPrice = std::min(minPrice, prices[i]);
-            ans = std::max(ans, prices[i]-minPrice);
+            lmin = std::min(lmin, prices[i]);
+            ans = std::max(prices[i] - lmin, ans);
         }
         return ans;
     }
@@ -176,22 +173,20 @@ class Solution {
 public:
     int maxProfit(vector<int>& prices) {
         int n = prices.size();
-        vector<int> left(n), right(n);
-        left[0] = 0, right[n-1] = 0;
-        int minPrice = prices[0], maxPrice = prices[n-1];
-        for (int i = 1; i < n; i++)
-        {
-            minPrice = std::min(minPrice, prices[i]);
-            left[i] = std::max(left[i-1], prices[i]-minPrice);
-        }
-        for (int i = n-2; i >= 0; i-- )
-        {
-            maxPrice = std::max(prices[i], maxPrice);
-            right[i] = std::max(right[i+1], maxPrice - prices[i]);         
+        vector<int> l(n, 0), r(n, 0);
+        int lmin = prices[0], rmax = prices[n-1];
+        for (int i = 1; i < n; ++i){
+            lmin = std::min(lmin, prices[i]);
+            l[i] = std::max(l[i-1], prices[i] - lmin);            
+        }   
+        for (int i = n - 2; i >= 0; --i){
+            rmax = std::max(rmax, prices[i]);
+            r[i] = std::max(r[i+1], rmax - prices[i]);
         }
         int ans = 0;
-        for (int i = 0; i < n; i++)
-            ans = std::max(left[i]+right[i], ans);
+        for (int i = 0 ; i < n; ++i)
+            ans = std::max(ans, l[i] + r[i]);
+        
         return ans;
     }
 };
