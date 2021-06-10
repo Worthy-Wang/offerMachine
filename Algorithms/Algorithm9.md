@@ -223,7 +223,7 @@ public:
             visited[i] = 1;
             path.push_back(beginWord);
             DFS(wordList[i], endWord, wordList, level+1, height,  visited, path);
-            visited[i] = 0;
+            visited[i] = 0;****
             path.pop_back();
         }
     }

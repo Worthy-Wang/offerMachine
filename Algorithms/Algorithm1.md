@@ -22,7 +22,9 @@
     - [73.矩阵置零](#73矩阵置零)
     - [54.螺旋矩阵](#54螺旋矩阵)
     - [59.螺旋矩阵2](#59螺旋矩阵2)
+    - [74.搜索二维矩阵](#74搜索二维矩阵)
     - [剑指 Offer 03. 数组中重复的数字](#剑指-offer-03-数组中重复的数字)
+    - [剑指 Offer 53 - II. 0～n-1中缺失的数字](#剑指-offer-53---ii-0n-1中缺失的数字)
     - [41.缺失的第一个正数](#41缺失的第一个正数)
     - [1539. 第 k 个缺失的正整数](#1539-第-k-个缺失的正整数)
     - [剑指 Offer 61. 扑克牌中的顺子](#剑指-offer-61-扑克牌中的顺子)
@@ -1395,6 +1397,84 @@ public:
 
 
 
+
+---------------------------
+##### 74.搜索二维矩阵
+>题目描述:编写一个高效的算法来判断 m x n 矩阵中，是否存在一个目标值。该矩阵具有如下特性：
+每行中的整数从左到右按升序排列。
+每行的第一个整数大于前一行的最后一个整数。
+ 
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/search-a-2d-matrix
+
+* **解法一**
+
+解题思路：从右上角开始寻找，这样可以找准单一变量，向左减小，向下增大。
+
+时间复杂度：O(M+N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    bool searchMatrix(vector<vector<int>>& matrix, int target) {
+        int m = matrix.size(), n = matrix[0].size();
+        int i = 0, j = n - 1;
+        while (i < m && j >= 0)
+        {
+            if (matrix[i][j] == target)
+                return true;
+            else if (matrix[i][j] > target)
+                --j;
+            else
+                ++i;
+        }
+        return false;
+    }
+};
+
+
+```
+
+
+* **解法二**
+
+解题思路：将二维当做一维，直接进行二分法。
+
+时间复杂度：O(log(M*N))
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    bool searchMatrix(vector<vector<int>>& matrix, int target) {
+        if (matrix.empty())
+            return false;
+        int m = matrix.size(), n = matrix[0].size();
+        int l = 0, r = m * n - 1;
+        while (l <= r)
+        {
+            int mid = (l + r) >> 1;
+            if (matrix[mid/n][mid%n] == target)
+                return true;
+            else if (matrix[mid/n][mid%n] > target)
+                r = mid - 1;
+            else 
+                l = mid + 1;
+        }
+        return false;
+    }
+};
+```
+
+<br>
+
+
+
+
+
 ---------------------------
 ##### 剑指 Offer 03. 数组中重复的数字
 >题目描述:找出数组中重复的数字。
@@ -1431,6 +1511,51 @@ public:
 
 <br>
 
+
+
+
+
+---------------------------
+##### 剑指 Offer 53 - II. 0～n-1中缺失的数字
+>题目描述：在范围0～n-1内的n个数字中有且只有一个数字不在该数组中，请找出这个数字。该数组从0开始递增。
+示例 1:
+输入: [0,1,3]
+输出: 2
+示例 2:
+输入: [0,1,2,3,4,5,6,7,9]
+输出: 8
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/que-shi-de-shu-zi-lcof
+
+解题思路：递增数组，二分查找，充分利用数组有序，下标与元素对应这两个条件。
+
+时间复杂度：O(logN)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int missingNumber(vector<int>& nums) {
+        if (nums.empty())
+            return 0;
+        int l = 0, r = nums.size()-1;
+        while (l <= r)
+        {
+            int mid = (l + r) >> 1;
+            if (mid == nums[mid])
+                l = mid + 1;
+            else if (mid != nums[mid])
+                r = mid - 1;
+        }
+        return l;
+    }
+};
+
+```
+
+<br>
 
 ---------------------------
 ##### 41.缺失的第一个正数

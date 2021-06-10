@@ -6,8 +6,6 @@
     - [34. 在排序数组中查找元素的第一个和最后一个位置](#34-在排序数组中查找元素的第一个和最后一个位置)
     - [剑指 Offer 53 - II. 0～n-1中缺失的数字](#剑指-offer-53---ii-0n-1中缺失的数字)
     - [35.搜索插入位置](#35搜索插入位置)
-    - [69.x的平方根](#69x的平方根)
-    - [74.搜索二维矩阵](#74搜索二维矩阵)
     - [4.寻找两个正序数组的中位数](#4寻找两个正序数组的中位数)
 
 
@@ -235,10 +233,10 @@ public:
         while (l < r)
         {
             int mid = (l + r) >> 1;
-            if (nums[mid] < target)
-                l = mid + 1;
-            else if (nums[mid] > target)
+            if (nums[mid] > target)
                 r = mid;
+            else if (nums[mid] < target)
+                l = mid + 1;
             else
                 r = mid;
         }
@@ -251,25 +249,23 @@ public:
         while (l < r)
         {
             int mid = (l + r) >> 1;
-            if (nums[mid] < target)
-                l = mid + 1;
-            else if (nums[mid] > target)
+            if (nums[mid] > target)
                 r = mid;
+            else if (nums[mid] < target)
+                l = mid + 1;
             else
-                l = mid+1;
+                l = mid + 1;
         }
-        return r-1;
+        return l - 1;
     }
 
     vector<int> searchRange(vector<int>& nums, int target) {
-        if (nums.empty() || target<nums.front() || target>nums.back())
+        int low = lower_bound(nums, target);
+        int up = upper_bound(nums, target);
+        if (low > up)
             return vector<int>{-1, -1};
-        int l = lower_bound(nums, target);
-        int r = upper_bound(nums, target);
-        if (l <= r)
-            return vector<int>{l, r};
-        else
-            return vector<int>{-1, -1};
+        
+        return vector<int>{low, up};
     }
 };
 
@@ -362,100 +358,7 @@ public:
 
 
 
-
----------------------------
-##### 69.x的平方根
->题目描述:实现 int sqrt(int x) 函数。
-计算并返回 x 的平方根，其中 x 是非负整数。
-由于返回类型是整数，结果只保留整数的部分，小数部分将被舍去。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/sqrtx
-
-解题思路：已经暴力法，从 x/2 开始寻找 k ，找到第一个 K*k<=x 的数，该数即为x的平方根；在此基础上使用二分查找即可。
-
-时间复杂度：O(logX)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    int mySqrt(int x) {
-        int l = 0, r = x;
-        while (l <= r)
-        {
-            long mid = (l + r) >> 1;
-            if (mid*mid == x)
-                return mid;
-            else if (mid*mid < x)
-                l = mid + 1;
-            else 
-                r = mid - 1;
-        }
-        return r;
-    }
-};
-
-```
-
-<br>
-
-
-
-
----------------------------
-##### 74.搜索二维矩阵
->题目描述:编写一个高效的算法来判断 m x n 矩阵中，是否存在一个目标值。该矩阵具有如下特性：
-每行中的整数从左到右按升序排列。
-每行的第一个整数大于前一行的最后一个整数。
- 
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/search-a-2d-matrix
-
-* **解法一**
-
-解题思路：从右上角开始寻找，这样可以找准单一变量，向左减小，向下增大。
-
-时间复杂度：O(M+N)
-
-空间复杂度：O(1)
-
-* **解法二**
-
-解题思路：将二维当做一维，直接进行二分法。
-
-时间复杂度：O(log(M*N))
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    bool searchMatrix(vector<vector<int>>& matrix, int target) {
-        if (matrix.empty())
-            return false;
-        int m = matrix.size(), n = matrix[0].size();
-        int l = 0, r = m * n - 1;
-        while (l <= r)
-        {
-            int mid = (l + r) >> 1;
-            if (matrix[mid/n][mid%n] == target)
-                return true;
-            else if (matrix[mid/n][mid%n] > target)
-                r = mid - 1;
-            else 
-                l = mid + 1;
-        }
-        return false;
-    }
-};
-```
-
-<br>
-
-
-
+****
 
 --------------------------
 ##### 4.寻找两个正序数组的中位数
@@ -475,43 +378,39 @@ public:
 ```cpp
 class Solution {
 public:
-    double findKth(vector<int>& nums1, vector<int>& nums2, int k)
+    double findK(vector<int>& nums1, vector<int>& nums2, int k)
     {
-        int i = 0, j = 0;
-        int len1 = nums1.size(), len2 = nums2.size();
+        int i = 0, j = 0, n1 = nums1.size(), n2 = nums2.size();
         while (1)
         {
-            if (i == len1)
+            if (i == n1)
                 return nums2[j + k - 1];
-            if (j == len2)
+            if (j == n2)
                 return nums1[i + k - 1];
             if (1 == k)
                 return std::min(nums1[i], nums2[j]);
 
-            int newi = std::min(i+k/2-1, len1-1);
-            int newj = std::min(j+k/2-1, len2-1);
-            if (nums1[newi] < nums2[newj])
+            int newI = std::min(n1-1, i + k/2 - 1), newJ = std::min(n2-1, j + k/2 - 1);
+            if (nums1[newI] < nums2[newJ])
             {
-                k -= newi + 1 - i;
-                i = newi + 1;
-            }
-            else
+                k -= newI + 1 - i ;
+                i = newI + 1;
+            }else
             {
-                k -= newj + 1 - j;
-                j = newj + 1;
+                k -= newJ + 1 - j;
+                j = newJ + 1;
             }
         }
         return 0;
     }
 
-
     double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
-        int len = nums1.size() + nums2.size();
-        if (len & 0x1)//奇数
-            return findKth(nums1, nums2, len/2+1);
-        else 
-            return (findKth(nums1, nums2, len/2) + findKth(nums1, nums2, len/2+1))/2;        
-    } 
+        int n1 = nums1.size(), n2 = nums2.size(), n = n1 + n2;
+        if (n & 0x1)
+            return findK(nums1, nums2, n/2 + 1);
+        else
+            return (findK(nums1, nums2, n/2+1) + findK(nums1, nums2, n/2)) / 2;
+    }
 };
 
 ```
