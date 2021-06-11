@@ -246,22 +246,18 @@ class Solution {
 public:
     ListNode* insertionSortList(ListNode* head) {
         ListNode dummy(-1);
-        ListNode* cur = head;
-        while (cur)
+        ListNode* p = head;
+        while (p)
         {
-            ListNode* t = cur->next;
-
-            ListNode *p = &dummy;
-            while (p->next)
-            {
-                if (p->next->val >= cur->val)
-                    break;
-                p = p->next;
-            }
-            cur->next = p->next;
-            p->next = cur;
-
-            cur = t;
+            ListNode* tmp = p->next;
+            
+            ListNode* q = &dummy;
+            while (q->next && q->next->val <= p->val)
+                q = q->next;
+            p->next = q->next;
+            q->next = p;
+            
+            p = tmp;
         }
         return dummy.next;
     }
@@ -282,21 +278,23 @@ public:
 ```cpp
 class Solution {
 public:
-    ListNode* sortList(ListNode* head) {
-        if (!head || !head->next)
-            return head;
-        ListNode* end = nullptr;
-        while (head->next != end)
+    ListNode* insertionSortList(ListNode* head) {
+        ListNode *end = nullptr;
+
+        while (head != end)
         {
-            ListNode* cur = head;
-            while (cur->next != end)
+            ListNode* p = head;
+
+            while (p->next != end)
             {
-                if (cur->val > cur->next->val)
-                    swap(cur->val, cur->next->val);
-                cur = cur->next;
+                if (p->val > p->next->val)
+                    swap(p->val, p->next->val);
+                p = p->next;
             }
-            end = cur;
+
+            end = p;
         }
+
         return head;
     }
 };
@@ -388,7 +386,7 @@ public:
 
 * **解法二**
 
-解题思路：快速排序，找parition分割点时，需要用两个临时节点连接左右链表，左边的链表比key值小，右边的链表比key值大。
+解题思路：快速排序，找parition分割点时，需要用两个临时节点连接左右链表，左边的链表比key值小，右边的链表比key值大。在这道题上面用快速排序会超时。
 
 时间复杂度：O(NlogN)
 
