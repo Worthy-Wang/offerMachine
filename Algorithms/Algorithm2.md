@@ -325,12 +325,14 @@ public:
                 if (!cur)
                     return dummy.next;
             }
-            ListNode* rightHead = cur->next;
+            ListNode* tmp = cur->next;
+
             pair<ListNode*,ListNode*> newPair = reverseList(pre->next, cur);
             ListNode* newHead = newPair.first, *newTail = newPair.second;
             pre->next = newHead;
             pre = newTail;
-            newTail->next = rightHead;
+
+            newTail->next = tmp;
         }
         return dummy.next;
     }
@@ -361,25 +363,24 @@ public:
 ```cpp
 class Solution {
 public:
-    ListNode* partition(ListNode* head, int x) {
-        ListNode leftDummy(-1), rightDummy(-1);
-        ListNode* leftTail = &leftDummy, *rightTail = &rightDummy;
-        for (auto p = head; p; p=p->next)
+    ListNode* partition(ListNode* head, int x) {    
+        ListNode ldummy(-1), rdummy(-1);
+        ListNode *ltail = &ldummy, *rtail = &rdummy;
+        for (auto p = head; p; p = p->next)
         {
             if (p->val < x)
             {
-                leftTail->next = p;
-                leftTail = p;
-            }
-            else
+                ltail->next = p;
+                ltail = p;
+            }else
             {
-                rightTail->next = p;
-                rightTail = p;
+                rtail->next = p;
+                rtail = p;
             }
-        }
-        leftTail->next = rightDummy.next;
-        rightTail->next = nullptr;
-        return leftDummy.next;
+        }   
+        ltail->next = nullptr, rtail->next = nullptr;
+        ltail->next = rdummy.next;
+        return ldummy.next;
     }
 };
 
