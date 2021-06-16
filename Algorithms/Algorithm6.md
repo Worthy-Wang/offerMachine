@@ -1,7 +1,6 @@
 - [六.排序专题](#六排序专题)
     - [75.颜色分类](#75颜色分类)
     - [剑指 Offer 40. 最小的k个数](#剑指-offer-40-最小的k个数)
-    - [剑指 Offer 41. 数据流中的中位数](#剑指-offer-41-数据流中的中位数)
     - [剑指 Offer 45. 把数组排成最小的数](#剑指-offer-45-把数组排成最小的数)
     - [剑指 Offer 51. 数组中的逆序对](#剑指-offer-51-数组中的逆序对)
 
@@ -93,45 +92,44 @@ public:
 空间复杂度：O(1)
 
 ```cpp
-class Solution {
+
+class Solution
+{
 public:
-    int partition(vector<int>& nums, int l, int r)
+    int pivot(vector<int>& nums, int l, int r)
     {
         int key = nums[l];
-        int i = l, j = r;
-        while (i < j)
+        while (l < r)
         {
-            while (i<j && nums[j]>=key) j--;
-            if (i<j) nums[i++] = nums[j];
-            while (i<j && nums[i]<key) i++;
-            if (i<j) nums[j--] = nums[i]; 
+            while (l < r && nums[r] >= key) --r;
+            if (l < r) nums[l++] = nums[r];
+            while (l < r && nums[l] <= key) ++l;
+            if (l < r) nums[r--] = nums[l];
         }
-        nums[i] = key;
-        return i;
+        nums[l] = key;
+        return l;
     }
 
-    vector<int> quickSort(vector<int>& nums, int k)
+    vector<int> getLeastNumbers(vector<int>& arr, int k)
     {
-        int l = 0, r = nums.size()-1;
+        int l = 0, r = arr.size() - 1;
         while (l <= r)
         {
-            int mid = partition(nums, l, r);
-            if (mid == k-1)
-                return vector<int>(nums.begin(), nums.begin()+k);
-            else if (mid < k-1)
+            int mid = pivot(arr, l, r);
+            if (mid == k - 1)
+                return vector<int>(arr.begin(), arr.begin() + k);
+            else if (mid < k - 1)
                 l = mid + 1;
-            else 
+            else
+            {
                 r = mid - 1;
-        }   
-        return {};
-    }
-
-    vector<int> getLeastNumbers(vector<int>& arr, int k) {
-        if (k<=0 || k>arr.size())
-            return {};
-        return quickSort(arr, k);
+            }
+            
+        }
+        return vector<int>{};
     }
 };
+
 
 ```
 
@@ -144,40 +142,38 @@ public:
 空间复杂度：O(1)
 
 ```cpp
-class Solution {
+class Solution
+{
 public:
-    void heapAdjust(vector<int>& nums, int beg, int end)
+    void heapAdjust(vector<int>& nums, int start, int end)
     {
-        int dad = beg, son = 2 * dad + 1;
+        int dad = start, son = 2 * dad + 1;
         while (son <= end)
         {
-            if (son+1<=end && nums[son+1]>=nums[son]) son = son+1;
-            if (nums[dad] >= nums[son]) break;
+            if (son+1<=end && nums[son+1]>nums[son]) son = son+1;
+            if (nums[dad] > nums[son]) break;
             swap(nums[dad], nums[son]);
             dad = son;
-            son = dad * 2 + 1;
+            son = 2 * dad + 1;            
         }
     }
 
-    vector<int> heapSort(vector<int>& nums, int pos)
+    vector<int> getLeastNumbers(vector<int>& arr, int k)
     {
-        //先创建大小为k的最大堆
-        for (int i = (pos-1)/2; i >= 0; i--)
-            heapAdjust(nums, i, pos);
-        //创建好最大堆之后，将数组后面的元素依次和堆顶进行比较
-        for (int i = pos+1; i<nums.size(); i++)
-            if (nums[i] < nums[0])
+        //大顶堆
+        k -= 1;
+        for (int root = (k-1)/2; root >= 0; --root)
+            heapAdjust(arr, root, k);
+        
+        for (int i = k + 1; i < arr.size(); ++i)
+        {
+            if (arr[i] < arr[0])
             {
-                swap(nums[0], nums[i]);
-                heapAdjust(nums, 0, pos);
+                swap(arr[0], arr[i]);
+                heapAdjust(arr, 0, k);
             }
-        return vector<int>(nums.begin(), nums.begin()+pos+1);
-    }
-
-    vector<int> getLeastNumbers(vector<int>& arr, int k) {
-        if (k<=0 || k>arr.size())
-            return {};
-        return heapSort(arr, k-1);        
+        }
+        return vector<int>(arr.begin(), arr.begin() + k + 1);
     }
 };
 
@@ -219,59 +215,6 @@ public:
 ```
 
 <br>
-
----------------------------
-##### 剑指 Offer 41. 数据流中的中位数
->题目描述:如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。
-例如，
-[2,3,4] 的中位数是 3
-[2,3] 的中位数是 (2 + 3) / 2 = 2.5
-设计一个支持以下两种操作的数据结构：
-void addNum(int num) - 从数据流中添加一个整数到数据结构中。
-double findMedian() - 返回目前所有元素的中位数。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof
-
-解题思路：设置两个堆，左边为最大堆，右边为最小堆，且保证右边的堆始终比左边的堆大；这也就是说，如果要加入一个数，得先进左边堆，再进右边的堆。
-
-时间复杂度：addNum:O(logN) findMedian:O(1)
-
-空间复杂度：O(N)
-
-```cpp
-class MedianFinder {
-    std::priority_queue<int, vector<int>, std::less<int>> lheap;//左边的大顶堆
-    std::priority_queue<int, vector<int>, std::greater<int>> rheap;//右边的小顶堆
-public:
-    /** initialize your data structure here. */
-    MedianFinder() {
-    }
-    
-    void addNum(int num) {
-        lheap.push(num);
-        rheap.push(lheap.top());
-        lheap.pop();
-        if (lheap.size() < rheap.size())
-        {
-            lheap.push(rheap.top());
-            rheap.pop();
-        }
-    }
-    
-    double findMedian() {
-        int n = lheap.size() + rheap.size();
-        if (n & 0x1)
-            return lheap.top();
-        else
-            return (double)(lheap.top()+rheap.top())/2;
-    }
-};
-
-```
-
-<br>
-
 
 
 ---------------------------

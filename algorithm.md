@@ -7,7 +7,7 @@
 * [四.栈和队列专题](https://github.com/Worthy-Wang/offerMachine/blob/main/Algorithms/Algorithm4.md)
 * [五.树专题](https://github.com/Worthy-Wang/offerMachine/blob/main/Algorithms/Algorithm5.md)
 * [六.排序专题](https://github.com/Worthy-Wang/offerMachine/blob/main/Algorithms/Algorithm6.md)
-* [七.二分法专题](https://github.com/Worthy-Wang/offerMachine/blob/main/Algorithms/Algorithm7.md)
+* [七.查找专题](https://github.com/Worthy-Wang/offerMachine/blob/main/Algorithms/Algorithm7.md)
 * [八.暴力枚举专题](https://github.com/Worthy-Wang/offerMachine/blob/main/Algorithms/Algorithm8.md)
 * [九.BFS题](https://github.com/Worthy-Wang/offerMachine/blob/main/Algorithms/Algorithm9.md)
 * [十.DFS专题](https://github.com/Worthy-Wang/offerMachine/blob/main/Algorithms/Algorithm10.md)

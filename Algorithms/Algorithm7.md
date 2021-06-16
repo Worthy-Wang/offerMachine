@@ -1,4 +1,4 @@
-- [七.二分法专题](#七二分法专题)
+- [七.查找专题](#七查找专题)
     - [33. 搜索旋转排序数组](#33-搜索旋转排序数组)
     - [81. 搜索旋转排序数组 II](#81-搜索旋转排序数组-ii)
     - [153. 寻找旋转排序数组中的最小值](#153-寻找旋转排序数组中的最小值)
@@ -7,10 +7,11 @@
     - [剑指 Offer 53 - II. 0～n-1中缺失的数字](#剑指-offer-53---ii-0n-1中缺失的数字)
     - [35.搜索插入位置](#35搜索插入位置)
     - [4.寻找两个正序数组的中位数](#4寻找两个正序数组的中位数)
+    - [剑指 Offer 41. 数据流中的中位数](#剑指-offer-41-数据流中的中位数)
 
 
 
-### 七.二分法专题
+### 七.查找专题
 
 ---------------------------
 ##### 33. 搜索旋转排序数组
@@ -410,6 +411,104 @@ public:
             return findK(nums1, nums2, n/2 + 1);
         else
             return (findK(nums1, nums2, n/2+1) + findK(nums1, nums2, n/2)) / 2;
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 剑指 Offer 41. 数据流中的中位数
+>题目描述:如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。
+例如，
+[2,3,4] 的中位数是 3
+[2,3] 的中位数是 (2 + 3) / 2 = 2.5
+设计一个支持以下两种操作的数据结构：
+void addNum(int num) - 从数据流中添加一个整数到数据结构中。
+double findMedian() - 返回目前所有元素的中位数。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof
+
+* **方法一**
+
+解题思路：用vector数组存储添加进行来的元素，保证数组是有序存储的，在插入元素的时候就会进行插入排序。
+
+时间复杂度：addNum:O(N), findMedian : O(1)
+
+空间复杂度： O(N)
+
+
+```cpp
+class MedianFinder {
+    vector<int> nums;
+public:
+    /** initialize your data structure here. */
+    MedianFinder() {
+    }
+    
+    void addNum(int num) {
+        if (nums.empty())
+            nums.push_back(num);
+        else
+        {
+            int i = 0;
+            for (; i < nums.size(); ++i)
+                if (nums[i] > num)
+                    break;
+            nums.insert(nums.begin() + i, num);            
+        }
+    }
+    
+    double findMedian() {
+        int n = nums.size();
+        if (n & 0x1)
+            return nums[n / 2];
+        else
+            return (double)(nums[n/2] + nums[n/2-1]) / 2;
+    }
+};
+
+```
+
+
+
+* **方法二**
+
+解题思路：设置两个堆，左边为最大堆，右边为最小堆，且保证右边的堆始终比左边的堆大；这也就是说，如果要加入一个数，得先进左边堆，再进右边的堆。
+
+时间复杂度：addNum:O(logN) findMedian:O(1)
+
+空间复杂度：O(N)
+
+```cpp
+class MedianFinder {
+    std::priority_queue<int, vector<int>, std::less<int>> lheap;//左边的大顶堆
+    std::priority_queue<int, vector<int>, std::greater<int>> rheap;//右边的小顶堆
+public:
+    /** initialize your data structure here. */
+    MedianFinder() {
+    }
+    
+    void addNum(int num) {
+        lheap.push(num);
+        rheap.push(lheap.top());
+        lheap.pop();
+        if (lheap.size() < rheap.size())
+        {
+            lheap.push(rheap.top());
+            rheap.pop();
+        }
+    }
+    
+    double findMedian() {
+        int n = lheap.size() + rheap.size();
+        if (n & 0x1)
+            return lheap.top();
+        else
+            return (double)(lheap.top()+rheap.top())/2;
     }
 };
 
