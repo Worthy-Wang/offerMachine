@@ -12,9 +12,6 @@
     - [110.平衡二叉树](#110平衡二叉树)
     - [111.二叉树的最小深度](#111二叉树的最小深度)
     - [104.二叉树的最大深度](#104二叉树的最大深度)
-    - [114.二叉树展开为链表](#114二叉树展开为链表)
-    - [116.充填每个节点的下一个右侧节点指针](#116充填每个节点的下一个右侧节点指针)
-    - [117.充填每个节点的下一个右侧节点指针2](#117充填每个节点的下一个右侧节点指针2)
     - [105.从前序与中序遍历序列构造二叉树](#105从前序与中序遍历序列构造二叉树)
     - [106.从中序与后序遍历序列构造二叉树](#106从中序与后序遍历序列构造二叉树)
     - [297. 二叉树的序列化与反序列化](#297-二叉树的序列化与反序列化)
@@ -34,6 +31,9 @@
     - [437.路径总合3](#437路径总合3)
     - [124.二叉树中的最大路径和](#124二叉树中的最大路径和)
     - [129.求根到叶子节点数字之和](#129求根到叶子节点数字之和)
+    - [116.充填每个节点的下一个右侧节点指针](#116充填每个节点的下一个右侧节点指针)
+    - [117.充填每个节点的下一个右侧节点指针2](#117充填每个节点的下一个右侧节点指针2)
+    - [114.二叉树展开为链表](#114二叉树展开为链表)
 
 
 
@@ -334,12 +334,9 @@ public:
 class Solution {
 public:
     bool isSameTree(TreeNode* p, TreeNode* q) {
-        if (!p && !q)
-            return true;
-        else if (!p || !q)
-            return false;
-        else
-            return p->val==q->val && isSameTree(p->left,q->left) && isSameTree(p->right, q->right);
+        if (!p && !q) return true;
+        if (!p || !q) return false;
+        return p->val == q->val && isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
     }
 };
 ```
@@ -362,20 +359,17 @@ public:
 ```cpp
 class Solution {
 public:
-    bool isSymmetric(TreeNode* A, TreeNode* B)
+    bool judge(TreeNode* l, TreeNode* r)
     {
-        if (!A && !B)
-            return true;
-        else if (!A || !B)
-            return false;
-        else
-            return A->val==B->val && isSymmetric(A->left, B->right) && isSymmetric(A->right, B->left);
+        if (!l && !r) return true;
+        if (!l || !r) return false;
+        return l->val == r->val && judge(l->left, r->right) && judge(l->right, r->left);
     }
 
     bool isSymmetric(TreeNode* root) {
         if (!root)
             return true;
-        return isSymmetric(root->left, root->right);
+        return judge(root->left, root->right);
     }
 };
 
@@ -563,227 +557,6 @@ public:
         if (!root)
             return 0;
         return std::max(maxDepth(root->left), maxDepth(root->right)) + 1;
-    }
-};
-
-```
-
-<br>
-
----------------------------
-##### 114.二叉树展开为链表
->题目描述:给定一个二叉树，原地将它展开为一个单链表。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list
-
-* **解法一**
-
-解题思路：1.将右子树连接到左子树的右边最后一个节点右边； 2.左子树转移到右子树 3.向右子树移动。 循环该过程
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    void flatten(TreeNode* root) {
-        while(root)
-        {
-            if (root->left)
-            {
-                TreeNode* lchild = root->left;
-                while (lchild->right)
-                    lchild = lchild->right;
-                lchild->right = root->right;
-                root->right = nullptr;
-                swap(root->left, root->right);
-            }
-            root = root->right;
-        }        
-    }
-};
-
-```
-
-* **解法二**
-
-解题思路：将上面的方法改为递归
-
-时间复杂度：O(N)
-
-空间复杂度：O(N)
-
-
-```cpp
-class Solution {
-public:
-    void flatten(TreeNode* root) {
-        if (!root)
-            return;
-        if (root->left)
-        {
-            TreeNode* lchild = root->left;
-            while(lchild->right)
-                lchild = lchild->right;
-            lchild->right = root->right;
-            root->right = nullptr;
-            swap(root->left, root->right);
-        }
-        flatten(root->right);     
-    }
-};
-
-```
-
-<br>
-
-
-
-<br>
-
----------------------------
-##### 116.充填每个节点的下一个右侧节点指针
->题目描述:给定一个 完美二叉树 ，其所有叶子节点都在同一层，每个父节点都有两个子节点。二叉树定义如下：
-struct Node {
-  int val;
-  Node *left;
-  Node *right;
-  Node *next;
-}
-填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
-初始状态下，所有 next 指针都被设置为 NULL。
-进阶：
-你只能使用常量级额外空间。
-使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node
-
-解题思路：利用已经创建好的next指针，不断右移，将左右子树的next指针迭代填充。每一次cur指针只负责连接left指针和right指针（如果有）的next，如果没由下一层的话，那么就直接返回。
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    Node* connect(Node* root) {
-        
-        Node* cur = root, *nextCur = nullptr, *pre = nullptr;
-        while (cur)
-        {
-            if (cur->left)
-            {
-                if (!nextCur)
-                    nextCur = cur->left;
-                if (!pre)
-                    pre = cur->left;
-                else
-                {
-                    pre->next = cur->left;
-                    pre = cur->left;
-                }
-            }
-            if (cur->right)
-            {
-                if (!nextCur)
-                    nextCur = cur->right;
-                if (!pre)
-                    pre = cur->right;
-                else
-                {
-                    pre->next = cur->right;
-                    pre = cur->right;
-                }
-            }
-
-            if (cur->next)
-                cur = cur->next;
-            else
-            {
-                cur = nextCur;
-                nextCur = nullptr, pre = nullptr;
-            }
-        }
-        return root;
-    }
-};
-
-```
-
-<br>
-
----------------------------
-##### 117.充填每个节点的下一个右侧节点指针2
->题目描述:给定一个二叉树
-struct Node {
-  int val;
-  Node *left;
-  Node *right;
-  Node *next;
-}
-填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
-初始状态下，所有 next 指针都被设置为 NULL。
-进阶：
-你只能使用常量级额外空间。
-使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node-ii
-
-解题思路：该题将完美二叉树改成了普通的二叉树，只需要在上一题的基础上添加更多的条件判断即可。
-
-时间复杂度：O(N)
-
-空间复杂度：O(1)
-
-```cpp
-class Solution {
-public:
-    Node* connect(Node* root) {
-        if (!root)
-            return nullptr;
-        Node* cur = root, *nextCur = nullptr, *pre = nullptr;
-        while (cur)
-        {
-            if (cur->left)
-            {
-                if (!nextCur)
-                    nextCur = cur->left;
-                if (!pre)
-                    pre = cur->left;
-                else
-                {
-                    pre->next = cur->left;
-                    pre = cur->left;
-                }    
-            }
-            if (cur->right)//与上面的格式相同
-            {
-                if (!nextCur)
-                    nextCur = cur->right;
-                if (!pre)
-                    pre = cur->right;
-                else    
-                {
-                    pre->next = cur->right;
-                    pre = cur->right;
-                }
-            }
-
-            //向右
-            if (cur->next)
-                cur = cur->next;
-            else//向下一层
-            {
-                cur = nextCur;
-                nextCur = nullptr, pre = nullptr;
-            }
-        }
-        return root;
     }
 };
 
@@ -995,34 +768,35 @@ public:
 
 ```cpp
 class Solution {
-    bool ans = true;
 public:
-    void DFS(vector<int>& postorder, int l, int r)
+    bool check(vector<int>& postorder, int l, int r)
     {
-        if (l <= r)
+        if (l < r)
         {
-            int root = postorder[r];
-            int mid = r-1;
-            while (mid>=l && postorder[mid]>root)
-                mid--;
-            for (int i = mid; i >= l; i--)
-                if (postorder[i] > root)
+            int rootVal = postorder[r];
+            int mid = r;
+            while (l <= mid && postorder[mid] >= rootVal)
+                --mid;
+            bool flag = true;
+            for (int i = mid; i >= l; --i)
+            {
+                if (postorder[i] > rootVal)
                 {
-                    ans = false;
-                    return;
+                    flag = false;
+                    break;
                 }
-            DFS(postorder, l, mid);
-            DFS(postorder, mid+1, r-1);
-        }
+            }
+
+            return flag && check(postorder, l, mid) &&  check(postorder, mid + 1, r - 1);
+        }else
+            return  true;
     }
 
     bool verifyPostorder(vector<int>& postorder) {
-        if (postorder.empty())
-            return true;
-        DFS(postorder, 0, postorder.size()-1);
-        return ans;
+        return check(postorder, 0, postorder.size()-1);
     }
 };
+
 ```
 
 <br>
@@ -1264,14 +1038,14 @@ public:
 class Solution {
 public:
     int numTrees(int n) {
-        vector<int> dp(n+1, 0);
+        vector<int> dp(n + 1, 0);
         dp[0] = 1, dp[1] = 1;
-        for (int num = 2; num <= n; ++num)
+        for (int k = 2; k < n+1; ++k)
         {
-            int cnt = 0;
-            for (int i = 1; i <= num; ++i)
-                cnt += dp[i-1] * dp[num-i];
-            dp[num] = cnt;
+            int sum = 0;
+            for (int mid = 1; mid <= k; ++mid)
+                sum += dp[mid-1] * dp[k - mid];
+            dp[k] = sum;
         }
         return dp[n];
     }
@@ -1498,19 +1272,23 @@ public:
 ```cpp
 class Solution {
 public:
-    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+    TreeNode* DFS(TreeNode* root, TreeNode* p, TreeNode* q)
+    {
         if (!root)
             return nullptr;
-        if (root==p || root==q)
-            return root;
-        TreeNode* l = lowestCommonAncestor(root->left, p, q);
-        TreeNode* r = lowestCommonAncestor(root->right, p, q);
+        TreeNode* l = DFS(root->left, p, q);
+        TreeNode* r = DFS(root->right, p, q);
         if (l && r)
             return root;
-        else if (!l && !r)
-            return nullptr;
-        else
+        if (root == p || root == q)
+            return root;
+        if (l || r)
             return l ? l : r;
+        return nullptr;        
+    }
+
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        return DFS(root, p, q);
     }
 };
 ```
@@ -1618,21 +1396,25 @@ public:
 
 ```cpp
 class Solution {
+    int ans = 0;
 public:
-    int DFS(TreeNode* root, int sum)
+    void DFS(TreeNode* root, int sum)
     {
         if (!root)
-            return 0;
-        if (root->val == sum)
-            return 1 + DFS(root->left, 0) + DFS(root->right, 0);
-        else 
-            return DFS(root->left, sum-root->val) + DFS(root->right, sum-root->val);
+            return;
+        if (root && sum == root->val)
+            ans++;
+        DFS(root->left, sum - root->val);
+        DFS(root->right, sum - root->val);
     }
 
-    int pathSum(TreeNode* root, int sum) {
+    int pathSum(TreeNode* root, int targetSum) {
         if (!root)
-            return 0;
-        return DFS(root, sum) + pathSum(root->left, sum) + pathSum(root->right, sum);
+            return ans;
+        DFS(root, targetSum);
+        pathSum(root->left, targetSum);
+        pathSum(root->right, targetSum);
+        return ans;
     }
 };
 
@@ -1699,27 +1481,246 @@ public:
 
 ```cpp
 class Solution {
-    int sum = 0;
+    int ans = 0;
 public:
-    void DFS(TreeNode* root, int num)
+    void DFS(TreeNode* root, int sum)
     {
         if (!root)
             return;
-        if (!root->left && !root->right)
+        if (root && !root->left && !root->right)
         {
-            sum += num*10 + root->val;
+            sum = sum * 10 + root->val;
+            ans += sum;
             return;
         }
-
-        DFS(root->left, num*10+root->val);
-        DFS(root->right, num*10+root->val);
+        sum = sum * 10 + root->val;
+        DFS(root->left, sum);
+        DFS(root->right, sum);
     }
 
-    int sumNumbers(TreeNode* root) {
-        if (!root)
-            return 0;
+    int sumNumbers(TreeNode* root) {    
         DFS(root, 0);
-        return sum;
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 116.充填每个节点的下一个右侧节点指针
+>题目描述:给定一个 完美二叉树 ，其所有叶子节点都在同一层，每个父节点都有两个子节点。二叉树定义如下：
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+初始状态下，所有 next 指针都被设置为 NULL。
+进阶：
+你只能使用常量级额外空间。
+使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node
+
+解题思路：利用已经创建好的next指针，不断右移，将左右子树的next指针迭代填充。每一次cur指针只负责连接left指针和right指针（如果有）的next，如果没由下一层的话，那么就直接返回。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    Node* connect(Node* root) {
+        
+        Node* cur = root, *nextCur = nullptr, *pre = nullptr;
+        while (cur)
+        {
+            if (cur->left)
+            {
+                if (!nextCur)
+                    nextCur = cur->left;
+                if (!pre)
+                    pre = cur->left;
+                else
+                {
+                    pre->next = cur->left;
+                    pre = cur->left;
+                }
+            }
+            if (cur->right)
+            {
+                if (!nextCur)
+                    nextCur = cur->right;
+                if (!pre)
+                    pre = cur->right;
+                else
+                {
+                    pre->next = cur->right;
+                    pre = cur->right;
+                }
+            }
+
+            if (cur->next)
+                cur = cur->next;
+            else
+            {
+                cur = nextCur;
+                nextCur = nullptr, pre = nullptr;
+            }
+        }
+        return root;
+    }
+};
+
+```
+
+<br>
+
+---------------------------
+##### 117.充填每个节点的下一个右侧节点指针2
+>题目描述:给定一个二叉树
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+初始状态下，所有 next 指针都被设置为 NULL。
+进阶：
+你只能使用常量级额外空间。
+使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node-ii
+
+解题思路：该题将完美二叉树改成了普通的二叉树，只需要在上一题的基础上添加更多的条件判断即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    Node* connect(Node* root) {
+        if (!root)
+            return nullptr;
+        Node* cur = root, *nextCur = nullptr, *pre = nullptr;
+        while (cur)
+        {
+            if (cur->left)
+            {
+                if (!nextCur)
+                    nextCur = cur->left;
+                if (!pre)
+                    pre = cur->left;
+                else
+                {
+                    pre->next = cur->left;
+                    pre = cur->left;
+                }    
+            }
+            if (cur->right)//与上面的格式相同
+            {
+                if (!nextCur)
+                    nextCur = cur->right;
+                if (!pre)
+                    pre = cur->right;
+                else    
+                {
+                    pre->next = cur->right;
+                    pre = cur->right;
+                }
+            }
+
+            //向右
+            if (cur->next)
+                cur = cur->next;
+            else//向下一层
+            {
+                cur = nextCur;
+                nextCur = nullptr, pre = nullptr;
+            }
+        }
+        return root;
+    }
+};
+
+```
+
+<br>
+
+
+
+---------------------------
+##### 114.二叉树展开为链表
+>题目描述:给定一个二叉树，原地将它展开为一个单链表。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list
+
+* **解法一**
+
+解题思路：1.将右子树连接到左子树的右边最后一个节点右边； 2.左子树转移到右子树 3.向右子树移动。 循环该过程
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    void flatten(TreeNode* root) {
+        while(root)
+        {
+            if (root->left)
+            {
+                TreeNode* lchild = root->left;
+                while (lchild->right)
+                    lchild = lchild->right;
+                lchild->right = root->right;
+                root->right = nullptr;
+                swap(root->left, root->right);
+            }
+            root = root->right;
+        }        
+    }
+};
+
+```
+
+* **解法二**
+
+解题思路：将上面的方法改为递归
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+public:
+    void flatten(TreeNode* root) {
+        if (!root)
+            return;
+        if (root->left)
+        {
+            TreeNode* lchild = root->left;
+            while(lchild->right)
+                lchild = lchild->right;
+            lchild->right = root->right;
+            root->right = nullptr;
+            swap(root->left, root->right);
+        }
+        flatten(root->right);     
     }
 };
 
