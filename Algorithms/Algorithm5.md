@@ -1527,6 +1527,8 @@ struct Node {
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node
 
+* **解法一**
+
 解题思路：利用已经创建好的next指针，不断右移，将左右子树的next指针迭代填充。每一次cur指针只负责连接left指针和right指针（如果有）的next，如果没由下一层的话，那么就直接返回。
 
 时间复杂度：O(N)
@@ -1537,48 +1539,78 @@ struct Node {
 class Solution {
 public:
     Node* connect(Node* root) {
-        
-        Node* cur = root, *nextCur = nullptr, *pre = nullptr;
+        if (!root)
+            return nullptr;
+        Node* cur = root;
         while (cur)
         {
-            if (cur->left)
+            Node* nextCur = cur->left;
+            while (cur)
             {
-                if (!nextCur)
-                    nextCur = cur->left;
-                if (!pre)
-                    pre = cur->left;
-                else
+                if (cur->left && cur->right)
                 {
-                    pre->next = cur->left;
-                    pre = cur->left;
+                    cur->left->next = cur->right;
+                    cur->right->next = cur->next ? cur->next->left : nullptr;
                 }
-            }
-            if (cur->right)
-            {
-                if (!nextCur)
-                    nextCur = cur->right;
-                if (!pre)
-                    pre = cur->right;
-                else
-                {
-                    pre->next = cur->right;
-                    pre = cur->right;
-                }
-            }
-
-            if (cur->next)
                 cur = cur->next;
-            else
-            {
-                cur = nextCur;
-                nextCur = nullptr, pre = nullptr;
             }
+            cur = nextCur; 
+        }     
+        return root;      
+    }
+};
+
+```
+
+
+* **解法二**
+
+解题思路：用树的层序遍历的方法
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+
+class Solution {
+public:
+    void link(std::queue<Node*>& tmpQ)
+    {
+        std::queue<Node*> que = tmpQ;
+        while (!que.empty())
+        {
+            Node* node = que.front();
+            que.pop();
+            node->next = que.empty() ? nullptr : que.front();
+        }
+    }
+
+    Node* connect(Node* root) {
+        if (!root)
+            return nullptr;
+        std::queue<Node*> que;
+        que.push(root);
+        while (!que.empty())
+        {
+            std::queue<Node*> tmpQ;
+            while (!que.empty())
+            {
+                Node* node = que.front();
+                que.pop();
+                if (node->left) tmpQ.push(node->left);
+                if (node->right) tmpQ.push(node->right);
+            }
+            link(tmpQ);
+            swap(tmpQ, que);
         }
         return root;
     }
 };
 
+
 ```
+
 
 <br>
 
@@ -1600,6 +1632,8 @@ struct Node {
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node-ii
 
+* **解法一**
+
 解题思路：该题将完美二叉树改成了普通的二叉树，只需要在上一题的基础上添加更多的条件判断即可。
 
 时间复杂度：O(N)
@@ -1609,51 +1643,102 @@ struct Node {
 ```cpp
 class Solution {
 public:
+    Node* connect(Node* root) { 
+        if (!root)
+            return nullptr;
+        Node* cur = root;
+        while (cur)
+        {
+            Node* nextCur = nullptr, *pre = nullptr;
+            while (cur)
+            {
+                if (cur->left)
+                {
+                    if (!nextCur && !pre)
+                    {
+                        nextCur = cur->left;
+                        pre = cur->left;
+                    }
+                    else
+                    {
+                        pre->next = cur->left;
+                        pre = cur->left;
+                    }
+                }
+                if (cur->right)
+                {
+                    if (!nextCur && !pre)
+                    {
+                        nextCur = cur->right;
+                        pre = cur->right;
+                    }
+                    else
+                    {
+                        pre->next = cur->right;
+                        pre = cur->right;
+                    }
+                }
+                cur = cur->next;
+            }
+            cur = nextCur; 
+        }     
+        return root;     
+    }
+};
+
+```
+
+
+
+* **解法二**
+
+解题思路：用树的层序遍历的方法
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+```cpp
+
+class Solution {
+public:
+    void link(std::queue<Node*>& tmpQ)
+    {
+        std::queue<Node*> que = tmpQ;
+        while (!que.empty())
+        {
+            Node* node = que.front();
+            que.pop();
+            node->next = que.empty() ? nullptr : que.front();
+        }
+    }
+
     Node* connect(Node* root) {
         if (!root)
             return nullptr;
-        Node* cur = root, *nextCur = nullptr, *pre = nullptr;
-        while (cur)
+        std::queue<Node*> que;
+        que.push(root);
+        while (!que.empty())
         {
-            if (cur->left)
+            std::queue<Node*> tmpQ;
+            while (!que.empty())
             {
-                if (!nextCur)
-                    nextCur = cur->left;
-                if (!pre)
-                    pre = cur->left;
-                else
-                {
-                    pre->next = cur->left;
-                    pre = cur->left;
-                }    
+                Node* node = que.front();
+                que.pop();
+                if (node->left) tmpQ.push(node->left);
+                if (node->right) tmpQ.push(node->right);
             }
-            if (cur->right)//与上面的格式相同
-            {
-                if (!nextCur)
-                    nextCur = cur->right;
-                if (!pre)
-                    pre = cur->right;
-                else    
-                {
-                    pre->next = cur->right;
-                    pre = cur->right;
-                }
-            }
-
-            //向右
-            if (cur->next)
-                cur = cur->next;
-            else//向下一层
-            {
-                cur = nextCur;
-                nextCur = nullptr, pre = nullptr;
-            }
+            link(tmpQ);
+            swap(tmpQ, que);
         }
         return root;
     }
 };
 
+
 ```
+
+
 
 <br>
 
