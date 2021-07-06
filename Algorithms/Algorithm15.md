@@ -11,6 +11,7 @@
     - [12.整形转罗马数字](#12整形转罗马数字)
     - [13.罗马数字转整形](#13罗马数字转整形)
     - [17.电话号码的字母组合](#17电话号码的字母组合)
+    - [470. 用 Rand7() 实现 Rand10()](#470-用-rand7-实现-rand10)
 
 
 ### 十五.细节实现专题
@@ -580,3 +581,80 @@ public:
 ```
 
 <br>
+
+
+
+---------------------------
+##### 470. 用 Rand7() 实现 Rand10()
+>题目描述:给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。此题需要看原链接。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/implement-rand10-using-rand7
+
+解题思路：rand7()能等概率生成 1~7；
+rand7() - 1 能等概率生成 0 ~ 6；
+(rand7() - 1) * 7 能够等概率生成 0, 7, 14, 21, 28, 35, 42;
+(rand7() - 1) * 7 + rand7() 能等概率生成 1~49
+
+时间复杂度：O(1) 当然最坏情况下会一直>40也就是O(无穷)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    int rand10() {
+        int num;
+        do
+        {
+            num = (rand7() - 1) * 7 + rand7(); // 1~49
+        } while (num > 40);
+        return num % 10 + 1; //(1~40 -1) % 10 + 1
+    }
+};
+```
+
+<br>
+
+
+>如果是random5 实现 random7 的话：
+
+```cpp
+    int random7()
+    {
+        int i;
+        do
+        {
+            i = (rand5() - 1) * 5 + rand5();  // i is now uniformly random between 1 and 25
+        } while(i > 21);
+        // i is now uniformly random between 1 and 21
+        return i % 7 + 1;  // result is now uniformly random between 1 and 7
+    }
+```
+
+<br>
+
+
+>还有一种情景题实现：
+30万个员工，工卡是1-30万，抽出10万个员工发奖。
+已有一个随机数生成函数rand()能够生成0-65535的整数，写一个公平的抽奖程序，输出这10万个员工的工卡号码
+(进阶：30万抽99999个员工)
+
+
+```cpp
+
+int rand300000()
+{
+	int x = 0;
+    do
+    {
+        x= rand() * 65536 + rand() + 1; //(0 ~ 65535) * 65536  + random65536() = (1~ 65536*65536)
+    }while(x > 65536*65536/30w * 30w);
+    return x % 30w + 1;
+}
+
+```
+
+<br>
+
+

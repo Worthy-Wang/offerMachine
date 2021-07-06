@@ -4,6 +4,8 @@
     - [121.买卖股票的最佳时机](#121买卖股票的最佳时机)
     - [122.买卖股票的最佳时机2](#122买卖股票的最佳时机2)
     - [123.买卖股票的最佳时机3](#123买卖股票的最佳时机3)
+    - [198. 打家劫舍](#198-打家劫舍)
+    - [213. 打家劫舍 II](#213-打家劫舍-ii)
 
 
 ### 十一.贪心法专题
@@ -195,4 +197,106 @@ public:
 
 <br>
 
+
+
+---------------------------
+##### 198. 打家劫舍
+>题目描述：你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/house-robber
+
+解题思路：动态规划，dp[i]代表到第i个房间能够偷到的最大金钱。dp[i] = std::max(dp[i-2] + nums[i], dp[i-1]);
+其中动态规划师数组可以简化。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        if (0 == n)
+            return 0;
+        else if (1 == n)
+            return nums[0];
+        else
+        {
+            vector<int> dp(n, 0);
+            int dp0 = nums[0];
+            int dp1 = std::max(nums[0], nums[1]);
+            int dp2 = dp1;
+            for (int i = 2; i < n; ++i)
+            {
+                dp2 = std::max(dp0 + nums[i], dp1);
+                dp0 = dp1;
+                dp1 = dp2;
+            }
+            return dp2;
+        }
+    }
+};
+
+```
+
+<br>
+
+
+---------------------------
+##### 213. 打家劫舍 II
+>题目描述:你是一个专业的小偷，计划偷窃沿街的房屋，每间房内都藏有一定的现金。这个地方所有的房屋都 围成一圈 ，这意味着第一个房屋和最后一个房屋是紧挨着的。同时，相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警 。
+给定一个代表每个房屋存放金额的非负整数数组，计算你 在不触动警报装置的情况下 ，今晚能够偷窃到的最高金额。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/house-robber-ii
+
+解题思路：该题解决方法和上一题相同，只是计算的时候需要把第一个和最后一个区分开即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+
+```cpp
+class Solution {
+public:
+    int robMax(vector<int>& nums, int start, int end)
+    {
+        vector<int> dp(end - start + 1, 0);
+        int dp0 = nums[start];
+        int dp1 = std::max(nums[start], nums[start + 1]);
+        int dp2 = dp1;
+        for (int i = start + 2; i <= end; ++i)
+        {
+            dp2 = std::max(dp0 + nums[i], dp1);
+            dp0 = dp1;
+            dp1 = dp2;
+        }
+        return dp2;
+    }
+
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        if (0 == n)
+            return 0;
+        else if (1 == n)
+            return nums[0];
+        else if (2 == n)
+            return std::max(nums[0], nums[1]);
+        else
+        {
+            return std::max(robMax(nums, 0, n-2), robMax(nums, 1, n-1));
+        }
+        
+    }
+};
+
+
+```
+
+<br>
 

@@ -20,7 +20,9 @@
     - [876.链表的中间节点](#876链表的中间节点)
     - [剑指 Offer 52. 两个链表的第一个公共节点](#剑指-offer-52-两个链表的第一个公共节点)
     - [146.LRU缓存机制](#146lru缓存机制)
+    - [460. LFU 缓存](#460-lfu-缓存)
     - [138.复制带随机指针的链表](#138复制带随机指针的链表)
+    - [234. 回文链表](#234-回文链表)
 
 
 ### 二.链表专题
@@ -1312,6 +1314,115 @@ public:
 
 ```
 
+<br>
+
+
+-----------------------------------
+##### 460. LFU 缓存
+>题目描述：请你为 最不经常使用（LFU）缓存算法设计并实现数据结构。
+实现 LFUCache 类：
+LFUCache(int capacity) - 用数据结构的容量 capacity 初始化对象
+int get(int key) - 如果键存在于缓存中，则获取键的值，否则返回 -1。
+void put(int key, int value) - 如果键已存在，则变更其值；如果键不存在，请插入键值对。当缓存达到其容量时，则应该在插入新项之前，使最不经常使用的项无效。在此问题中，当存在平局（即两个或更多个键具有相同使用频率）时，应该去除 最近最久未使用 的键。
+注意「项的使用次数」就是自插入该项以来对其调用 get 和 put 函数的次数之和。使用次数会在对应项被移除后置为 0 。
+为了确定最不常使用的键，可以为缓存中的每个键维护一个 使用计数器 。使用计数最小的键是最久未使用的键。
+当一个键首次插入到缓存中时，它的使用计数器被设置为 1 (由于 put 操作)。对缓存中的键执行 get 或 put 操作，使用计数器的值将会递增。
+进阶：你可以为这两种操作设计时间复杂度为 O(1) 的实现吗？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/lfu-cache
+
+解题思路：设置两个哈希表，分别是key哈希和freq哈希。key哈希可以快速查找有无该key值；freq哈希可以记录不同频率的节点，
+list左边代表新加入的，右边代表后加入的，容量满的话删除右边的节点。同时设置一个最小频率，作为记录。这样设计可以保证该LFU算法的时间复杂度为O(1)。
+
+时间复杂度：O(1)
+
+空间复杂度：O(N)
+
+
+```cpp
+struct Node{
+    int key;
+    int val;
+    int freq;
+    Node(int _key, int _val, int _freq) : key(_key), val(_val), freq(_freq){}
+};
+
+
+class LFUCache {
+    int _minFreq; //当前最小频率
+    int _capacity; 
+    std::unordered_map<int, std::list<Node>::iterator> _keyTable;
+    std::unordered_map<int, list<Node>> _freqTable;
+public:
+    LFUCache(int capacity) {
+        _minFreq = 0;
+        _capacity = capacity;
+    }
+    
+    int get(int key) {
+        if (_capacity == 0 || _keyTable.find(key) == _keyTable.end())
+            return -1;
+        std::list<Node>::iterator it = _keyTable[key];
+        int val = it->val, freq = it->freq;
+        //删除freq链表记录
+        _freqTable[freq].erase(it);
+        //若链表为空，那么删除该freq对应链表并更新_minFreq；
+        if (_freqTable[freq].empty())
+        {
+            _freqTable.erase(freq);
+            if (_minFreq == freq)
+                _minFreq += 1;
+        }
+        //频率+1，并重新插入链表
+        _freqTable[freq + 1].push_front(Node(key, val, freq+1));
+        _keyTable[key] = _freqTable[freq + 1].begin();
+        return val;
+    }
+    
+    void put(int key, int value) {
+        if (_capacity == 0)
+            return;
+        //未找到该值，进行添加
+        if (_keyTable.find(key) == _keyTable.end())
+        {
+            if (_keyTable.size() == _capacity)
+            {
+                //容量已满，需要将最后的节点删除
+                auto node = _freqTable[_minFreq].back();
+                _keyTable.erase(node.key);
+                _freqTable[_minFreq].pop_back();
+                if (_freqTable[_minFreq].empty())
+                {
+                    _freqTable.erase(_minFreq);
+                }
+            }
+            //有空余位置，直接添加
+            _freqTable[1].push_front(Node(key, value, 1));
+            _keyTable[key] = _freqTable[1].begin();
+            _minFreq = 1;
+        }else//找到了该value，类似 get操作
+        {
+            std::list<Node>::iterator it = _keyTable[key];
+            int freq = it->freq;
+            _freqTable[freq].erase(it);
+            if (_freqTable[freq].empty())
+            {
+                _freqTable.erase(freq);
+                if (_minFreq == freq)
+                    _minFreq += 1;
+            }
+            _freqTable[freq + 1].push_front(Node(key, value, freq+1));
+            _keyTable[key] = _freqTable[freq + 1].begin();
+        }
+        
+    }
+};
+
+
+```
+
+<br>
 
 
 -----------------------------------
@@ -1391,5 +1502,81 @@ public:
     }
 };
 ```
+
+<br>
+
+
+
+-----------------------------------
+##### 234. 回文链表
+>题目描述：请判断一个链表是否为回文链表。
+进阶：
+你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/palindrome-linked-list
+
+解题思路：先找到中间节点，再将中间节点以后的链表进行反转，再判断这两个链表是否相等
+
+时间复杂度：O(N)
+
+空间复杂度：O(1)
+
+```cpp
+class Solution {
+public:
+    ListNode* middleNode(ListNode* head) {
+        if (!head || !head->next)
+            return head;
+        ListNode* s = head, *f = head;
+        while (1)
+        {
+            if (!f || !f->next || !f->next->next)
+                return s;
+            s = s->next;
+            f = f->next->next;
+        }
+        return s;
+    }
+    
+    ListNode* reverseList(ListNode* head) {
+        ListNode dummy(-1);
+        ListNode *cur = head;
+        while (cur)
+        {
+            ListNode *temp = cur->next;
+            cur->next = dummy.next;
+            dummy.next = cur;
+            cur = temp;
+        }   
+        return dummy.next;
+    }
+
+    bool check(ListNode* l1, ListNode* l2)
+    {
+        while  (l1 && l2)
+        {
+            if (l1->val != l2->val)
+                return false;
+            l1 = l1->next;
+            l2 = l2->next;
+        }
+        return true;
+    }
+
+    bool isPalindrome(ListNode* head) {
+        if (!head || !head->next)
+            return head;
+        ListNode* mid = middleNode(head);
+        ListNode* rHead = reverseList(mid->next);
+        mid->next = nullptr;;
+        return check(head, rHead);        
+    }
+
+};
+
+
+```
+
 
 <br>

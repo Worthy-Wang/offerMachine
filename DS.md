@@ -10,7 +10,7 @@
 * [树（七）红黑树](https://blog.csdn.net/Worthy_Wang/article/details/113853780)
 
 ### 图 
-* [图（一）邻接表与邻接矩阵](https://blog.csdn.net/worthy_wang/category_9407057.html)
+* [图（一）邻接表与邻接矩阵](https://blog.csdn.net/Worthy_Wang/article/details/104143775)
 * [图（二）最短路径：Dijkstra算法和Floyd算法](https://blog.csdn.net/Worthy_Wang/article/details/103921463)
 * [图（三）最小生成树：Prim算法和Kruskal算法](https://blog.csdn.net/Worthy_Wang/article/details/105769734)
 * [图（四）拓扑排序与关键路径](https://blog.csdn.net/Worthy_Wang/article/details/105770703)
@@ -19,3 +19,4 @@
 ### 排序
 
 * [排序算法：数组版+链表版实现](https://blog.csdn.net/Worthy_Wang/article/details/102466576)
+

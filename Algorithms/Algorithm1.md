@@ -10,6 +10,7 @@
     - [15.三数之和](#15三数之和)
     - [16.最接近的三数之和](#16最接近的三数之和)
     - [18.四数之和](#18四数之和)
+    - [494. 目标和](#494-目标和)
     - [11.盛最多水的容器](#11盛最多水的容器)
     - [42.接雨水](#42接雨水)
     - [84.柱状图中最大的矩形](#84柱状图中最大的矩形)
@@ -17,6 +18,7 @@
     - [面试题 17.24. 最大子矩阵](#面试题-1724-最大子矩阵)
     - [53.最大子序和](#53最大子序和)
     - [128.最长连续序列](#128最长连续序列)
+    - [300. 最长递增子序列](#300-最长递增子序列)
     - [134.加油站](#134加油站)
     - [135.分发糖果](#135分发糖果)
     - [48.旋转图像](#48旋转图像)
@@ -628,6 +630,63 @@ public:
 
 <br>
 
+---------------------------
+##### 494. 目标和
+>题目描述:给你一个整数数组 nums 和一个整数 target 。
+向数组中的每个整数前添加 '+' 或 '-' ，然后串联起所有整数，可以构造一个 表达式 ：
+例如，nums = [2, 1] ，可以在 2 之前添加 '+' ，在 1 之前添加 '-' ，然后串联起来得到表达式 "+2-1" 。
+返回可以通过上述方法构造的、运算结果等于 target 的不同 表达式 的数目。
+示例 1：
+输入：nums = [1,1,1,1,1], target = 3
+输出：5
+解释：一共有 5 种方法让最终目标和为 3 。
+-1 + 1 + 1 + 1 + 1 = 3
++1 - 1 + 1 + 1 + 1 = 3
++1 + 1 - 1 + 1 + 1 = 3
++1 + 1 + 1 - 1 + 1 = 3
++1 + 1 + 1 + 1 - 1 = 3
+示例 2：
+输入：nums = [1], target = 1
+输出：1
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/target-sum
+
+解题思路：用DFS遍历所有的情况
+
+时间复杂度：O(2^N)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+    int ans = 0;
+public:
+    void DFS(vector<int>& nums, int target, int idx, int sum)
+    {
+        if (idx == nums.size())
+        {
+            if (sum == target)
+                ans++;
+        }else
+        {
+            DFS(nums, target, idx + 1, sum + nums[idx]);            
+            DFS(nums, target, idx + 1, sum - nums[idx]);            
+        }
+        
+    }
+
+    int findTargetSumWays(vector<int>& nums, int target) {
+        DFS(nums, target, 0, 0);
+        return ans;
+    }
+};
+
+```
+
+<br>
+
+
 
 
 ---------------------------
@@ -1134,6 +1193,100 @@ public:
 <br>
 
 
+
+--------------------------
+##### 300. 最长递增子序列
+>题目描述：给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+进阶：
+你可以设计时间复杂度为 O(n^2) 的解决方案吗？
+你能将算法的时间复杂度降低到 O(n log(n)) 吗?
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-increasing-subsequence
+
+* **解法一**
+
+解题思路：动态规划，dp[i]代表到位置i为止的最长子序列长度。dp[i] = std::max(dp[i], dp[j] + 1);
+
+时间复杂度：O(N^2)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        int n = nums.size();
+        int maxLen = 0;
+        vector<int> dp(n, 0);
+        for (int i = 0; i < n; ++i)
+        {
+            dp[i] = 1;
+            for (int j = 0; j < i; ++j)
+            {
+                if (nums[j] < nums[i])
+                    dp[i] = std::max(dp[i], dp[j] + 1);
+            }
+            maxLen = std::max(maxLen, dp[i]);
+        }
+        return maxLen;
+    }
+};
+
+```
+
+
+* **解法二**
+
+解题思路：贪心+二分法，dp[i]代表长度为i的最长上升子序列末尾元素的最小值。并且用len记录目前最长上升子序列的长度
+
+时间复杂度：O(NlogN)
+
+空间复杂度：O(N)
+
+```cpp
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        if (nums.empty())
+            return 0;
+        int n = nums.size();
+        int len = 1;
+        vector<int> dp(n + 1, 0);
+        dp[len] = nums[0];
+        for (int i = 1; i < n; ++i)
+        {
+            if (nums[i] > dp[len])
+                dp[++len] = nums[i];
+            else
+            {
+                int l = 1, r = len;
+                int k = 0;
+                while (l <= r)
+                {
+                    int mid = (l + r) >> 1;
+                    if (dp[mid] < nums[i])
+                    {
+                        k  = mid;
+                        l = mid + 1;
+                    }else
+                    {
+                        r = mid - 1;
+                    }
+                }
+                dp[k + 1] = nums[i];                
+            }
+        }
+        return len;
+    }
+};
+
+```
+
+
+<br>
 
 
 -----------------------
@@ -1742,5 +1895,4 @@ public:
 ```
 
 <br>
-
 
