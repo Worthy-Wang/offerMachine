@@ -34,6 +34,7 @@
     - [116.充填每个节点的下一个右侧节点指针](#116充填每个节点的下一个右侧节点指针)
     - [117.充填每个节点的下一个右侧节点指针2](#117充填每个节点的下一个右侧节点指针2)
     - [114.二叉树展开为链表](#114二叉树展开为链表)
+    - [199. 二叉树的右视图](#199-二叉树的右视图)
 
 
 
@@ -1813,3 +1814,97 @@ public:
 
 <br>
 
+---------------------------
+##### 199. 二叉树的右视图
+>给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+示例:
+输入: [1,2,3,null,5,null,4]
+输出: [1, 3, 4]
+解释:
+   1            <---
+ /   \
+2     3         <---
+ \     \
+  5     4       <---
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/binary-tree-right-side-view
+
+* **解法一**
+
+解题思路: BFS， 层序遍历的方法，再把每一层最右边的节点保存起来
+
+时间复杂度：O(N)
+
+空间复杂度：O(N)
+
+
+```cpp
+class Solution {
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        if (!root)
+            return {};
+        std::queue<TreeNode*> que;
+        vector<int> ans;
+        ans.push_back(root->val);
+        que.push(root);
+        while (!que.empty())
+        {
+            vector<int> vec;
+            std::queue<TreeNode*> tempQue;
+            while (!que.empty())
+            {
+                TreeNode* node = que.front();
+                que.pop();
+                vec.push_back(node->val);
+                if (node->left) tempQue.push(node->left);
+                if (node->right) tempQue.push(node->right);
+            }
+            swap(tempQue, que);
+            if (!que.empty())
+                ans.push_back(que.back()->val);
+        }  
+        return ans;
+    }
+
+};
+
+
+```
+
+
+* **解法二**
+
+解题思路:DFS，根->右->左的顺序进行，并且再设置树的深度，用一个vector保存最右边的元素即可。
+
+时间复杂度：O(N)
+
+空间复杂度：O(logN)，因为辅助空间只需要存储每一层的最右边元素。
+
+
+```cpp
+
+class Solution {
+    vector<int> ans;
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        DFS(root, 0);
+        return ans;
+    }
+
+    void DFS(TreeNode* root, int depth)
+    {
+        if  (!root)
+            return;
+        if (depth == ans.size()){
+            ans.push_back(root->val);
+        }
+        DFS(root->right, depth + 1);
+        DFS(root->left, depth + 1);
+    }
+};
+
+```
+
+<br>
