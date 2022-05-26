@@ -1,3 +1,4 @@
+## 目录
 - [OSI七层模型？](#osi七层模型)
 - [有连接，无连接，可靠协议，不可靠，有状态，无状态的区别?](#有连接无连接可靠协议不可靠有状态无状态的区别)
 - [简述HTTP协议?](#简述http协议)
@@ -45,6 +46,11 @@
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -------------
 
 ## 有连接，无连接，可靠协议，不可靠，有状态，无状态的区别?
@@ -61,6 +67,11 @@
 * **无状态**：对于事务处理没有记忆能力，对于之前处理过的事务不再保留其信息。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -------------
 ## 简述HTTP协议?
@@ -179,6 +190,11 @@ https://www.runoob.com/http/http-status-codes.html
 
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -----------
 ## GET和POST有什么区别？
 1.	GET重点在从服务器获取数据；POST重点在于向服务器发送数据。
@@ -198,6 +214,11 @@ https://www.runoob.com/http/http-status-codes.html
 <br>
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -----------
 ## 301和302状态码的区别？ 
 
@@ -206,6 +227,11 @@ https://www.runoob.com/http/http-status-codes.html
 
 <br>
 
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
 --------------
@@ -219,6 +245,11 @@ https://www.runoob.com/http/http-status-codes.html
 6.	浏览器解析`html`文本内容并显示。
 
 <br>
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
 --------
@@ -237,6 +268,11 @@ CONNECTION字段设置为`closed`，在建立连接，传输数据之后，立�
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ----------
 
 ## HTTP是不保存状态的协议，那么如何保存用户的状态？（Cookie，Session的区别是什么？）
@@ -252,11 +288,21 @@ Cookie存储在客户端浏览器中，会记录下该浏览器对应的SessionI
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -----------
 ## 如果Cookie被禁用怎么办？
 可用将URL重写，也就是将SessionID直接附加在URL路径的后面。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -------------
 
@@ -268,6 +314,11 @@ Cookie存储在客户端浏览器中，会记录下该浏览器对应的SessionI
 4.	**断点续传功能**：HTTP1.1中请求头中引入了range，可以只请求资源的某个部分，实现断点续传。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -----------------
 ##  URI和URL的区别是什么？
@@ -281,11 +332,21 @@ Cookie存储在客户端浏览器中，会记录下该浏览器对应的SessionI
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ------------
 ## HTTP 和 HTTPS的区别是什么？
 详见网络安全专题。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -----------------
 ## TCP协议是什么？
@@ -299,6 +360,11 @@ TCP协议是一个**面向连接**的，**可靠**的，**基于字节流**的**
 >![在这里插入图片描述](https://img-blog.csdnimg.cn/20201029100855856.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ----------
 ## 简述TCP头部结构？
@@ -344,6 +410,11 @@ FIN：结束报文段，通知对方本方将要关闭连接
 >![在这里插入图片描述](https://img-blog.csdnimg.cn/20201029103324330.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
 >
 <br>
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
 -----------------
@@ -420,6 +491,11 @@ TCP报文头部信息：ACK = 1，seq = u + 1， ack = w + 1。
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ------------
 ## 为什么要三次握手？只有两次握手可以吗？
 三次握手才能保证双方的接收发送能力都是正常的，第三次握手有**两点作用**：
@@ -429,6 +505,11 @@ TCP报文头部信息：ACK = 1，seq = u + 1， ack = w + 1。
 2. 如果第二次握手的ACK信号丢失，服务器直接进入ESTABLISHED状态，而客户端没有收到ACK信号，还处于SYN-SEND阶段，则会形成死锁。
 
 <BR>
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
 ----------
@@ -442,12 +523,22 @@ TCP报文头部信息：ACK = 1，seq = u + 1， ack = w + 1。
 <br>
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ------------
 ## 为什么连接的时候是三次握手，关闭的时候却是四次挥手?(为什么挥手需要四次，三次挥手不行吗？）
 
 **挥手必须四次**，因为四次挥手中，服务器收到FIN后，并不能立刻返回FIN-ACK，而是先发送ACK，**也这是为什么挥手需要四次的原因，因为需要等到数据传输完成才行**，再发送FIN-ACK，这两个不能合到一起发送，所以需要四次挥手来关闭连接。
 
 <br>
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
 --------------
@@ -465,6 +556,11 @@ TCP报文头部信息：ACK = 1，seq = u + 1， ack = w + 1。
 
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -----
 ## 什么是半连接队列？什么是全连接队列？
 * **半连接状态**
@@ -476,6 +572,11 @@ TCP报文头部信息：ACK = 1，seq = u + 1， ack = w + 1。
 **全连接状态**也就是完成了三次握手的连接，全连接队列将存放这些连接。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -----
 
@@ -489,6 +590,11 @@ ISN不固定有两个好处：
 2. 固定ISN容易遭受到黑客攻击，黑客能得知服务器的ISN，能在第三次握手正确的返回ACK报文，与服务器建立连接。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ---------
 ## SYN攻击是什么？(泛洪攻击是什么？)
@@ -506,12 +612,22 @@ ISN不固定有两个好处：
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ----------
 ## 如果已经建立了连接，但是客户端突然出现故障了怎么办?
 
 服务端会有一个**Keep-Alive**心跳包机制，也就是**定期内会通过发送数据包检测客户端是否正常运行**，那么就认为客户端已经出现故障， 服务器自动断开。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 --------------
 ## 为什么会发生TCP粘包拆包？如何处理？
@@ -541,6 +657,11 @@ ISN不固定有两个好处：
 3.	设置消息边界，一般使用 ‘\n’ 作为边界。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -----------
 ## TCP协议如何保证可靠传输？
@@ -599,6 +720,11 @@ TCP发送端与接收端都有内核socket缓冲区，当接收缓冲区的剩�
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201029173930554.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ---------------
 ## 简述UDP协议？UDP的头部结构？
 我们将用户数据报协议（User Datagram Protocol）称为UDP，它是一种 **无连接**，**不可靠**，**基于数据报** 的协议。
@@ -623,6 +749,11 @@ UDP头部长为固定的**8字节**；
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ----------
 ## TCP/UDP协议的区别
 **这个问题属于一个发散性，综合性的问题，相当于让面试者详细的解释TCP协议与UDP协议。**
@@ -636,6 +767,11 @@ UDP头部长为固定的**8字节**；
 4.  TCP一般用于文件传输，收发邮件，远程登录，HTTP等，UDP一般用于即时通信，比如语音，视频，直播，DNS等。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ---------------
 ## 简述IP协议？IP协议的头部结构？
@@ -694,6 +830,11 @@ IP数据报头部最小为**20**个字节，最大为**60**个字节。为了方
 
 
 <br>
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
 ------------
@@ -764,6 +905,11 @@ E类地址作为保留地址之后使用。
 <br>
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -------------
 ## 0.0.0.0	与 127.0.0.1 与 localhost的区别?
 * **127.0.0.1**
@@ -784,6 +930,11 @@ PC1 和 PC2 在同一个局域网中，PC1的地址是172.21.0.7
 <br>
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -------------
 ## NAT协议的作用？（公网与私网的区别？）
 
@@ -801,6 +952,11 @@ NAT路由表如下：
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201030103824430.png#pic_center)
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 --------------
 ## ARP协议是什么？
@@ -822,3 +978,8 @@ NAT路由表如下：
 **注意**：ARP请求只能在局域网中进行，且ARP协议并不会验明其真实性就记入ARP缓存，所以发送的信息可能会到达错误的主机，形成ARP欺骗。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
