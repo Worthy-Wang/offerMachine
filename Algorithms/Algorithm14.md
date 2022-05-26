@@ -1,3 +1,4 @@
+## 目录
 - [十四.位操作专题](#十四位操作专题)
     - [50.Pow(x,n)](#50powxn)
     - [69.x的平方根](#69x的平方根)
@@ -67,6 +68,11 @@ public:
 
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ---------------------------
 ##### 69.x的平方根
 >题目描述:实现 int sqrt(int x) 函数。
@@ -108,6 +114,11 @@ public:
 
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -------------------------------------------
 ##### 136.只出现一次的数字
 >题目描述：给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
@@ -135,6 +146,11 @@ public:
 ```
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -------------------------------------------
 ##### 137.只出现一次的数字2
@@ -172,6 +188,11 @@ public:
 ```
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ----------------------------
 ##### 260.只出现一次的数字3
@@ -214,6 +235,11 @@ public:
 ```
 
 <br>
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
 ---------------------------------
@@ -270,6 +296,11 @@ public:
 
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ---------------------------
 ##### 剑指 Offer 64. 求1+2+…+n
 >题目描述:求 1+2+...+n ，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
@@ -295,6 +326,11 @@ public:
 ```
 
 <br>
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
 ---------------------------
@@ -326,6 +362,11 @@ public:
 ```
 
 <br>
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
 ---------------------------
@@ -375,6 +416,11 @@ public:
 
 <br>
 
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
 ---------------------------
@@ -430,4 +476,9 @@ public:
 
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
