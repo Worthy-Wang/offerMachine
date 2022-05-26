@@ -1,3 +1,4 @@
+## 目录
 - [阻塞、非阻塞、同步、异步的区别？](#阻塞非阻塞同步异步的区别)
 - [IO的五种模型？](#io的五种模型)
 - [epoll/poll/select 的区别？](#epollpollselect-的区别)
@@ -35,6 +36,11 @@
 此处的小王对应**用户进程**，书对应**数据**，买书对应**系统调用**，书店老板对应**内核**。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -------------
 ## IO的五种模型？
@@ -82,6 +88,11 @@ IO的五种模型：
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ----------
 ## epoll/poll/select 的区别？
 
@@ -126,6 +137,11 @@ epoll在select和poll上面进行了改进，解决了上面的三个问题。
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ----------
 
 ## epoll中ET，LT的区别？
@@ -149,6 +165,11 @@ LT水平触发是缺省的工作方式，**只要缓冲区有数据就会触发*
 缺点：buffer有可能无法一次性取出缓冲区中的所有数据，导致缓冲区中有数据剩余。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ------------
 ## Reactor/Proactor模式是什么？
@@ -224,11 +245,21 @@ Reactor的常用模型有以下几种：
 <br>
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ----------
 ## 大规模连接上来后，并发模型怎么设计？
 采用Reactor + threadpool模型并发网络编程模型。其中epoll可以直接采用**libevent**。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ---------
 ## select返回可读，但是使用read一直只能读到0字节，什么情况？
@@ -236,12 +267,22 @@ Reactor的常用模型有以下几种：
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ---------
 ## connect函数长时间阻塞该怎么办？
 1. 将socket设置为非阻塞模式，如果服务器发生错误，那么执行connect的时候就可以立刻返回。再通过select来测试socket是否可写，用来判断connect是否成功连接上。
 2. 通过信号处理函数设置定时器。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ----------------
 ## socket什么情况下可读？
@@ -257,6 +298,11 @@ Reactor的常用模型有以下几种：
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ----------
 ## UDP通信中调用connect有什么作用？和TCP连接中的connect有什么区别？
 1. UDP进行connect后并不会建立三次握手，而是建立一对一的连接，但UDP连接的本质没有变，仍然是不可靠的连接。
@@ -267,6 +313,11 @@ Reactor的常用模型有以下几种：
 	
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ------------
 ## keepalive是什么？如何使用？
@@ -283,6 +334,11 @@ Keepalive发送的时间可以通过 cat /proc/sys/net/ipv4/tcp_keepalive_time �
 <br>
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -------------
 ## Socket编程中，如果client断开，服务器如何快速知道？
 1. **正常断开**：通过recv/read等系统调用会不断接收到0字节。
@@ -290,6 +346,11 @@ Keepalive发送的时间可以通过 cat /proc/sys/net/ipv4/tcp_keepalive_time �
 2. **异常断开**：使用心跳包（keepalive机制）；也就是server在一段时间没有接收到client的数据时，会向client发送keepalive packet，根据client的回复做出判断。
 
 >**补充：Keepalive 相关内容见上一个问题。**
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -------------
 ## Socket通信流程是怎样的？
@@ -305,5 +366,10 @@ Keepalive发送的时间可以通过 cat /proc/sys/net/ipv4/tcp_keepalive_time �
 * **四次挥手过程**：
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201102123342361.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dvcnRoeV9XYW5n,size_16,color_FFFFFF,t_70#pic_center)
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
