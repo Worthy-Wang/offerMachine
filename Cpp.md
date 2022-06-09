@@ -1,3 +1,5 @@
+## 目录
+
 - [简述 const 关键字？](#简述-const-关键字)
 - [简述 static 关键字？](#简述-static-关键字)
 - [new/delete 和 malloc/free 的区别？](#newdelete-和-mallocfree-的区别)
@@ -74,6 +76,11 @@
 <br>
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ------------------------------------------
 
 ## 简述 static 关键字？
@@ -96,6 +103,11 @@
 静态成员函数属于整个类，`由于没有this指针，所以只能调用静态成员变量`；
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ----------------
 ## new/delete 和 malloc/free 的区别？
@@ -168,6 +180,11 @@ public:
 ```
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ------------
 ## 简述extern关键字？
 **extern关键字有两个作用：**
@@ -177,6 +194,11 @@ public:
 对于变量或函数只进行申明而不是定义，`提示编译器该变量或函数的定义需要在另一个文件中寻找`。在编译阶段，目标模块A虽然找不到extern 修饰的变量或者函数，但不会报错，而是在链接时从模块B中找到该函数或变量。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -------------------
 
@@ -193,6 +215,11 @@ public:
 可以，代表指针指向的地址是volatile的。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ------------
 ## mutable关键字？
@@ -217,6 +244,11 @@ public:
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -----------------
 ## 指针与引用的区别？（C++中引用的特点？）
 1. 引用是变量的别名，本身不具有单独的内存空间，属于直接访问；指针是指向地址的变量，有单独的内存空间，属于间接访问。
@@ -226,6 +258,11 @@ public:
 **总的来说，引用既有指针的效率，同时也更加方便直观。**
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ---------------------
 ## C++内存的五大分区？（内存的分配方式有哪几种？）
@@ -244,6 +281,11 @@ public:
 
 <br>
 
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 ____________________________
 ## 堆和栈的区别？
 
@@ -255,6 +297,11 @@ ____________________________
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 --------------------
 ## 静态内存分配与动态内存分配的区别？
 1. **时间**：静态内存分配在编译时期完成；动态内存分配在程序运行时期完成。
@@ -263,6 +310,11 @@ ____________________________
 （该概念和静态联编，动态联编有些相似）
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ------------------
 ## 深拷贝与浅拷贝
@@ -275,6 +327,11 @@ ____________________________
 **浅拷贝可能会出现问题，因为两个指针指向同一块内存区域，一个指针的修改会造成另一个指针错误，如出现两个对象析构，两次delete内存的情况。**
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ----------------
 ## 枚举(enum) 和 宏(#define)，typedef，using 的区别？
@@ -289,6 +346,11 @@ ____________________________
 <br>
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ----------------
 ## 内联函数（inline）是什么？
 * 我们知道如果频繁的调用一个函数，那么函数多次压栈会消耗过多的栈空间。 **当函数被申明为内联函数之后，编译器编译时会将其内联展开，而不是按照普通的函数调用机制进行压栈调用**；少了多次的压栈操作，栈空间的消耗就减小了。
@@ -298,6 +360,11 @@ ____________________________
 2. 类成员函数默认加上inline，但具体是否进行内联由编译器决定，类函数声明前加上inline是无效写法，只有在类函数定义前加上inline才有效。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ------------
 ## struct 与 class 的区别？ 
@@ -309,6 +376,11 @@ ____________________________
 **除了这两点外，struct 和 class 完全相同。**
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -----------
 ## struct 和 union 的区别？
@@ -324,6 +396,11 @@ ____________________________
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -----------------
 ## 内存对齐是什么？（字节对齐）
 
@@ -336,6 +413,11 @@ ____________________________
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -------------------
 ## 右值引用是什么？移动语义是什么？move函数的作用？
 **右值**： 左值是可以取到地址的值，右值是不能够取到地址的值。右值主要用于实现移动语义。
@@ -347,11 +429,21 @@ ____________________________
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ---------------------
 ## RVO返回值优化是什么？
 返回值优化（Return value optimization，缩写为RVO）是C++的一项编译优化技术，即省略掉 `两次` 通过`拷贝构造函数` `创建临时对象` 的过程。这样大大节省了开销。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ---------------------
 ## 简述智能指针？
@@ -421,6 +513,11 @@ int main()
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 --------------------
 ## C++有哪四种强制类型转换？
 1. **static_cast**
@@ -433,6 +530,11 @@ reinterpret_cast可以用于不同类型数据之间的转换，是按照逐个�
 dynamic_cast主要用于将 多态基类的指针或引用 转换为 派生类的指针或引用，并且能够检查安全性。如果转换不安全，对指针则返回nullptr；对引用则抛出bad_cast异常。（`多态基类意味着必须由虚函数`）
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -------------------
 ## 动态数组的实现？
@@ -452,6 +554,11 @@ vector<vector<int>> nums(m, vector<int>(n, 0));
 ```
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -------------------------
 ## 简述STL 库？
@@ -489,6 +596,11 @@ stack，queue，priority_queue既是序列式容器，也是容器适配器；st
 
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -----------------------
 ## 简述STL库中的容器以及特点？
@@ -532,6 +644,11 @@ stack，queue，priority_queue既是序列式容器，也是容器适配器；st
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ----------------------
 ## 简述vector的存储机制？
 vector在STL源码中的实现主要是有三个指针：start，finish，end_of_storage
@@ -550,6 +667,11 @@ finish->end_of_storage：代表着剩余可存储空间的大小
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 --------------
 
 
@@ -560,6 +682,11 @@ list的底层实现是`闭环双向链表`，有一个指向尾部节点的**空
 
 
 <br>
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
 ---------------------
@@ -588,6 +715,11 @@ deque插入：
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ----------------
 ## 什么情况下选择unorder_map 和 map？
 选用map还是unordered_map，**关键在于看关键字的查询操作次数**。
@@ -598,6 +730,11 @@ deque插入：
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ------------
 ## 什么情况下选择set和map？
 这两种数据类型的底层均为红黑树。
@@ -607,6 +744,11 @@ map更适合用于作为数据字典，也就是**关键字的查询**；
 而set适用于**判断关键字是否在集合中**。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 --------------
 ## 简述迭代器失效的情况？
@@ -628,11 +770,21 @@ map更适合用于作为数据字典，也就是**关键字的查询**；
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ------
 ## 没有迭代器的容器有哪些？
 queue, stack, priority_queue。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 --------------------
 ## 简述public ，protected，private 访问修饰符的区别?
@@ -657,6 +809,11 @@ class中如果不写则**默认是private继承**。
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -----------
 ## 派生类不能继承基类的哪些东西？
 派生类可以继承基类的大部分资源，但是 **构造函数**，**析构函数**不能够继承。
@@ -670,6 +827,11 @@ class中如果不写则**默认是private继承**。
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 --------------------------
 ## 友元是什么？
 友元可以分为**友元函数**以及**友元类**，在某一个类中申明了友元函数或者友元类之后，该友元函数或友元类就可以访问该类的所有public，protected和 private 成员。
@@ -679,6 +841,11 @@ class中如果不写则**默认是private继承**。
 2.	友元并不属于类成员（也就没有this指针,通常是将对象作为参数），所以放在public, protected, private 均可，没有关系。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 -----------------
 ## this指针是什么？
@@ -691,12 +858,22 @@ class中如果不写则**默认是private继承**。
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -----------
 ## 简述C++中的多重继承？（菱形继承）
 多继承会让程序变得复杂，同时可能会继承一些不必要的数据。
 多继承容易出现命名冲突的问题，可以**加上域限定符（：：）**，或是**采用虚继承**来消除二义性。
 
 <br>
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
 ------
@@ -709,12 +886,22 @@ class中如果不写则**默认是private继承**。
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ---------
 ## 类成员变量初始化的顺序？
 
 是按照 **类中的声明顺序** 进行初始化的，并不是按照初始化列表的顺序进行初始化。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ---------------
 ## 简述C++中的多态机制？（虚函数，多态相关问题）
@@ -749,11 +936,21 @@ class中如果不写则**默认是private继承**。
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 -----------
 ## 虚函数与纯虚函数的区别？
 纯虚函数在基类中只申明不定义（如`virtual void func() = 0`），必须在派生类中进行覆盖重写虚函数表；拥有纯虚函数的基类被称为**抽象类**，抽象类**不能实例化**，只能被继承。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ----------
 ## C++中哪些函数不能是虚函数？
@@ -774,6 +971,11 @@ class中如果不写则**默认是private继承**。
 因为静态成员函数是整个类共享的，虚函数无法进行覆盖。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ------------
 ## 静态联编与动态联编？（静态绑定与动态绑定）
@@ -802,6 +1004,11 @@ class中如果不写则**默认是private继承**。
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ------------
 ## 构造函数与析构函数能否为虚函数？
 * **构造函数不能为虚函数**
@@ -816,6 +1023,11 @@ class中如果不写则**默认是private继承**。
 
 <br>
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ------------
 ## 析构函数可以抛出异常吗？
 **析构函数不能抛出异常**，原因如下：
@@ -825,6 +1037,11 @@ class中如果不写则**默认是private继承**。
 2. 严格来说，**析构函数也是处理异常的一部分**；如果之前发生异常，调用析构函数来释放内存，若是析构函数也抛出异常，将会让程序崩溃。
 
 <br>
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
 
 ------
 ## 空类中自带哪些函数？
@@ -844,11 +1061,21 @@ class中如果不写则**默认是private继承**。
 <br>
 
 
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
+
+
 ---------------
 ## 抽象类和接口的区别？
 * 抽象类即是拥有纯虚函数的基类，不能够被实例化；
 * 接口是一种特殊的抽象类，并且满足：1）类中没有任何成员变量；2）所有的成员函数都是公有且都是纯虚函数。
 
 <br>
+
+
+<div align="right">
+    <b><a href="#目录">↥ Back To Top</a></b>
+</div>
 
 
